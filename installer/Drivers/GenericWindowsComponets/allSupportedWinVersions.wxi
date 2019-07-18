@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Include>
+    <?if $(sys.BUILDARCH) = "x64" ?>
+    <?include ./2k12.wxi ?>
+    <?include ./2k12R2.wxi ?>
+    <?include ./2k16.wxi ?>
+    <?include ./2k19.wxi ?>
+    <?include ./w10x64.wxi ?>
+    <?include ./w81x64.wxi?>
+    <?include ./w8x64.wxi ?>
+    <?else ?>
+    <?include ./w10x86.wxi ?>
+    <?include ./w81x86.wxi?>
+    <?include ./w8x86.wxi ?>
+    <?endif ?>
+</Include>

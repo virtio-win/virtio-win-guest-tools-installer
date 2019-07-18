@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<Include xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+        <Component Id='CMP_$(var.driverName)_viorngum_$(var.osShort)_$(var.ISA)'
+            Guid='$(var.viorng_viorngum_guid)'
+            Transitive='yes'
+            Win64='$(var.Win64)'>
+            <Condition><![CDATA[$(var.condition)]]></Condition>
+            <File Id='FILE_$(var.driverName)_viorngum_$(var.osShort)_$(var.ISA)'
+                Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\viorngum.dll'
+                KeyPath='yes'/>
+        </Component>
+        <Component Id='CMP_$(var.driverName)_viorngci_$(var.osShort)_$(var.ISA)'
+            Guid='$(var.viorng_viorngci_guid)'
+            Transitive='yes'
+            Win64='$(var.Win64)'>
+            <Condition><![CDATA[$(var.condition)]]></Condition>
+            <File Id='FILE_$(var.driverName)_viorngci_$(var.osShort)_$(var.ISA)'
+                Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\viorngci.dll'
+                KeyPath='yes'/>
+        </Component>
+        <?if $(var.WdfCoInstaller01011) = "true" ?>
+        <Component Id='CMP_$(var.driverName)_WdfCoInstaller01011_$(var.osShort)_$(var.ISA)'
+            Guid='$(var.viorng_WdfCoInstaller_guid)'
+            Transitive='yes'
+            Win64='$(var.Win64)'>
+            <Condition><![CDATA[$(var.condition)]]></Condition>
+            <File Id='FILE_$(var.driverName)_WdfCoInstaller01011_$(var.osShort)_$(var.ISA)'
+                Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\WdfCoInstaller01011.dll'
+                KeyPath='yes'/>
+        </Component>
+        <?endif?>
+</Include>

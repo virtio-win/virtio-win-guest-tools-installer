@@ -1,0 +1,411 @@
+Bugs I found on installsield project:
+- all drivers are missing w10 and server19 installers
+- RegisterTool dosent work, I looked into the registry on SOFTWARE\\RedHat\\RHEV\\Tools\\ but the only one being registered is SSO
+Balloon:
+      - if blnsvr -i failes the installation continue and finishs succsesfully.
+spice_agent:
+      we are getting the package "vdagent-win" which containes the .exe
+      files, and we unpack them to xp/w7 folders and in the ism project
+      we tell installShield to take the files from the w7/xp folders
+      but we install the agent on all the oses (look into the file Osbehavior
+       on the main installer) that is vety confusing.
+netkvm:
+- missing dlls on w8
+SSO:
+- I saw that by Osbehavior SSO needs to be installed on win8/8.1/10
+      vut the conditions all puit os as OS=win7  even if the os is 8/8.1/10
+      it is a confusing workaround.
+--------------------------------------------------------
+TODO:
+1. Get a way to build in Linux, with msitools or wine.
+2. Add ICONS to the installer.
+4. Set Cited properties http://msdn.microsoft.com/en-us/library/aa370905%28v=VS.85%29.aspx Chapter 3.
+5. Create a brew build script.
+6. Think about adding INSTALLED to and REMOVED to the component conditions
+7. Think about adding -sadmin, -sadv, -slocto, -sv, -usf, -cub the light linker.
+8. Add support for win 2019.
+9. on RHV-Agent in the install agent function there is a string replacement, basically replace
+      "ovirt-guest-agent.log" with PROGRAMFILES^"Redhat\\RHEV\\Tools\\InstallLogs\\Install.ovirt-guest-agent-service.log"
+      when I'll have a log dit maybe I need to do something similar.
+10. on RHV-Agent I have some CA that I need to investigate.
+11. What to do with QGA (rhewv-qga.smi)
+12. on rhev-agent ResetPeriodInDays="1" needs to select currect one.
+
+-----------------------------------------------------------------------------
+Balloon - DONE!!!
+Qemufwcfg - DONE!!!
+-QumranetrAgentDriver - Mostly done but need to investigate some CAs.
+NetKvm - DONE!!!
+QumranetSpiceAgent - Done !!!!
+QumranetSpiceDriver - NO NEED!!!!!!
+SSO - Done !!!!
+SMBUS - NO NEED!!!!!!
+QXL\RHEV-Spice-WDDM-DOD - Done !!!!
+Viorng - Done !!!!
+-Vioscsi - need to implement 2 CAs.
+-Vioserial - need StopDriverServices.
+-Viostor - need StopDriverServices.
+
+Custom Actions analysis:
+********************
+***Balloon:***
+1. ChangeDisplayName:
+      Description:
+      A CA that should add to the registry at "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\{Product_key}"
+      the name, and then calls the registrt tool, that dosent work.
+      Decision:
+      Not to implement, I don't see why we need to register this values, the function is not working and nothing broke.
+
+2. DontShowOnAddRemove:
+      Description:
+      Set the key SystemComponent in the registry
+      HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall to 1 and that means that
+      it is not in the add and remove
+      Decision:
+      Not to implement, since we are using a single installer now olus the function is not working(looked into the registry) and nothing broke.
+
+3. DriverNeedsReboot:
+      Description:
+      Sets a registry ISSCHEDULEREBOOT in SOFTWARE\\Redhat to 1 ,we chack that later in the wrapper
+      Decision:
+      We are always asking for reboot, and telling the user that if he dosen't reboot then the
+      changes won't have any effect
+
+4. InstallBalloonService:
+      Description:
+      - Launch "blnscr.exe -i" and wait for it to finish with option to say wait for it to
+      finish and hide the window.
+      - Launch "sc.exe start BalloonService (DRIVER_SERVICE_NAME)" and wait for it to finish with option to
+      say wait for it to finish and hide the window, that basiclly means that it tell Service Control
+      Manager to start the Balloon service .
+      Decision:
+      We must implement, only on install, not sure if we need to start the service since I think that it start on boot.
+5. RegisterTool:
+      Description:
+      Writes Product_ver and Product_key to the registry on path SOFTWARE\\RedHat\\RHEV\\Tools\\Balloon
+      Decision:
+      Not to implement, I Don't see why we need to write those keys to the registry.
+6. RemoveBalloonService:
+      Description:
+      Checks if the service "RHEV-Balloon" exist
+      if it does then calls stop service
+      then Launch and wait to finish blnsvr.exe\" -u 
+      Decision:
+      We must implement, only on uninstall.
+7. SetPlatformProperty - no need
+8. UnregisterTool:
+      Description: Deletes the SOFTWARE\\RedHat\\RHEV\\Tools\\Balloon" reg entry
+      Decision: Not to implement.
+*********************
+***Qemufwcfg:***
+1. ChangeDisplayName:
+      Description:
+      A CA that should add to the registry at "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\{Product_key}"
+      the name, and then calls the registrt tool, that dosent work.
+      Decision:
+      Not to implement, I don't see why we need to register this values, the function is not working and nothing broke.
+2. DontShowOnAddRemove:
+      Description:
+      Set the key SystemComponent in the registry
+      HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall to 1 and that means that
+      it is not in the add and remove
+      Decision:
+      Not to implement, since we are using a single installer now olus the function is not working(looked into the registry) and nothing broke.
+3. DriverNeedsReboot:
+      Description:
+      Sets a registry ISSCHEDULEREBOOT in SOFTWARE\\Redhat to 1 ,we chack that later in the wrapper
+      Decision:
+      We are always asking for reboot, and telling the user that if he dosen't reboot then the
+      changes won't have any effect
+4. RegisterTool:
+      Description:
+      Writes Product_ver and Product_key to the registry on path SOFTWARE\\RedHat\\RHEV\\Tools\\Qemufwcfg
+      Decision:
+      Not to implement, I Don't see why we need to write those keys to the registry.
+5. SetPlatformProperty - no need
+6. UnregisterTool:
+      Description: Deletes the SOFTWARE\\RedHat\\RHEV\\Tools\\Qemufwcfg" reg entry
+      Decision: Not to implement.
+*********************
+***QumranetrAgentDriver:***
+1.BackupOemFile - no need, not used
+2. ChangeDisplayName:
+      Description:
+      A CA that should add to the registry at "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\{Product_key}"
+      the name, and then calls the registrt tool, that dosent work.
+      Decision:
+      Not to implement, I don't see why we need to register this values, the function is not working and nothing broke.
+3. CopyOemFile - no need, not used
+4. CreateHooksDirs:
+      Description:
+      used in installagentservice action, cretes dirs:
+            RHEV\Drivers\Agent\[after_hibernation, after_migration, before_hibernation, before_migration]
+      Decision: Implement
+5. CreateLocalConfFile:
+      Description:
+      used in installagentservice action, cretes empty conf file
+      Decision: Implement
+6. DontShowOnAddRemove:
+      Description:
+      Set the key SystemComponent in the registry
+      HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall to 1 and that means that
+      it is not in the add and remove
+      Decision:
+      Not to implement, since we are using a single installer now olus the function is not working(looked into the registry) and nothing broke.
+7. DriverNeedsReboot:
+      Description:
+      Sets a registry ISSCHEDULEREBOOT in SOFTWARE\\Redhat to 1 ,we chack that later in the wrapper
+      Decision:
+      We are always asking for reboot, and telling the user that if he dosen't reboot then the
+      changes won't have any effect
+8. FindOemFile - no need, not used.
+9. !GetDeviceFileName!: NEED TO RESEARCH
+10.!HcCalls\hcInit\hcTerm\hcSend!: NEED TO RESEARCH
+11. IsSpesificServiceExists: No need
+12.installagentservice:
+      Description:
+      a. creates the logs dir.
+      b. checks if the file default-logger.ini containes str "ovirt-guest-agent.log".
+      c. replaces the string ovirt-guest-agent.log with the PROGRAMFILES^"Redhat\\RHEV\\Tools\\InstallLogs\\Install.ovirt-guest-agent-service.log
+      d. checks if a file ovirt-guest-agent-ini exist, if not then
+            checks if a file rhev-agent.ini exist,
+                  if it does then copys it's content to ovirt-guest-agent.ini
+                  if it dosen't then creates an mpty ovirt-guest-agent.ini
+      e. calls CreateHooksDirs()
+13. RegisterTool, UnregisterTool:
+      Description:
+      Writes Product_ver and Product_key to the registry on path SOFTWARE\\RedHat\\RHEV\\Tools\\Qemufwcfg
+      Decision:
+      Not to implement, I Don't see why we need to write those keys to the registry.
+14. RemoveAgentService:
+      Description:
+      Removes the service, and the hooks dir
+      Decision:
+      Not to implement,We dont need that since the hooks dir is a part of the msi,
+      and the service is beeing managed by the service Control.
+15. RemoveOldInstallerFromAddRemove:
+      No need, since only the main installer appears in add and remove.
+16. RestoreOemFile, SearchOemFile - no need, not used
+17. SetPlatformProperty - no need
+18. StartAgent, StopAgent, WriteToLogFile - no need
+*********************
+***NetKVM***
+1. ChangeDisplayName:
+      Description:
+      A CA that should add to the registry at 
+      "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\{Product_key}"
+      the name, and then calls the registrt tool, that dosent work.
+      Decision:
+      Not to implement, I don't see why we need to register this values,
+      the function is not working and nothing broke.
+
+2. MyDisableDevice\MyEnableDevice\SetUpgradeFlag:
+      Description: called in Disable\EnableDriver which are not used in the installation
+      Decision: Not to implement
+3. DisableDriver\EnableDriver: Not used in the installation.
+4. DontShowOnAddRemove:
+      Description:
+      Set the key SystemComponent in the registry
+      HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall to 1 and that means that
+      it is not in the add and remove
+      Decision:
+      Not to implement, since we are using a single installer now olus the function is not working(looked into the registry) and nothing broke.
+5. DriverNeedReboot: No need.
+6. FindOemFile: Not used in the installation.
+7. RegisterTool:
+      Description:
+      Writes Product_ver and Product_key to the registry on path SOFTWARE\\RedHat\\RHEV\\Tools\\Balloon
+      Decision:
+      Not to implement, I Don't see why we need to write those keys to the registry.
+8. RemoveOldInstallerFromAddRemove: No need.
+9. SetW2K: not relevant.
+*****************************
+*** SSO ***
+1. ChangeDisplayName:
+      Description:
+      A CA that should add to the registry at "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\{Product_key}"
+      the name, and then calls the registrt tool, that dosent work.
+      Decision:
+      Not to implement, I don't see why we need to register this values, the function is not working and nothing broke.
+2. ChainGinaSOO\UnChainGinaSOO:
+      Description:
+      Sets a variable called REGDB_OPTIONS and it looks like it un sets it rightaway,
+      so not doing any thing
+      Decision:
+      Not to implement, no being used in the installation.
+3. DontShowOnAddRemove:
+      Description:
+      Set the key SystemComponent in the registry
+      HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall to 1 and that means that
+      it is not in the add and remove
+      Decision:
+      Not to implement, since we are using a single installer now olus the function
+      is not working(looked into the registry) and nothing broke.
+4. DriverNeedReboot\SetDriverNeedToReboot\SetPlatformProperty: No need.
+5. RegisterTool:
+      Description:
+      Writes Product_ver and Product_key to the registry on path SOFTWARE\\RedHat\\RHEV\\Tools\\Balloon
+      Decision:
+      Not to implement, I Don't see why we need to write those keys to the registry.
+6. RemoveOldInstallerFromAddRemove:
+      No need, since only the main installer appears in add and remove.
+7.UnsetSASGeneration/ SetSASGenerationForUpgrade/ SetSASGeneration:
+      https://getadmx.com/?Category=Windows_10_2016&Policy=Microsoft.Policies.WindowsLogon2::SoftwareSASGeneration
+      Decision: implemented as simple reg writes.
+ *** SMBUS ***
+ 1. ChangeDisplayName:
+      Description:
+      A CA that should add to the registry at "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\{Product_key}"
+      the name, and then calls the registrt tool, that dosent work.
+      Decision:
+      Not to implement, I don't see why we need to register this values, the function is not working and nothing broke.
+2. DontShowOnAddRemove:
+      Description:
+      Set the key SystemComponent in the registry
+      HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall to 1 and that means that
+      it is not in the add and remove
+      Decision:
+      Not to implement, since we are using a single installer now olus the function is not working(looked into the registry) and nothing broke.
+3. DriverNeedsReboot:
+      Description:
+      Sets a registry ISSCHEDULEREBOOT in SOFTWARE\\Redhat to 1 ,we chack that later in the wrapper
+      Decision:
+      We are always asking for reboot, and telling the user that if he dosen't reboot then the
+      changes won't have any effect
+4. RegisterTool:
+      Description:
+      Writes Product_ver and Product_key to the registry on path SOFTWARE\\RedHat\\RHEV\\Tools\\Qemufwcfg
+      Decision:
+      Not to implement, I Don't see why we need to write those keys to the registry.
+5. SetPlatformProperty - no need
+6. UnregisterTool:
+      Description: Deletes the SOFTWARE\\RedHat\\RHEV\\Tools\\Qemufwcfg" reg entry
+      Decision: Not to implement.
+***QXL\RHEV-Spice-WDDM-DOD:***
+1. ChangeDisplayName:
+      Description:
+      A CA that should add to the registry at "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\{Product_key}"
+      the name, and then calls the registrt tool, that dosent work.
+      Decision:
+      Not to implement, I don't see why we need to register this values, the function is not working and nothing broke.
+2. DriverNeedsReboot:
+      Description:
+      Sets a registry ISSCHEDULEREBOOT in SOFTWARE\\Redhat to 1 ,we chack that later in the wrapper
+      Decision:
+      We are always asking for reboot, and telling the user that if he dosen't reboot then the
+      changes won't have any effect
+4. RegisterTool:
+      Description:
+      Writes Product_ver and Product_key to the registry on path SOFTWARE\\RedHat\\RHEV\\Tools\\Qemufwcfg
+      Decision:
+      Not to implement, I Don't see why we need to write those keys to the registry.
+5. SetPlatformProperty - no need
+6. UnregisterTool:
+      Description: Deletes the SOFTWARE\\RedHat\\RHEV\\Tools\\Qemufwcfg" reg entry
+      Decision: Not to implement.
+***Viorng***
+1. ChangeDisplayName:
+      Description:
+      A CA that should add to the registry at "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\{Product_key}"
+      the name, and then calls the registrt tool, that dosent work.
+      Decision:
+      Not to implement, I don't see why we need to register this values, the function is not working and nothing broke.
+2. DriverNeedsReboot:
+      Description:
+      Sets a registry ISSCHEDULEREBOOT in SOFTWARE\\Redhat to 1 ,we chack that later in the wrapper
+      Decision:
+      We are always asking for reboot, and telling the user that if he dosen't reboot then the
+      changes won't have any effect
+4. RegisterTool:
+      Description:
+      Writes Product_ver and Product_key to the registry on path SOFTWARE\\RedHat\\RHEV\\Tools\\Qemufwcfg
+      Decision:
+      Not to implement, I Don't see why we need to write those keys to the registry.
+5. SetPlatformProperty - no need
+6. UnregisterTool:
+      Description: Deletes the SOFTWARE\\RedHat\\RHEV\\Tools\\Qemufwcfg" reg entry
+      Decision: Not to implement.
+7. FindOemFile - not used
+*******************************
+***Vioscsi***
+1. ChangeDisplayName:
+      Description:
+      A CA that should add to the registry at "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\{Product_key}"
+      the name, and then calls the registrt tool, that dosent work.
+      Decision:
+      Not to implement, I don't see why we need to register this values, the function is not working and nothing broke.
+2. DriverNeedsReboot:
+      Description:
+      Sets a registry ISSCHEDULEREBOOT in SOFTWARE\\Redhat to 1 ,we chack that later in the wrapper
+      Decision:
+      We are always asking for reboot, and telling the user that if he dosen't reboot then the
+      changes won't have any effect
+4. RegisterTool:
+      Description:
+      Writes Product_ver and Product_key to the registry on path SOFTWARE\\RedHat\\RHEV\\Tools\\Qemufwcfg
+      Decision:
+      Not to implement, I Don't see why we need to write those keys to the registry.
+5. SetPlatformProperty - no need
+6. UnregisterTool:
+      Description: Deletes the SOFTWARE\\RedHat\\RHEV\\Tools\\Qemufwcfg" reg entry
+      Decision: Not to implement.
+7. FindOemFile - not used
+8. LockVol and UnLockvol - use dll, need to implement, investigate for what it is used
+**********************************
+****** Vioserial *******
+StopDriverServices - need to know if it is relevant.
+--------------------------------------------------------------------------------
+<!--
+currently installing:
+Vioserial: (come from virtio-win)
+Viostor: (come from virtio-win)
+Vioscsi: (come from virtio-win)
+Balloon: (come from virtio-win)
+Network_Driver: (come from virtio-win)
+      netkvm.inf
+      readme.doc
+      virtio-win_licence.txt.
+      registry write Tcp1323Opts
+Spice_Agent: (come from vdagent-win)
+      vdagent.exe
+      vdservice.exe
+Spice_Driver: (come from spice-qxl-wddm-dod)
+      qxldod.inf
+SSO: (come from system-win-utils(the project sources to build)/ rhev-sso-msi(our build in brew)):
+      RHEVcredProv.dll
+QGA: (mingw-qemu-ga-win) IS BUILT NOT BY US WE ONLY GET THE MSI, SHOULD THINK OF WHAT TO DO WITH IT
+
+balloon           virtio-win;
+netkvm            virtio-win;
+viorng.inf        virtio-win;
+vioscsi           virtio-win;
+viostor           virtio-win;
+qemufwcfg         virtio-win;
+qxldod.in         spice-qxl-wddm-dod;
+rhev-agent        rhev-agent-binaries; syswin-utils
+
+Dropped:
+      -From spice DRIVER, droped RHEV-SPICE["","x64"].msi that comes
+            from qxl-win since it is only for xp and w7.
+      - Dropped USB-DRIVER since we dont used.
+      - SSO: xp part which was the ginasso.dll
+      
+
+rhev-agent\QumranetrAgentDriver(in installShield):
+- need to know where to get the files and is it a driver? what going on there.
+RHEV-QGA\qemu-ga:
+
+sso = ginasso.dll what is that ???? 
+Agent = ovirtguestservice.exe;
+SPICE agent = vdservice.exe
+QGA = Qemu-ga = qemu_ga.exe; qe
+
+
+stuff that we are not installing and reason:
+SPICE = qxl = qxl.inf   only for 2k8r2, w7, xp
+smbus                   This is only for 2k8 which is not suported any more.
+pvpanic                 ???? not installing it ????
+qemupciserial           ???? not installing it ????
+vfddrivers and netkvm   ???? What is the differance ????
+vioinput                ???? not installing it ????
+-->

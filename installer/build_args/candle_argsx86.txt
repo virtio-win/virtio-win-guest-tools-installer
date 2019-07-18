@@ -1,0 +1,20 @@
+@@INSTALLER_PATH@@\*.wxs
+@@INSTALLER_PATH@@\Drivers\Balloon\*.wxs
+@@INSTALLER_PATH@@\Drivers\NetKVM\*.wxs
+@@INSTALLER_PATH@@\Drivers\qemufwcfg\*.wxs
+@@INSTALLER_PATH@@\Drivers\qxldod\*.wxs
+@@INSTALLER_PATH@@\Drivers\viorng\*.wxs
+@@INSTALLER_PATH@@\Drivers\vioscsi\*.wxs
+@@INSTALLER_PATH@@\Drivers\vioserial\*.wxs
+@@INSTALLER_PATH@@\Drivers\viostor\*.wxs
+@@INSTALLER_PATH@@\Agents\rhv_agent\*.wxs
+@@INSTALLER_PATH@@\Agents\spice_agent\*.wxs
+-out wixobjx86\
+-nologo
+-pedantic
+-v
+-arch x86
+-fips
+-ext "@@WIX_BIN_PATH@@\WixDifxAppExtension.dll"
+-ext "@@WIX_BIN_PATH@@\WixUtilExtension.dll"
+-ext "@@WIX_BIN_PATH@@\WixUIExtension"

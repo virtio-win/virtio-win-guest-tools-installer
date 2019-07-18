@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+<?define fileName = "RHEVcredProv.dll" ?>
+<?define srcDirName = "SSO" ?>
+<?define destDirName = "SSODRIVER" ?>
+<?if $(sys.BUILDARCH) = "x64" ?>
+<?define guid = "446AE311-B8F2-4146-AC50-503468B4DDAB"?>
+<?define guid_reg = "4B41E951-24EE-4703-91E6-62455968EB19"?>
+<?define Win64 = "yes" ?>
+<?define condition = "$(var.condition_w8x64) OR $(var.condition_w81x64) OR $(var.condition_w10x64)" ?>
+<?define ISA = "x64" ?>
+<?else ?>
+<?define osFullName = "Win10x86" ?>
+<?define guid = "101C5A02-3C52-442F-9094-976B1FD635FB"?>
+<?define guid_reg = "218F8854-65AE-4668-9DDF-079504F361C4"?>
+<?define Win64 = "no" ?>
+<?define condition = "$(var.condition_w8x86) OR $(var.condition_w81x86) OR $(var.condition_w10x86)" ?>
+<?define ISA = "x86" ?>
+ <?endif ?>
+</Include>
+

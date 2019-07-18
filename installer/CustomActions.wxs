@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<?include constants.wxi ?>
+    <Fragment>
+        <Property Id="CustomActionsRef" Value="1" />
+        <PropertyRef Id="RHV_Agent_CA" />
+        <!-- <?foreach driver in $(var.virtioDriverList)?>
+            <PropertyRef Id="$(var.driver)InstallDriverRef" />
+        <?endforeach?> -->
+    </Fragment>
+</Wix>

@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'
+     xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+<?include ../../constants.wxi ?>
+<?include ./spice_agent.wxi ?>
+
+    <Fragment>
+        <ComponentGroup Id="CMPG_spice_agent" Directory="$(var.destDirName)">
+            <Component Id='CMP_spice_agent'
+            Guid='$(var.guid_agent)'
+            Transitive='yes'
+            Win64='$(var.Win64)'>
+                <File Id='FILE_$(var.agent_file)'
+                    Source='$(var.spice_agent_path)\$(var.ISA)\$(var.agent_file)' 
+                    KeyPath='yes'/>
+            </Component>
+            <Component Id='CMP_spice_service'
+            Guid='$(var.guid_service)'
+            Transitive='yes'
+            Win64='$(var.Win64)'>
+                <File Id='FILE_$(var.service_file)'
+                    Source='$(var.spice_agent_path)\$(var.ISA)\$(var.service_file)' 
+                    KeyPath='yes'/>
+                <ServiceInstall
+                    Id="VdService"
+                    Name="VdService"
+                    DisplayName="VdService"
+                    Description="Spice Agent"
+                    Start="auto"
+                    ErrorControl="normal"
+                    Type="ownProcess">
+                    <ServiceDependency Id="VirtioSerial" />
+                </ServiceInstall>
+                <ServiceControl
+                    Id="sc_VdService"
+                    Name="VdService"
+                    Start="install"
+                    Stop="both"
+                    Remove="uninstall"
+                    Wait="yes" />
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+</Wix>

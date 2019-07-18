@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+<?define Version = "4.4.0" ?>
+<?if $(sys.BUILDARCH) = "x64" ?>
+      <?define UpgradeCode = "{05294E2F-7778-4E46-B2A3-CF039D5767C8}" ?>
+      <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+      <?define LaunchCondition = "x64_Validation" ?>
+<?else ?>
+      <?define UpgradeCode = "{22C8F100-2ED1-4A99-A8FC-C391F0D1D7E7}" ?>
+      <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+      <?define LaunchCondition = "x86_Validation" ?>
+<?endif ?>
+<?define spice_agent_path = '@@VDAGENT-WIN-PATH@@' ?>
+<?define ovirt_agent_path = '@@OVIRT-GA-PATH@@' ?>
+<?define virtio_path = '@@VIRTIO-WIN-PATH@@' ?>
+<?define sso_path = '@@@@' ?>
+<!-- Win Versions Conditions-->
+<?define condition_2k12 = '(VersionNT64 = 602 AND MsiNTProductType > 1)' ?>
+<?define condition_2k12r2 = '(REGISTRY_PRODUCT_NAME >< "2012" AND MsiNTProductType > 1)' ?>
+<?define condition_2k16 = '(REGISTRY_PRODUCT_NAME >< "2016" AND MsiNTProductType > 1)' ?>
+<?define condition_2k19 = '(REGISTRY_PRODUCT_NAME >< "2019" AND MsiNTProductType > 1)' ?>
+<?define condition_w8x64 = '(VersionNT = 602 AND VersionNT = VersionNT64 AND MsiNTProductType = 1)' ?>
+<?define condition_w8x86 = '(VersionNT = 602 AND VersionNT <> VersionNT64 AND MsiNTProductType = 1)' ?>
+<?define condition_w81x64 = '(REGISTRY_PRODUCT_NAME >< "8.1" AND VersionNT = VersionNT64 AND MsiNTProductType = 1)' ?>
+<?define condition_w81x86 = '(REGISTRY_PRODUCT_NAME >< "8.1" AND VersionNT <> VersionNT64 AND MsiNTProductType = 1)' ?>
+<?define condition_w10x64 = '(REGISTRY_PRODUCT_NAME >< "Windows 10" AND VersionNT = VersionNT64 AND MsiNTProductType = 1)' ?>
+<?define condition_w10x86 = '(REGISTRY_PRODUCT_NAME >< "Windows 10" AND VersionNT <> VersionNT64 AND MsiNTProductType = 1)' ?>
+<!-- <?define virtioDriverList = "balloon;netkvm;viorng;vioscsi;vioser;viostor" ?> -->
+<!-- <?define isServer = 'MsiNTProductType > 1' ?>
+<?define is64 = 'VersionNT = VersionNT64' ?>
+<?define isWin8or2k12 = 'VersionNT = 602' ?>
+<?define isWin2k12r2 = 'REGISTRY_PRODUCT_NAME >< "2012"' ?>
+<?define isWin2k16 = 'REGISTRY_PRODUCT_NAME >< "2016"' ?>
+<?define isWin2k19 = 'REGISTRY_PRODUCT_NAME >< "2019"' ?>
+<?define isWin81 = 'REGISTRY_PRODUCT_NAME >< "8.1"' ?>
+<?define isWin10 = 'REGISTRY_PRODUCT_NAME >< "Windows 10"' ?>
+
+<?define condition_2k12 = '($(var.isWin8or2k12) AND $(var.isServer))' ?>
+<?define condition_2k12r2 = '($(var.isWin2k12r2) AND $(var.isServer))' ?>
+<?define condition_2k16 = '($(var.isWin2k16) AND $(var.isServer))' ?>
+<?define condition_2k19 = '($(var.isWin2k19) AND $(var.isServer))' ?>
+<?define condition_w8x64 = '($(var.isWin8or2k12) AND $(var.is64) AND NOT $(var.isServer))' ?>
+<?define condition_w8x86 = '($(var.isWin8or2k12) AND NOT $(var.is64) AND NOT $(var.isServer))' ?>
+<?define condition_w81x64 = '($(var.isWin81) AND $(var.is64) AND NOT $(var.isServer))' ?>
+<?define condition_w81x86 = '($(var.isWin81) AND NOT $(var.is64) AND NOT $(var.isServer))' ?>
+<?define condition_w10x64 = '($(var.isWin10) AND $(var.is64) AND NOT $(var.isServer))' ?>
+<?define condition_w10x86 = '($(var.isWin10) AND NOT $(var.is64) AND NOT $(var.isServer))' ?> -->
+</Include>

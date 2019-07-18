@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<Include xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+    <Fragment>
+        <ComponentGroup
+            Id="CMPG_$(var.osFullName)_$(var.driverName)"
+            Directory="$(var.destDirName)">
+            <Component Id='CMP_$(var.osFullName)_$(var.driverName)'
+                Guid='$(var.guid)'
+                Transitive='yes'
+                Win64='$(var.Win64)'>
+                <Condition><![CDATA[$(var.condition)]]></Condition>
+                <File Id='FILE_$(var.driverName)_$(var.osShort)_$(var.ISA).inf'
+                    Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\$(var.driverName).inf' 
+                    KeyPath='yes'/>
+                <File Id='FILE_$(var.driverName)_$(var.osShort)_$(var.ISA).cat'
+                    Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\$(var.driverName).cat'
+                    CompanionFile='FILE_$(var.driverName)_$(var.osShort)_$(var.ISA).inf'/>
+                <?if $(var.with_sys) = "true" ?>
+                <File Id='FILE_$(var.driverName)_$(var.osShort)_$(var.ISA).sys'
+                    Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\$(var.driverName).sys'
+                    CompanionFile='FILE_$(var.driverName)_$(var.osShort)_$(var.ISA).inf'/>
+                <?endif?>
+                <difx:Driver PlugAndPlayPrompt='no' AddRemovePrograms='no' />
+            </Component>
+            <?if $(var.extra_components) = "true" ?>
+            <?include ../$(var.srcDirName)/$(var.driverName)_extras.wxi ?>
+            <?endif?>
+        </ComponentGroup>
+    </Fragment>
+</Include>

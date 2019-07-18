@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<Include xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+        <Component Id='CMP_$(var.driverName)_netkvmco_$(var.osShort)_$(var.ISA)'
+            Guid='$(var.netkvm_netkvmco_guid)'
+            Transitive='yes'
+            Win64='$(var.Win64)'>
+            <Condition><![CDATA[$(var.condition)]]></Condition>
+            <File Id='FILE_$(var.driverName)_netkvmco_$(var.osShort)_$(var.ISA)'
+                Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\netkvmco.dll'
+                KeyPath='yes'/>
+        </Component>
+        <Component Id='CMP_$(var.driverName)_readme_$(var.osShort)_$(var.ISA)'
+            Guid='$(var.netkvm_readme_guid)'
+            Transitive='yes'
+            Win64='$(var.Win64)'>
+            <Condition><![CDATA[$(var.condition)]]></Condition>
+            <File Id='FILE_$(var.driverName)_readme_$(var.osShort)_$(var.ISA)'
+                Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\readme.doc'
+                KeyPath='yes'/>
+        </Component>
+</Include>

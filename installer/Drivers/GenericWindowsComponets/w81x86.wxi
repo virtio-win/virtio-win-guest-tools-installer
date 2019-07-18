@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Include xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+<?define WdfCoInstaller01011 = "true" ?>
+<?define osFullName = "Win81x86" ?>
+<?define osShort = "w8.1" ?>
+<?define ISA = "x86" ?>
+<?define Win64 = "no" ?>
+<?define condition = "$(var.condition_w81x86)" ?>
+<?include ./template.wxi ?>
+<?undef WdfCoInstaller01011?>
+<?undef osFullName?>
+<?undef osShort?>
+<?undef ISA?>
+<?undef Win64?>
+<?undef condition?>
+</Include>

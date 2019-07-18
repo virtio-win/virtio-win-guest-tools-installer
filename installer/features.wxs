@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<?include constants.wxi ?>
+    <Fragment>
+        <Property Id="FeatureProperty" Value="1" />
+        <Feature Id='FE_balloon_driver' Title='Balloon' Level='1'>
+                <ComponentGroupRef Id='CMPG_balloon_driver' />
+        </Feature>
+        <Feature Id='FE_network_driver' Title='Network' Level='1'>
+                <ComponentGroupRef Id='CMPG_netkvm_driver' />
+        </Feature>
+        <Feature Id='FE_qemufwcfg_driver' Title='Qemufwcfg' Level='1'>
+                <ComponentGroupRef Id='CMPG_qemufwcfg_driver' />
+        </Feature>
+        <Feature Id='FE_qxl_driver' Title='Qxl' Level='1'>
+                <ComponentGroupRef Id='CMPG_qxldod_driver' />
+        </Feature>
+        <Feature Id='FE_spice_Agent' Title='Spice Agent' Level='1'>
+                <ComponentGroupRef Id='CMPG_spice_agent' />
+        </Feature>
+        <Feature Id='FE_RHEV_Agent' Title='RHEV Agent' Level='1'>
+                <ComponentGroupRef Id='CMPG_rhev_agent' />
+        </Feature>
+        <Feature Id='FE_spice_driver' Title='Spice Driver' Level='1'>
+                <ComponentGroupRef Id='CMPG_qxldod_driver' />
+        </Feature>
+        <!-- <Feature Id='FE_sso_driver' Title='SSO' Level='1'>
+                <ComponentGroupRef Id='CMPG_SSO' />
+        </Feature> -->
+        <Feature Id='FE_viorng_driver' Title='Viorng' Level='1'>
+                <ComponentGroupRef Id='CMPG_viorng_driver' />
+        </Feature>
+        <Feature Id='FE_vioscsi_driver' Title='Vioscsi' Level='1'>
+                <ComponentGroupRef Id='CMPG_vioscsi_driver' />
+        </Feature>
+        <Feature Id='FE_vioserial_driver' Title='Vioserial' Level='1'>
+                <ComponentGroupRef Id='CMPG_vioserial_driver' />
+        </Feature>
+        <Feature Id='FE_viostor_driver' Title='Viostor' Level='1'>
+                <ComponentGroupRef Id='CMPG_viostor_driver' />
+        </Feature>
+    </Fragment>
+</Wix>

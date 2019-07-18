@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<Include xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+        <?if $(var.WdfCoInstaller01011) = "true" ?>
+        <Component Id='CMP_$(var.driverName)_WdfCoInstaller01011_$(var.osShort)_$(var.ISA)'
+            Guid='$(var.balloon_WdfCoInstaller_guid)'
+            Transitive='yes'
+            Win64='$(var.Win64)'>
+            <Condition><![CDATA[$(var.condition)]]></Condition>
+            <File Id='FILE_$(var.driverName)_WdfCoInstaller01011_$(var.osShort)_$(var.ISA)'
+                Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\WdfCoInstaller01011.dll'
+                KeyPath='yes'/>
+        </Component>
+        <?endif?>
+        <Component Id='CMP_blnsvr_$(var.osShort)_$(var.ISA)'
+            Guid='$(var.balloon_blnsvr_guid)'
+            Transitive='yes'
+            Win64='$(var.Win64)'>
+            <Condition><![CDATA[$(var.condition)]]></Condition>
+            <File Id='FILE_blnsvr_$(var.osShort)_$(var.ISA)'
+                Source='$(var.virtio_path)\Balloon\$(var.osShort)\$(var.ISA)\blnsvr.exe'
+                KeyPath='yes'/>
+            <ServiceInstall
+                Id="BalloonService_$(var.osShort)_$(var.ISA)"
+                Name="BalloonService"
+                DisplayName="BalloonService"
+                Description="Balloon Service"
+                Start="auto"
+                ErrorControl="normal"
+                Type="ownProcess" />
+            <ServiceControl
+                Id="sc_BalloonService_$(var.osShort)_$(var.ISA)"
+                Name="BalloonService"
+                Start="install"
+                Stop="both"
+                Remove="uninstall"
+                Wait="yes" />
+        </Component>
+</Include>

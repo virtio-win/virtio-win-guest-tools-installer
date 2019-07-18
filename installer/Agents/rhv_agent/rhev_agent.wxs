@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+     xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+<?include ../../constants.wxi ?>
+<?include ./rhev_agent.wxi ?>
+
+    <Fragment>
+        <Property Id="RHV_Agent_CA" Value="1" />
+        <CustomAction
+            Id="create_new_agent_ini"
+            Script="vbscript"
+            Execute="deferred" >
+            <![CDATA[
+                Dim location
+                location = Session.Property("RHVAGENT") & "\ovirt-guest-agent.ini"
+                Set objFSO = createobject("Scripting.FileSystemObject")
+                Set objFile = objFSO.OpenTextFile(location,2,true)
+                objFile.WriteLine("#") 
+                objFile.WriteLine("# oVirt-Guest-Agent local configuration override file")
+                objFile.WriteLine("#") 
+                objFile.Close
+            ]]>
+        </CustomAction>
+        <CustomAction
+            Id="rename_rhev_agent_ini"
+            Script="vbscript"
+            Execute="deferred" >
+            <![CDATA[
+                Dim filename1,filename2
+                Set objFSO = createobject("Scripting.FileSystemObject")
+                filename1 = Session.Property("RHVAGENT") & "\rhev-agent.ini"
+                filename2 = Session.Property("RHVAGENT") & "\ovirt-guest-agent.ini"
+                objFSO.MoveFile filename1,filename1
+            ]]>
+        </CustomAction>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="CMPG_rhev_agent" Directory="$(var.destDirName)">
+            <Component Id='CMP_rhev_agent_default_logger.ini'
+                Guid='$(var.guid_default_logger)'
+                Transitive='yes'
+                Win64='$(var.Win64)'>
+                <File Id='FILE_default_logger.ini'
+                    Source='$(var.ovirt_agent_path)\default-logger.ini' 
+                    KeyPath='yes'/>
+            </Component>
+            <Component Id='CMP_rhev_agent_default.ini'
+                Guid='$(var.guid_default.ini)'
+                Transitive='yes'
+                Win64='$(var.Win64)'>
+                <File Id='FILE_default.ini'
+                    Source='$(var.ovirt_agent_path)\default.ini' 
+                    KeyPath='yes'/>
+            </Component>
+            <Component Id='CMP_rhev_agent_Microsoft.VC90.CRT.manifest'
+                Guid='$(var.guid_Microsoft.VC90.CRT.manifest)'
+                Transitive='yes'
+                Win64='$(var.Win64)'>
+                <File Id='FILE_Microsoft.VC90.CRT.manifest'
+                    Source='..\3rdParty\Microsoft.VC90.CRT.manifest' 
+                    KeyPath='yes'/>
+            </Component>
+            <Component Id='CMP_rhev_agent_msvcr90.dll'
+                Guid='$(var.guid_msvcr90.dll)'
+                Transitive='yes'
+                Win64='$(var.Win64)'>
+                <File Id='FILE_msvcr90.dll'
+                    Source='..\3rdParty\msvcr90.dll' 
+                    KeyPath='yes'/>
+            </Component>
+            <Component Id='CMP_OvirtGuestService.exe'
+                Guid='$(var.guid_OvirtGuestService)'
+                Transitive='yes'
+                Win64='$(var.Win64)'>
+                <File Id='FILE_OvirtGuestService.exe'
+                    Source='$(var.ovirt_agent_path)\OvirtGuestService.exe' 
+                    KeyPath='yes'/>
+                <ServiceInstall
+                    Id="OvirtGuestService"
+                    Name="OvirtGuestService"
+                    DisplayName="oVirt Agent"
+                    Description="Manages events detection and alerts"
+                    Start="auto"
+                    ErrorControl="normal"
+                    Type="ownProcess">
+                    <ServiceDependency Id="VirtioSerial" />
+                    <ServiceDependency Id="[TermService]" />
+                    <ServiceDependency Id="[spiceusbredirector]" />
+                    <util:ServiceConfig
+                        FirstFailureActionType="restart"
+                        SecondFailureActionType="restart"
+                        ThirdFailureActionType="none"
+                        RestartServiceDelayInSeconds="30"
+                        ResetPeriodInDays="1"/>
+                </ServiceInstall>
+                <ServiceControl
+                    Id="sc_OvirtGuestService"
+                    Name="OvirtGuestService"
+                    Start="install"
+                    Stop="both"
+                    Remove="uninstall"
+                    Wait="yes" />
+            </Component>
+            <Component Id='CMP_hook_dirs_BEFORE_MIGRATION'
+                Guid='$(var.guid_hook_dirs_BEFORE_MIGRATION)'
+                Win64='$(var.Win64)'
+                KeyPath="yes" >
+                <CreateFolder Directory="BEFORE_MIGRATION"/>
+            </Component>
+            <Component Id='CMP_hook_dirs_AFTER_MIGRATION'
+                Guid='$(var.guid_hook_dirs_AFTER_MIGRATION)'
+                Win64='$(var.Win64)'
+                KeyPath="yes" >
+                <CreateFolder Directory="AFTER_MIGRATION"/>
+            </Component>
+            <Component Id='CMP_hook_dirs_BEFORE_HIBERNATION'
+                Guid='$(var.guid_hook_dirs_BEFORE_HIBERNATION)'
+                Win64='$(var.Win64)'
+                KeyPath="yes" >
+                <CreateFolder Directory="BEFORE_HIBERNATION"/>
+            </Component>
+            <Component Id='CMP_hook_dirs_AFTER_HIBERNATION'
+                Guid='$(var.guid_hook_dirs_AFTER_HIBERNATION)'
+                Win64='$(var.Win64)'
+                KeyPath="yes" >
+                <CreateFolder Directory="AFTER_HIBERNATION"/>
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+</Wix>

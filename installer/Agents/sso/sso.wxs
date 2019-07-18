@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'
+     xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+<?include ../../constants.wxi ?>
+<?include ./sso.wxi ?>
+    <Fragment>
+        <ComponentGroup Id="CMPG_SSO" Directory="$(var.destDirName)">
+            <Component Id='CMP_$(var.fileName)'
+                Guid='$(var.guid)'
+                Transitive='yes'
+                Win64='$(var.Win64)'>
+                <Condition><![CDATA[$(var.condition)]]></Condition>
+                <File Id='FILE_$(var.fileName)_$(var.ISA).inf'
+                    Source='$(var.sso_path)\$(var.srcDirName)\$(var.ISA)\$(var.fileName)' 
+                    KeyPath='yes'/>
+                <RegistryValue Id="RHEV_Credential_Provider"
+                    KeyPath="no"
+                    Action="write"
+                    Root="HKLM"
+                    Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\Credential Providers\{82D99859-33A8-438b-8B83-3988A20089DD}"
+                    Value="RHEV Credential Provider"
+                    Type="string" />
+                <RegistryValue Id="InprocServer32_default"
+                    KeyPath="no"
+                    Action="write"
+                    Root="HKCR"
+                    Key="CLSID\{82D99859-33A8-438b-8B83-3988A20089DD}\InprocServer32"
+                    Value="RHEVCredProv.dll"
+                    Type="string" />
+                <RegistryValue Id="ThreadingModel_default"
+                    KeyPath="no"
+                    Action="write"
+                    Root="HKCR"
+                    Name="ThreadingModel"
+                    Key="CLSID\{82D99859-33A8-438b-8B83-3988A20089DD}\InprocServer32"
+                    Value="Apartment"
+                    Type="string" />
+            </Component>
+            <Component Id='CMP_SSO_Registry_Write'
+                Guid='$(var.guid_reg)'
+                Transitive='yes'
+                Win64='$(var.Win64)'>
+                <Condition><![CDATA[$(var.condition)]]></Condition>
+                <RegistryKey Root="HKLM" Key="SOFTWARE\Redhat\SSO">
+                    <RegistryValue Id="IDC_WLXLOGGEDONSAS_DOMAIN"
+                        Name="IDC_WLXLOGGEDONSAS_DOMAIN"
+                        Value="1956"
+                        Type="integer"
+                        KeyPath="yes" />
+                    <RegistryValue Id="IDC_WLXLOGGEDONSAS_PASSWORD"
+                        Name="IDC_WLXLOGGEDONSAS_PASSWORD"
+                        Value="1954"
+                        Type="integer"
+                        KeyPath="no" />
+                    <RegistryValue Id="IDC_WLXLOGGEDONSAS_USERNAME"
+                        Name="IDC_WLXLOGGEDONSAS_USERNAME"
+                        Value="1953"
+                        Type="integer"
+                        KeyPath="no" />
+                    <RegistryValue Id="IDC_WLXLOGGEDOUTSAS_DOMAIN"
+                        Name="IDC_WLXLOGGEDOUTSAS_DOMAIN"
+                        Value="1504"
+                        Type="integer"
+                        KeyPath="no" />
+                    <RegistryValue Id="IDC_WLXLOGGEDOUTSAS_PASSWORD"
+                        Name="IDC_WLXLOGGEDOUTSAS_PASSWORD"
+                        Value="1503"
+                        Type="integer"
+                        KeyPath="no" />
+                    <RegistryValue Id="IDC_WLXLOGGEDOUTSAS_USERNAME"
+                        Name="IDC_WLXLOGGEDOUTSAS_USERNAME"
+                        Value="1502"
+                        Type="integer"
+                        KeyPath="no" />
+                    <RegistryValue Id="IDD_USER_MESSAGE_DIALOG"
+                        Name="IDD_USER_MESSAGE_DIALOG"
+                        Value="2500"
+                        Type="integer"
+                        KeyPath="no" />
+                    <RegistryValue Id="IDD_WLXDISPLAYLOCKEDNOTICE_DIALOG"
+                        Name="IDD_WLXDISPLAYLOCKEDNOTICE_DIALOG"
+                        Value="1900"
+                        Type="integer"
+                        KeyPath="no" />
+                    <RegistryValue Id="IDD_WLXDISPLAYSASNOTICE_DIALOG"
+                        Name="IDD_WLXDISPLAYSASNOTICE_DIALOG"
+                        Value="1400"
+                        Type="integer"
+                        KeyPath="no" />
+                    <RegistryValue Id="IDD_WLXLOGGEDONSAS_DIALOG"
+                        Name="IDD_WLXLOGGEDONSAS_DIALOG"
+                        Value="1950"
+                        Type="integer"
+                        KeyPath="no" />
+                    <RegistryValue Id="IDD_WLXLOGGEDOUTSAS_DIALOG"
+                        Name="IDD_WLXLOGGEDOUTSAS_DIALOG"
+                        Value="1500"
+                        Type="integer"
+                        KeyPath="no" />
+                    <RegistryValue Id="PresentLogonMessage"
+                        Name="PresentLogonMessage"
+                        Value="1"
+                        Type="integer"
+                        KeyPath="no" />
+                    <RegistryValue Id="RestartCredentialsListening"
+                        Name="RestartCredentialsListening"
+                        Value="1"
+                        Type="integer"
+                        KeyPath="no" />
+				</RegistryKey>
+                <RegistryValue Id="RHEV_SSO_DisableCAD_Reg"
+                    KeyPath="no"
+                    Action="write"
+                    Root="HKLM"
+                    Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
+                    Name="DisableCAD"
+                    Value="0"
+                    Type="integer" />
+                <RegistryValue Id="RHEV_SSO_SoftwareSASGeneration_Reg"
+                    KeyPath="no"
+                    Action="write"
+                    Root="HKLM"
+                    Key="Software\Microsoft\Windows\CurrentVersion\Policies\System"
+                    Name="SoftwareSASGeneration"
+                    Value="1"
+                    Type="integer" />
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+</Wix>

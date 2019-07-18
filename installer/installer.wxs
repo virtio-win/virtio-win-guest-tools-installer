@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'
+     xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+
+<?include constants.wxi ?>
+
+      <Product Id="*"
+            Name="RHV-WGT"
+            Language="1033"
+            Version="$(var.Version)"
+            Manufacturer="Red Hat, Inc."
+            UpgradeCode="$(var.UpgradeCode)">
+            <Package Id="*"
+                  InstallerVersion="200"
+                  Compressed="yes"
+                  InstallScope="perMachine"
+                  Description="RHV windows guest tools driver installer "/>
+            <PropertyRef Id="$(var.LaunchCondition)" />
+            <PropertyRef Id="CustomActionsRef" />
+            <PropertyRef Id="LoggingPropertyRef" />
+            <PropertyRef Id="Set_ProductName" />
+            <PropertyRef Id="Set_RHV_Agent_Properties" />
+            <MajorUpgrade 
+                  DowngradeErrorMessage="A newer version of [ProductName] is already installed."
+                  Schedule="afterInstallExecute" />
+            <UIRef Id="WixUI_FeatureTree" />
+            <MediaTemplate EmbedCab="yes" />
+            <PropertyRef Id="DirectoryProperty" />
+            <PropertyRef Id="FeatureProperty" />
+            <PropertyRef Id="InstallExecuteSequenceProperty" />
+      </Product>
+</Wix>

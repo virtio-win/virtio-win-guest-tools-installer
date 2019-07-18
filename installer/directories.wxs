@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<?include constants.wxi ?>
+    <Fragment>
+        <Property Id="DirectoryProperty" Value="1" />
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="$(var.PlatformProgramFilesFolder)">
+                <Directory Id="INSTALLERDIR" Name="RHV">
+                    <Directory Id="BALLOON" Name="Balloon"/>
+                    <Directory Id="NETWORK" Name="Network"/>
+                    <Directory Id="QEMUFWCFG" Name="Qemufwcfg"/>
+                    <Directory Id="SSODRIVER" Name="SSO"/>
+                    <Directory Id="RHVAGENT" Name="RHV_Agent">
+                        <Directory Id="BEFORE_MIGRATION" Name="before_migration"/>
+                        <Directory Id="AFTER_MIGRATION" Name="after_migration"/>
+                        <Directory Id="BEFORE_HIBERNATION" Name="before_hibernation"/>
+                        <Directory Id="AFTER_HIBERNATION" Name="after_hibernation"/>
+                    </Directory>
+                    <Directory Id="SPICE" Name="Spice">
+                        <Directory Id="QXL" Name="qxl"/>
+                    </Directory>
+                    <Directory Id="VIORNG" Name="Viorng"/>
+                    <Directory Id="VIOSCSI" Name="Vioscsi"/>
+                    <Directory Id="VIOSERIAL" Name="Vioserial"/>
+                    <Directory Id="VIOSTOR" Name="Viostor"/>
+                </Directory>
+            </Directory>
+        </Directory>
+    </Fragment>
+</Wix>

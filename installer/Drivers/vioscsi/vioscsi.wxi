@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+<?define driverName = "vioscsi" ?>
+<?define srcDirName = "vioscsi" ?>
+<?define destDirName = "VIOSCSI" ?>
+<?define with_sys = "true"?>
+<?define extra_components = "false"?>
+<?if $(sys.BUILDARCH) = "x64" ?>
+<!-- 2k12 -->
+<?define guid = "DF58EBA6-EFA5-4997-AC9E-618EC9093800"?>
+<?include ../GenericWindowsComponets/2k12.wxi ?>
+<?undef guid?>
+<!-- 2k12R2 -->
+<?define guid = "A7F4C0E2-9BBA-46E9-991C-74AEC0BEE4E6"?>
+<?include ../GenericWindowsComponets/2k12R2.wxi ?>
+<?undef guid?>
+<!-- 2k16 -->
+<?define guid = "2581A672-FDCB-45E4-9C3E-2D143FAD9D88"?>
+<?include ../GenericWindowsComponets/2k16.wxi ?>
+<?undef guid?>
+<!-- 2k19 -->
+<?define guid = "9B505BFA-24F1-4AFA-8F20-1150AD7DC384"?>
+<?include ../GenericWindowsComponets/2k19.wxi ?>
+<?undef guid?>
+<!-- w8x64 -->
+<?define guid = "59D86BA7-401C-4022-A009-771CEB370A6F"?>
+<?include ../GenericWindowsComponets/w8x64.wxi ?>
+<?undef guid?>
+<!-- w81x64 -->
+<?define guid = "212B141F-9939-4945-AACC-EE5D5CDC2717"?>
+<?include ../GenericWindowsComponets/w81x64.wxi ?>
+<?undef guid?>
+<!-- w10x64 -->
+<?define guid = "D78BF955-D5B6-4080-A702-E98754D9174A"?>
+<?include ../GenericWindowsComponets/w10x64.wxi ?>
+<?undef guid?>
+<?else ?>
+<!-- w8x86 -->
+<?define guid = "D4386CD9-8535-4926-90D0-A3E7C54FB0FC"?>
+<?include ../GenericWindowsComponets/w8x86.wxi ?>
+<?undef guid?>
+<!-- w81x86 -->
+<?define guid = "68C0498E-2CA1-4A97-819C-05C6BFA97886"?>
+<?include ../GenericWindowsComponets/w81x86.wxi ?>
+<?undef guid?>
+<!-- w10x86 -->
+<?define guid = "3A763786-27EA-4967-86DB-D6D982D7CACB"?>
+<?include ../GenericWindowsComponets/w10x86.wxi ?>
+<?undef guid?>
+<?endif ?>
+</Include>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <Property Id="LoggingPropertyRef" Value="1" />
+        <Property Id="MsiLogging" Value="v!" />
+        <CustomAction Id="CopyLog" Execute="immediate" 
+              ExeCommand="cmd /c copy [MsiLogFileLocation] [INSTALLERDIR]" 
+              Directory="TARGETDIR" 
+              Impersonate="no"
+              Return="asyncNoWait" />
+    </Fragment>
+</Wix>

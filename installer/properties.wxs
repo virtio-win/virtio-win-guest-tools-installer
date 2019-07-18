@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<?if $(sys.BUILDARCH) = "x64" ?>
+    <?define Win64 = "yes" ?>
+<?else ?>
+    <?define Win64 = "no" ?>
+<?endif ?>
+    <!-- Set Cited Properties -->
+    <Fragment>
+        <Property Id="Set_Cited_properties" Value="1" />
+        <SetProperty Id="ARPINSTALLLOCATION" Value="[INSTALLERDIR]" After="CostFinalize" />
+    </Fragment>
+    <!-- This Fragement is used in the Lunch Condition to determine the arch -->
+    <Fragment>
+        <Property Id="x86_Validation" Value="1" />
+        <Condition Message= "Detected x86 Windows version, please use a x86 installer">
+                <![CDATA[VersionNT <> VersionNT64 AND "$(sys.BUILDARCH)" = "x86"]]>
+        </Condition>
+    </Fragment>
+    <Fragment>
+        <Property Id="x64_Validation" Value="1" />
+        <Condition Message= "Detected x64 Windows version, please use a x64 installer">
+                <![CDATA[VersionNT = VersionNT64 AND "$(sys.BUILDARCH)" = "x64"]]>
+        </Condition>
+    </Fragment>
+    <!-- This Fragement is used to query for the ProductName to detect os version -->
+    <Fragment>
+        <Property Id="Set_ProductName" Value="1" />
+        <Property Id="REGISTRY_PRODUCT_NAME">
+            <RegistrySearch Id="MyRegistrySearch"
+                Root="HKLM"
+                Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+                Name="ProductName"
+                Type="raw" />
+        </Property>
+    </Fragment>
+    <!-- This Properties are for the RHV Agent service dep logic -->
+    <Fragment>
+        <Property Id="Set_RHV_Agent_Properties" Value="1" />
+        <Property Id="REGISTRYSEARCH_IS_TERMSERVICE_EXIST">
+            <RegistrySearch Id="is_TermService_exist"
+                Root="HKLM"
+                Key="SYSTEM\CurrentControlSet\Services\TermService"
+                Type="raw"
+                Name="DisplayName"
+                Win64='$(var.Win64)'/>
+        </Property>
+        <Property Id="REGISTRYSEARCH_IS_SPICEUSBREDIRECTOR_EXIST">
+            <RegistrySearch Id="is_spiceusbredirector_exist"
+                Root="HKLM"
+                Key="SYSTEM\CurrentControlSet\Services\spiceusbredirector"
+                Type="raw"
+                Name="DisplayName"
+                Win64='$(var.Win64)'/>
+        </Property>
+        <SetProperty Id="TermService"
+            Value="TermService"
+            After="InstallInitialize"
+            Sequence="execute">
+            NOT REGISTRYSEARCH_IS_TERMSERVICE_EXIST
+        </SetProperty>
+        <SetProperty Id="spiceusbredirector"
+            Value="spiceusbredirector"
+            After="InstallInitialize"
+            Sequence="execute">
+            NOT REGISTRYSEARCH_IS_SPICEUSBREDIRECTOR_EXIST
+        </SetProperty>
+        <Property Id="IS_OVIRT_GUEST_AGENT_INI_EXIST">
+            <DirectorySearch Path="[RHVAGENT]"
+                Depth="0"
+                AssignToProperty="no"
+                Id="ovirt_guest_agent_ini_exist">
+                <FileSearch Name="ovirt-guest-agent.ini" Id="ovirt_guest_agent_ini_search" />
+            </DirectorySearch>
+        </Property>
+        <Property Id="IS_RHEV_AGENT_INI_EXIST">
+            <DirectorySearch Path="[RHVAGENT]"
+                Depth="0"
+                AssignToProperty="no"
+                Id="rhev_agent_ini_exist">
+                <FileSearch Name="rhev-agent.ini" Id="rhev_agent_ini_search" />
+            </DirectorySearch>
+        </Property>
+    </Fragment>
+<?undef Win64?>
+</Wix>

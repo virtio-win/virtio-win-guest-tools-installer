@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+<?define destDirName = "SPICE" ?>
+<?define agent_file = "vdagent.exe" ?>
+<?define service_file = "vdservice.exe" ?>
+<?if $(sys.BUILDARCH) = "x64" ?>
+<?define guid_agent = "A8AF8AD8-3048-4DA3-9C95-9CDC3350A8DC"?>
+<?define guid_service = "74338128-7B20-4BCB-9660-627904BEF473"?>
+<?define Win64 = "yes" ?>
+<?define ISA = "x64" ?>
+<?else ?>
+<?define guid_agent = "E88B8D40-7884-40E2-A303-C3E3CCCD799B"?>
+<?define guid_service = "4FC2D433-55CA-4F5C-A9E0-8220BCF61BFD"?>
+<?define Win64 = "no" ?>
+<?define ISA = "x86" ?>
+ <?endif ?>
+</Include>

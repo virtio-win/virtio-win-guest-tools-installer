@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+<?define driverName = "viostor" ?>
+<?define srcDirName = "viostor" ?>
+<?define destDirName = "VIOSTOR" ?>
+<?define with_sys = "true"?>
+<?define extra_components = "false"?>
+<?if $(sys.BUILDARCH) = "x64" ?>
+<!-- 2k12 -->
+<?define guid = "E706318F-9E7A-4421-A951-C2A3562C8EC4"?>
+<?include ../GenericWindowsComponets/2k12.wxi ?>
+<?undef guid?>
+<!-- 2k12R2 -->
+<?define guid = "4964D140-95BC-4DF5-B6E6-A9607920C6B6"?>
+<?include ../GenericWindowsComponets/2k12R2.wxi ?>
+<?undef guid?>
+<!-- 2k16 -->
+<?define guid = "6AB4DF0A-AEC8-4F66-B9FE-AB47ADDCB857"?>
+<?include ../GenericWindowsComponets/2k16.wxi ?>
+<?undef guid?>
+<!-- 2k19 -->
+<?define guid = "57F26A76-3048-43AD-8852-412BF36D017B"?>
+<?include ../GenericWindowsComponets/2k19.wxi ?>
+<?undef guid?>
+<!-- w8x64 -->
+<?define guid = "616B7CA7-4D72-474E-8FA4-CF7DBF76B294"?>
+<?include ../GenericWindowsComponets/w8x64.wxi ?>
+<?undef guid?>
+<!-- w81x64 -->
+<?define guid = "99116486-F088-4E7E-9187-49D5BE1C3B1F"?>
+<?include ../GenericWindowsComponets/w81x64.wxi ?>
+<?undef guid?>
+<!-- w10x64 -->
+<?define guid = "884ADCD2-0334-45AB-9806-F21ED4D16D48"?>
+<?include ../GenericWindowsComponets/w10x64.wxi ?>
+<?undef guid?>
+<?else ?>
+<!-- w8x86 -->
+<?define guid = "071F14DE-1368-4117-8C82-3A388DF0BE81"?>
+<?include ../GenericWindowsComponets/w8x86.wxi ?>
+<?undef guid?>
+<!-- w81x86 -->
+<?define guid = "1AD92C03-9AB7-42A8-893B-77758F4F340C"?>
+<?include ../GenericWindowsComponets/w81x86.wxi ?>
+<?undef guid?>
+<!-- w10x86 -->
+<?define guid = "E514AF40-771B-4028-96B3-0E0268A4C176"?>
+<?include ../GenericWindowsComponets/w10x86.wxi ?>
+<?undef guid?>
+<?endif ?>
+</Include>
