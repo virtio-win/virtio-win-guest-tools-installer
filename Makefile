@@ -1,12 +1,11 @@
-.ONESHELL:
+# .ONESHELL:
 SHELL=/bin/bash
 
-NAME=ovirt-wgt
+NAME=ovirt-wgt-wix
 VERSION=4.4
-DISPLAYED_VERSION=$(VERSION)
+DISPLAYED_VERSION=$(DISPLAYED_VERSION)
 ARCHIVE=$(NAME)-$(VERSION).tar.gz
 RELEASE_SUFFIX=_master
-
 ###################################
 # Project Paths #
 VIRTIO_WIN_DRIVERS_PATH=$(CURDIR)/virtio-win
@@ -22,6 +21,7 @@ VDAGENT_WIN_PATH=$(shell winepath -w $(VDAGENT_PATH)|sed 's|\\|\\\\\\\\|g')
 WIX_BINARIES_WIN_PATH=$(shell winepath -w $(WIX_BINARIES_PATH)|sed 's|\\|\\\\\\\\|g')
 INSTALLER_WIN_PATH=$(shell winepath -w $(CURDIR)/installer|sed 's|\\|\\\\\\\\|g')
 #
+#TODO: 	Add notes
 VIRTIO_WIN_ISO=/usr/share/virtio-win/virtio-win.iso
 OVIRTGA_PATH=/usr/share/ovirt-guest-agent-windows
 VDA32BIN=/usr/i686-w64-mingw32/sys-root/mingw/bin/
@@ -35,10 +35,11 @@ QEMU_FC29_URL="http://mirror.isoc.org.il/pub/fedora/releases/29/Everything/x86_6
 # install targets
 PREFIX=/usr/local
 DATAROOT_DIR=$(PREFIX)/share
-INSTALL_NAME=ovirt-guest-tools-iso
-INSTALL_DATA_DIR=$(DATAROOT_DIR)/$(INSTALL_NAME)
-ISO_IMAGE=oVirt-toolsSetup_$(DISPLAYED_VERSION).iso
-ISO_P_TEXT=oVirt - KVM Virtualization Manager Project (www.ovirt.org)
+INSTALL_DATA_DIR=$(DATAROOT_DIR)/$(NAME)
+ISO_IMAGE=oVirt-toolsSetup_Wix$(DISPLAYED_VERSION).iso
+ISO_GENERIC=ovirt-wgt-wix-setup.iso
+ISO_P_TEXT=oVirt - Open Virtualization Project (www.ovirt.org)
+# Up to 16 digits will be displayed in windows, to fit in the iso label
 ISO_LABEL=oVirt-WGT-$(DISPLAYED_VERSION)
 ###################################
 
@@ -92,13 +93,16 @@ edit-project-paths:
 	sed "s|@@WIX_BIN_PATH@@|${WIX_BINARIES_WIN_PATH}|" -i installer/build_args/*
 	sed "s|@@INSTALLER_PATH@@|${INSTALLER_WIN_PATH}|" -i installer/build_args/*
 
-create-iso: create-installer iso
+create-iso: | create-installer clean-installer-dir iso
 
 create-installer:
-	pushd installer/
-	wine cmd.exe /c "$(WIX_BINARIES_PATH)\candle.exe @build_args/candle_argsx64.txt"
-	wine cmd.exe /c "$(WIX_BINARIES_PATH)\light.exe -sval @build_args/light_argsx64.txt"
+	pushd installer/ ;\
+	wine cmd.exe /c "$(WIX_BINARIES_PATH)\candle.exe @build_args/candle_argsx64.txt" ;\
+	wine cmd.exe /c "$(WIX_BINARIES_PATH)\light.exe -sval @build_args/light_argsx64.txt" ;\
 	popd
+
+clean-installer-dir:
+	rm -rf installer/wixobjx*
 
 iso:
 	mkisofs -J \
@@ -110,9 +114,10 @@ iso:
 			-publisher "$(ISO_P_TEXT)" \
 			-o "$(ISO_IMAGE)" \
 			-graft-points \
-			"/linux/"="/linux/ \
-			"/Drivers/"="/$(VIRTIO_WIN_DRIVERS_PATH)/" \
-			./manifest.txt
+			"linux/"="./linux/" \
+			"Drivers/"="$(VIRTIO_WIN_DRIVERS_PATH)/" \
+			"Sources/"="./installer/" \
+			./manifest.txt \
 			./ovirt-wgtx64.msi
 
 install: iso

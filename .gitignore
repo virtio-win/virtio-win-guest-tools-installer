@@ -1,0 +1,6 @@
+exported-artifacts/
+tmp.repos/
+.wine/
+.local
+.wget-hsts
+./mocker*
