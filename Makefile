@@ -1,4 +1,3 @@
-# .ONESHELL:
 SHELL=/bin/bash
 
 NAME=ovirt-wgt-wix
@@ -6,7 +5,6 @@ VERSION=4.4
 DISPLAYED_VERSION=$(DISPLAYED_VERSION)
 ARCHIVE=$(NAME)-$(VERSION).tar.gz
 RELEASE_SUFFIX=_master
-###################################
 # Project Paths #
 VIRTIO_WIN_DRIVERS_PATH=$(CURDIR)/virtio-win
 VDAGENT_PATH=$(CURDIR)/vdagent
@@ -20,8 +18,7 @@ OVIRT_GA_WIN_PATH=$(shell winepath -w $(OVIRT_GA_PATH)|sed 's|\\|\\\\\\\\|g')
 VDAGENT_WIN_PATH=$(shell winepath -w $(VDAGENT_PATH)|sed 's|\\|\\\\\\\\|g')
 WIX_BINARIES_WIN_PATH=$(shell winepath -w $(WIX_BINARIES_PATH)|sed 's|\\|\\\\\\\\|g')
 INSTALLER_WIN_PATH=$(shell winepath -w $(CURDIR)/installer|sed 's|\\|\\\\\\\\|g')
-#
-#TODO: 	Add notes
+#Paths come from the location of virtio-win ovirt-guest-agent rpm files
 VIRTIO_WIN_ISO=/usr/share/virtio-win/virtio-win.iso
 OVIRTGA_PATH=/usr/share/ovirt-guest-agent-windows
 VDA32BIN=/usr/i686-w64-mingw32/sys-root/mingw/bin/
@@ -41,17 +38,12 @@ ISO_GENERIC=ovirt-wgt-wix-setup.iso
 ISO_P_TEXT=oVirt - Open Virtualization Project (www.ovirt.org)
 # Up to 16 digits will be displayed in windows, to fit in the iso label
 ISO_LABEL=oVirt-WGT-$(DISPLAYED_VERSION)
-###################################
-
-
 # Available from http://www.microsoft.com/en-us/download/details.aspx?id=5582
-# RPM wrapping this available from http://resources.ovirt.org/pub/ovirt-3.6/rpm/fc22
+# RPM wrapping this available from http://resources.ovirt.org/
 VCREDIST=/usr/share/vcredist-x86/vcredist_x86.exe
 
-# Common definitions for targets
 
-
-all: | make-dirs init-files edit-project-paths create-iso
+all: make-dirs init-files edit-project-paths create-iso
 
 make-dirs:
 	mkdir -p $(VDAGENT_PATH)
@@ -60,10 +52,10 @@ make-dirs:
 	mkdir -p $(ISO_PATH)
 	mkdir -p $(QEMU_GA_PATH)
 
-init-files: | virtio-win ovirt-guest-agent vdagent qemu-ga wix;
+init-files: virtio-win ovirt-guest-agent vdagent qemu-ga wix
 
 # extract the iso to get the drivers
-virtio-win:
+virtio-win: make-dirs
 	7z -o"$(VIRTIO_WIN_DRIVERS_PATH)" x "$(VIRTIO_WIN_ISO)"
 	hardlink -vv "$(VIRTIO_WIN_DRIVERS_PATH)"
 
@@ -71,21 +63,26 @@ virtio-win:
 ovirt-guest-agent:
 	ln -s "$(OVIRTGA_PATH)" "$(OVIRT_GA_PATH)"
 
-vdagent:
+vdagent: make-dirs
 	ln -s "$(VDA32BIN)" $(VDAGENT_PATH)/x64
 	ln -s "$(VDA64BIN)" $(VDAGENT_PATH)/x86
 
-qemu-ga:
+# Download the qemu-ga rpms 
+qemu-ga: make-dirs
 	wget -P linux/debian/ "$(QEMU_DEB_URL)"
 	wget -P linux/el6/ "$(QEMU_EL6_URL)"
 	wget -P linux/el7/ "$(QEMU_EL7_URL)"
 	wget -P linux/fc28/ "$(QEMU_FC28_URL)"
 	wget -P linux/fc29/ "$(QEMU_FC29_URL)"
 
-wix:
+# Download the wix binaries
+# TODO: package wix as rpm
+wix: make-dirs
 	wget $(WIX_BINARIES_URL)
 	unzip wix311-binaries.zip -d $(WIX_BINARIES_PATH)
 
+# configure the correct paths,
+# TODO: replace with a .in target
 edit-project-paths:
 	sed "s|@@VIRTIO-WIN-PATH@@|${VIRTIO_WIN_PATH}|" -i installer/constants.wxi
 	sed "s|@@OVIRT-GA-PATH@@|${OVIRT_GA_WIN_PATH}|" -i installer/constants.wxi
@@ -93,18 +90,18 @@ edit-project-paths:
 	sed "s|@@WIX_BIN_PATH@@|${WIX_BINARIES_WIN_PATH}|" -i installer/build_args/*
 	sed "s|@@INSTALLER_PATH@@|${INSTALLER_WIN_PATH}|" -i installer/build_args/*
 
-create-iso: | create-installer clean-installer-dir iso
+create-iso: create-installer clean-installer-dir iso
 
-create-installer:
+create-installer: edit-project-paths wix qemu-ga vdagent ovirt-guest-agent virtio-win
 	pushd installer/ ;\
-	wine cmd.exe /c "$(WIX_BINARIES_PATH)\candle.exe @build_args/candle_argsx64.txt" ;\
-	wine cmd.exe /c "$(WIX_BINARIES_PATH)\light.exe -sval @build_args/light_argsx64.txt" ;\
+	wine cmd.exe /c "$(WIX_BINARIES_PATH)/candle.exe @build_args/candle_argsx64.txt" ;\
+	wine cmd.exe /c "$(WIX_BINARIES_PATH)/light.exe -sval @build_args/light_argsx64.txt" ;\
 	popd
 
-clean-installer-dir:
+clean-installer-dir: create-installer
 	rm -rf installer/wixobjx*
 
-iso:
+iso: create-installer clean-installer-dir
 	mkisofs -J \
 			-rational-rock \
 			-full-iso9660-filenames \
@@ -120,7 +117,7 @@ iso:
 			./manifest.txt \
 			./ovirt-wgtx64.msi
 
-install: iso
+install:
 	mkdir -p "$(DESTDIR)$(INSTALL_DATA_DIR)"
 	cp "$(ISO_IMAGE)" "$(DESTDIR)$(INSTALL_DATA_DIR)"
 	ln -s "$(ISO_IMAGE)" "$(DESTDIR)$(INSTALL_DATA_DIR)/$(ISO_GENERIC)"

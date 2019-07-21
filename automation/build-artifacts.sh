@@ -2,15 +2,13 @@
 
 # cleanup leftovers from previous builds
 rm -rf exported-artifacts
-rm -rf tmp.repos
+rm -rf tmp
+rm -rf .wine
 rm -f *.tar.gz
 
 # Create dirs
 mkdir -p exported-artifacts
-mkdir -p tmp.repos
-# mkdir -p vdagent
-# mkdir -p virtio-win
-# mkdir wix311-binaries
+mkdir -p tmp
 
 # init wine
 chown $(whoami) $(pwd)
@@ -31,7 +29,7 @@ else
 fi
 
 rpmbuild \
-    -D "_topdir $PWD/tmp.repos" \
+    -D "_topdir $PWD/tmp" \
     -D "_sourcedir $PWD" \
     ${SUFFIX:+-D "release_suffix ${SUFFIX}"} \
     -ba ovirt-wgt-wix.spec
@@ -39,6 +37,6 @@ rpmbuild \
 mv *.tar.gz exported-artifacts
 
 find \
-    "$PWD/tmp.repos/"{RPMS,SRPMS} \
+    "$PWD/tmp/"{RPMS,SRPMS} \
     -iname \*.rpm \
     -exec mv {} exported-artifacts/ \;
