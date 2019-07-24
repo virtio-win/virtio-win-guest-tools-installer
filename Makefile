@@ -122,8 +122,10 @@ install:
 	cp "$(ISO_IMAGE)" "$(DESTDIR)$(INSTALL_DATA_DIR)"
 	ln -s "$(ISO_IMAGE)" "$(DESTDIR)$(INSTALL_DATA_DIR)/$(ISO_GENERIC)"
 
-# clean:
-# 	rm -rf *.exe bin drivers "$(TEMP_DIR)" "$(ISO_IMAGE)" $(GENERATED)
+clean:
+	rm -rf exported-artifacts tmp 
+	rm -rf .wine .local .config .cache
+	rm -rf *.tar.gz
 
 # .SUFFIXES:
 # .SUFFIXES: .in
