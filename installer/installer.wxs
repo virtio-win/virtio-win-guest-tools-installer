@@ -24,6 +24,10 @@
                   DowngradeErrorMessage="A newer version of [ProductName] is already installed."
                   Schedule="afterInstallExecute" />
             <UIRef Id="WixUI_FeatureTree" />
+            <WixVariable Id="WixUIBannerBmp" Value="graphics/horizontal_banner.bmp" />
+            <WixVariable Id="WixUIDialogBmp" Value="graphics/background.bmp" />
+            <Icon Id="icon.ico" SourceFile="graphics/icon.ico"/>
+            <Property Id="ARPPRODUCTICON" Value="icon.ico" />
             <MediaTemplate EmbedCab="yes" />
             <PropertyRef Id="DirectoryProperty" />
             <PropertyRef Id="FeatureProperty" />
