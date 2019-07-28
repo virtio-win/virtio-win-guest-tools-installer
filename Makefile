@@ -74,8 +74,8 @@ ovirt-guest-agent:
 	ln -s "$(OVIRTGA_PATH)" "$(OVIRT_GA_PATH)"
 
 vdagent: make-dirs
-	ln -s "$(VDA32BIN)" $(VDAGENT_PATH)/x64
-	ln -s "$(VDA64BIN)" $(VDAGENT_PATH)/x86
+	ln -s "$(VDA32BIN)" $(VDAGENT_PATH)/x86
+	ln -s "$(VDA64BIN)" $(VDAGENT_PATH)/x64
 
 # Download the qemu-ga rpms 
 qemu-ga: make-dirs
