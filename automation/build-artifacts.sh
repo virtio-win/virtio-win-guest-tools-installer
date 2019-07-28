@@ -31,6 +31,7 @@ rpmbuild \
     ${SUFFIX:+-D "release_suffix ${SUFFIX}"} \
     -ba ovirt-wgt-wix.spec
 
+rm -f ./*.iso
 mv *.tar.gz exported-artifacts
 
 find \
