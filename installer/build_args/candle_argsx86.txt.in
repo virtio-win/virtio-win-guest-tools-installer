@@ -17,4 +17,4 @@
 -fips
 -ext "@@WIX_BIN_PATH@@\WixDifxAppExtension.dll"
 -ext "@@WIX_BIN_PATH@@\WixUtilExtension.dll"
--ext "@@WIX_BIN_PATH@@\WixUIExtension"
+-ext "@@WIX_BIN_PATH@@\WixUIExtension.dll"

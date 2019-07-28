@@ -1,10 +1,7 @@
 #!/bin/bash -xe
 
 # cleanup leftovers from previous builds
-rm -rf exported-artifacts
-rm -rf tmp
-rm -rf .wine
-rm -f *.tar.gz
+make clean
 
 # Create dirs
 mkdir -p exported-artifacts

@@ -14,7 +14,7 @@
 <?define Win64 = "yes" ?>
 <?else ?>
 <?define guid_OvirtGuestService = "812D719C-CC0E-4797-BEF0-9902C4B8BFC5"?>
-<?define guid_msvcr90.dll = "812D719C-CC0E-4797-BEF0-9902C4B8BFC5"?>
+<?define guid_msvcr90.dll = "FFC41F71-E2D7-4C58-A73A-0D843B9C7F93"?>
 <?define guid_Microsoft.VC90.CRT.manifest = "99145D00-6FF5-43CF-A967-939883F2A76A"?>
 <?define guid_default.ini = "879B7213-2049-43DF-996C-EC711765E3A7"?>
 <?define guid_default_logger = "BA5D95BB-D2F0-4191-932F-E0F744E045C2"?>

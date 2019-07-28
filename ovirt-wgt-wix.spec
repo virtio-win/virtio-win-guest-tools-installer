@@ -38,10 +38,14 @@ Windows Guest tools ISO for oVirt Virtualization Manager.
 %setup -q -n ovirt-wgt-wix-%{version}
 
 %build
-make %{make_common_opts}
+make ARCH=x64 %{make_common_opts}
+make clean
+make ARCH=x86 %{make_common_opts}
+
 
 %install
-make %{make_common_opts} install DESTDIR="%{buildroot}"
+make ARCH=x64 %{make_common_opts} install DESTDIR="%{buildroot}"
+make ARCH=x86 %{make_common_opts} install DESTDIR="%{buildroot}"
 
 %files
 %defattr(0644,root,root,0755)
