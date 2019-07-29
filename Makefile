@@ -11,7 +11,6 @@ VIRTIO_WIN_DRIVERS_PATH=$(CURDIR)/virtio-win
 VDAGENT_PATH=$(CURDIR)/vdagent
 WIX_BINARIES_PATH=$(CURDIR)/wix311-binaries
 OVIRT_GA_PATH=$(CURDIR)/ovirt-guest-agent
-QEMU_GA_PATH=$(CURDIR)/linux/{debian,el6,el7,fc28,fc29,lp151}
 ISO_PATH=$(CURDIR)/ISO
 # Windows Paths #
 VIRTIO_WIN_PATH=$(shell winepath -w $(VIRTIO_WIN_DRIVERS_PATH)|sed 's|\\|\\\\\\\\|g')
@@ -25,11 +24,6 @@ OVIRTGA_PATH=/usr/share/ovirt-guest-agent-windows
 VDA32BIN=/usr/i686-w64-mingw32/sys-root/mingw/bin/
 VDA64BIN=/usr/x86_64-w64-mingw32/sys-root/mingw/bin/
 WIX_BINARIES_URL="https://github.com/wixtoolset/wix3/releases/download/wix3111rtm/wix311-binaries.zip"
-QEMU_DEB_URL="http://mirror.isoc.org.il/pub/debian/pool/main/q/qemu/qemu-guest-agent_2.8%2bdfsg-6%2bdeb9u7_amd64.deb"
-QEMU_EL6_URL="http://mirror.isoc.org.il/pub/centos/6/os/x86_64/Packages/qemu-guest-agent-0.12.1.2-2.503.el6_9.6.x86_64.rpm"
-QEMU_EL7_URL="http://mirror.isoc.org.il/pub/centos/7/os/x86_64/Packages/qemu-guest-agent-2.12.0-2.el7.x86_64.rpm"
-QEMU_FC28_URL="http://mirror.isoc.org.il/pub/fedora/releases/28/Everything/x86_64/os/Packages/q/qemu-guest-agent-2.11.1-2.fc28.x86_64.rpm"
-QEMU_FC29_URL="http://mirror.isoc.org.il/pub/fedora/releases/29/Everything/x86_64/os/Packages/q/qemu-guest-agent-3.0.0-1.fc29.x86_64.rpm"
 # install targets
 PREFIX=/usr/local
 DATAROOT_DIR=$(PREFIX)/share
@@ -60,7 +54,6 @@ make-dirs:
 	mkdir -p $(VIRTIO_WIN_DRIVERS_PATH)
 	mkdir -p $(WIX_BINARIES_PATH)
 	mkdir -p $(ISO_PATH)
-	mkdir -p $(QEMU_GA_PATH)
 
 init-files: virtio-win ovirt-guest-agent vdagent qemu-ga wix
 
@@ -77,13 +70,6 @@ vdagent: make-dirs
 	ln -s "$(VDA32BIN)" $(VDAGENT_PATH)/x86
 	ln -s "$(VDA64BIN)" $(VDAGENT_PATH)/x64
 
-# Download the qemu-ga rpms 
-qemu-ga: make-dirs
-	wget -P linux/debian/ "$(QEMU_DEB_URL)"
-	wget -P linux/el6/ "$(QEMU_EL6_URL)"
-	wget -P linux/el7/ "$(QEMU_EL7_URL)"
-	wget -P linux/fc28/ "$(QEMU_FC28_URL)"
-	wget -P linux/fc29/ "$(QEMU_FC29_URL)"
 
 # Download the wix binaries
 # TODO: package wix as rpm
@@ -137,7 +123,6 @@ clean:
 	rm -rf $(VIRTIO_WIN_DRIVERS_PATH)
 	rm -rf $(WIX_BINARIES_PATH)
 	rm -rf $(ISO_PATH)
-	rm -rf $(QEMU_GA_PATH)
 	rm -f $(OVIRT_GA_PATH)
 	rm -f $(GENERATED)
 
