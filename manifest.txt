@@ -1,1 +1,5 @@
-blablabla
+@@VIRTIO_WIN@@
+@@OVIRT_GA_WINDOWS@@
+@@SPICE_AGENT@@
+@@VCREDIST@@
+@@WIX_TOOLSET@@

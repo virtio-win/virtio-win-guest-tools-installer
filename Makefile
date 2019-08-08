@@ -24,6 +24,12 @@ OVIRTGA_PATH=/usr/share/ovirt-guest-agent-windows
 VDA32BIN=/usr/i686-w64-mingw32/sys-root/mingw/bin/
 VDA64BIN=/usr/x86_64-w64-mingw32/sys-root/mingw/bin/
 WIX_BINARIES_URL="https://github.com/wixtoolset/wix3/releases/download/wix3111rtm/wix311-binaries.zip"
+#Package names for manifest
+VIRTIO_WIN_VER=$(shell rpm -q virtio-win)
+OVIRT_GA_WINDOWS_VER=$(shell rpm -q ovirt-guest-agent-windows)
+SPICE_AGENT_VER=$(shell rpm -q mingw32-spice-vdagent)
+VCREDIST_VER=$(shell rpm -q vcredist-x86)
+WIX_TOOLSET_VER=$(shell rpm -q wix-toolset-binaries)
 # install targets
 PREFIX=/usr/local
 DATAROOT_DIR=$(PREFIX)/share
@@ -55,7 +61,7 @@ make-dirs:
 	mkdir -p $(WIX_BINARIES_PATH)
 	mkdir -p $(ISO_PATH)
 
-init-files: virtio-win ovirt-guest-agent vdagent qemu-ga wix
+init-files: virtio-win ovirt-guest-agent vdagent wix manifest
 
 # extract the iso to get the drivers
 virtio-win: make-dirs
@@ -77,11 +83,19 @@ wix: make-dirs
 	wget $(WIX_BINARIES_URL)
 	unzip wix311-binaries.zip -d $(WIX_BINARIES_PATH)
 
+manifest:
+	sed \
+	-e "s|@@VIRTIO_WIN@@|${VIRTIO_WIN_VER}|g" \
+	-e "s|@@OVIRT_GA_WINDOWS@@|${OVIRT_GA_WINDOWS_VER}|g" \
+	-e "s|@@SPICE_AGENT@@|${SPICE_AGENT_VER}|g" \
+	-e "s|@@VCREDIST@@|${VCREDIST_VER}|g" \
+	-e "s|@@WIX_TOOLSET@@|${WIX_TOOLSET_VER}|g" \
+	-i manifest.txt
 
 create-iso: create-installer clean-installer-dir iso
 
 
-create-installer: $(GENERATED) wix qemu-ga vdagent ovirt-guest-agent virtio-win
+create-installer: $(GENERATED) wix vdagent ovirt-guest-agent virtio-win
 	pushd installer/ ;\
 	wine cmd.exe /c "$(WIX_BINARIES_PATH)/candle.exe @build_args/candle_args$(ARCH).txt" ;\
 	wine cmd.exe /c "$(WIX_BINARIES_PATH)/light.exe -sval @build_args/light_args$(ARCH).txt" ;\
