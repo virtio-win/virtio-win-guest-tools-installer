@@ -6,43 +6,11 @@
 <?define with_sys = "true"?>
 <?define extra_components = "false"?>
 <?if $(sys.BUILDARCH) = "x64" ?>
-<!-- 2k12 -->
-<?define guid = "79C7326D-873A-4D25-BF6A-5A632262AD3C"?>
-<?include ../GenericWindowsComponets/2k12.wxi ?>
-<?undef guid?>
-<!-- 2k12R2 -->
-<?define guid = "59F15E37-6084-4C73-80D5-F5A459499FE7"?>
-<?include ../GenericWindowsComponets/2k12R2.wxi ?>
-<?undef guid?>
-<!-- 2k16 -->
-<?define guid = "D4B70ECB-CFCF-4D6B-BDD1-97F632294BD9"?>
-<?include ../GenericWindowsComponets/2k16.wxi ?>
-<?undef guid?>
-<!-- 2k19 -->
-<?define guid = "2CA0AA91-8EFE-4171-A7F0-8BCC0EBB6E54"?>
-<?include ../GenericWindowsComponets/2k19.wxi ?>
-<?undef guid?>
-<!-- w8x64 -->
-<?define guid = "635F0039-A68E-4C42-8C98-57C6A10AAFF2"?>
-<?include ../GenericWindowsComponets/w8x64.wxi ?>
-<?undef guid?>
-<!-- w81x64 -->
-<?define guid = "D1962DE0-8C1D-4C01-9040-4131C1FD5A33"?>
-<?include ../GenericWindowsComponets/w81x64.wxi ?>
-<?undef guid?>
 <!-- w10x64 -->
 <?define guid = "6B0B39CC-125E-42E0-BA15-9BF05D6A9BDC"?>
 <?include ../GenericWindowsComponets/w10x64.wxi ?>
 <?undef guid?>
 <?else ?>
-<!-- w8x86 -->
-<?define guid = "9BA17678-D701-4D43-B785-4376162939F9"?>
-<?include ../GenericWindowsComponets/w8x86.wxi ?>
-<?undef guid?>
-<!-- w81x86 -->
-<?define guid = "40BE0289-42CF-422E-8720-09436772D1A0"?>
-<?include ../GenericWindowsComponets/w81x86.wxi ?>
-<?undef guid?>
 <!-- w10x86 -->
 <?define guid = "270551A2-BE74-4F62-BE2A-73A1939ACB91"?>
 <?include ../GenericWindowsComponets/w10x86.wxi ?>
