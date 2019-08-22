@@ -12,20 +12,21 @@
         <Property Id="Set_Cited_properties" Value="1" />
         <SetProperty Id="ARPINSTALLLOCATION" Value="[INSTALLERDIR]" After="CostFinalize" />
     </Fragment>
-    <!-- This Fragement is used in the Lunch Condition to determine the arch -->
+    <!-- Launch Condition to disable launch on arch x86-->
     <Fragment>
         <Property Id="x86_Validation" Value="1" />
         <Condition Message= "Detected x64 Windows version, please use a x64 installer">
                 <![CDATA[VersionNT <> VersionNT64 AND "$(sys.BUILDARCH)" = "x86"]]>
         </Condition>
     </Fragment>
+    <!-- Launch Condition to disable launch on arch x64 -->
     <Fragment>
         <Property Id="x64_Validation" Value="1" />
         <Condition Message= "Detected x86 Windows version, please use a x86 installer">
                 <![CDATA[VersionNT = VersionNT64 AND "$(sys.BUILDARCH)" = "x64"]]>
         </Condition>
     </Fragment>
-    <!-- This Fragement is used to query for the ProductName to detect os version -->
+    <!-- Query the ProductName registry value to detect os version -->
     <Fragment>
         <Property Id="Set_ProductName" Value="1" />
         <Property Id="REGISTRY_PRODUCT_NAME">
@@ -36,9 +37,9 @@
                 Type="raw" />
         </Property>
     </Fragment>
-    <!-- This Properties are for the RHV Agent service dep logic -->
+    <!-- This Properties are for the oVirt Agent service dependency logic -->
     <Fragment>
-        <Property Id="Set_RHV_Agent_Properties" Value="1" />
+        <Property Id="Set_oVirt_Agent_Properties" Value="1" />
         <Property Id="REGISTRYSEARCH_IS_TERMSERVICE_EXIST">
             <RegistrySearch Id="is_TermService_exist"
                 Root="HKLM"
@@ -67,23 +68,8 @@
             Sequence="execute">
             NOT REGISTRYSEARCH_IS_SPICEUSBREDIRECTOR_EXIST
         </SetProperty>
-        <Property Id="IS_OVIRT_GUEST_AGENT_INI_EXIST">
-            <DirectorySearch Path="[RHVAGENT]"
-                Depth="0"
-                AssignToProperty="no"
-                Id="ovirt_guest_agent_ini_exist">
-                <FileSearch Name="ovirt-guest-agent.ini" Id="ovirt_guest_agent_ini_search" />
-            </DirectorySearch>
-        </Property>
-        <Property Id="IS_RHEV_AGENT_INI_EXIST">
-            <DirectorySearch Path="[RHVAGENT]"
-                Depth="0"
-                AssignToProperty="no"
-                Id="rhev_agent_ini_exist">
-                <FileSearch Name="rhev-agent.ini" Id="rhev_agent_ini_search" />
-            </DirectorySearch>
-        </Property>
     </Fragment>
+    <!-- This Properties are for the upgrade from RHV WGT logic -->
     <Fragment>
         <Property Id="Set_Old_WGT_props" Value="1" />
         <Property Id="REGISTRYSEARCH_OLD_WGT_UNINSTALL_PATH">

@@ -5,7 +5,7 @@
         <Property Id="DirectoryProperty" Value="1" />
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="$(var.PlatformProgramFilesFolder)">
-                <Directory Id="INSTALLERDIR" Name="RHV">
+                <Directory Id="INSTALLERDIR" Name="Virtio-Win">
                     <Directory Id="BALLOON" Name="Balloon"/>
                     <Directory Id="NETWORK" Name="Network"/>
                     <Directory Id="QEMUFWCFG" Name="Qemufwcfg"/>

@@ -5,7 +5,7 @@
      <?include constants.wxi ?>
 
       <Product Id="*"
-            Name="RHV-WGT"
+            Name="Virtio-win-guest-tools"
             Language="1033"
             Version="$(var.Version)"
             Manufacturer="Red Hat, Inc."
@@ -14,12 +14,10 @@
                   InstallerVersion="200"
                   Compressed="yes"
                   InstallScope="perMachine"
-                  Description="RHV windows guest tools driver installer "/>
+                  Description="Virtio-win installer for drivers and agents"/>
             <PropertyRef Id="$(var.LaunchCondition)" />
-            <PropertyRef Id="CustomActionsRef" />
-            <PropertyRef Id="LoggingPropertyRef" />
             <PropertyRef Id="Set_ProductName" />
-            <PropertyRef Id="Set_RHV_Agent_Properties" />
+            <PropertyRef Id="Set_oVirt_Agent_Properties" />
             <PropertyRef Id="Set_Old_WGT_props" />
             <MajorUpgrade 
                   DowngradeErrorMessage="A newer version of [ProductName] is already installed."

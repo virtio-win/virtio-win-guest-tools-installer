@@ -38,8 +38,4 @@
             </Component>
         </ComponentGroup>
     </Fragment>
-	<!-- <Fragment>
-        <Property Id="$(var.driverName)InstallDriverRef" Value="1"/>
-        <CustomAction Id='$(var.driverName)ExecInstallDriver' Directory='$(var.destDirName)' Execute='immediate'  ExeCommand='cmd.exe /c &quot;pnputil /add-driver $(var.driverName).inf /install&quot;' Return='check'/>
-    </Fragment> -->
 </Wix>

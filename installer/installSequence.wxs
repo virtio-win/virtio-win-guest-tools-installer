@@ -13,22 +13,6 @@
         </InstallUISequence>
         <InstallExecuteSequence>
             <AllocateRegistrySpace>NOT Installed</AllocateRegistrySpace>
-            <!-- RHV-Agent Actions   -->
-            <!-- <Custom Action="create_new_ovirt_guest_agent_ini" Before="InstallFinalize">
-                NOT Installed AND NOT IS_OVIRT_GUEST_AGENT_INI_EXIST AND NOT IS_RHEV_AGENT_INI_EXIST
-            </Custom>
-            <Custom Action="rename_rhev_agent_ini_to_ovirt_guest_agent_ini" Before="InstallFinalize">
-                NOT Installed AND NOT IS_OVIRT_GUEST_AGENT_INI_EXIST AND IS_RHEV_AGENT_INI_EXIST
-            </Custom> -->
-            <!-- Log Custom Actions   -->
-
-            <!--Pnputil CA
-            <Custom Action="CopyLog" After="InstallFinalize" />
-            <?foreach driver in $(var.virtioDriverList)?>
-                <Custom Action="$(var.driver)ExecInstallDriver" Before="StartServices">
-                    NOT Installed
-                </Custom>
-            <?endforeach?> -->
         </InstallExecuteSequence>
     </Fragment>
 </Wix>
