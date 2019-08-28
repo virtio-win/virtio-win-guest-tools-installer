@@ -11,30 +11,35 @@ mkdir -p tmp
 chown $(whoami) $(pwd)
 winecfg
 
+# Define VARS for make
+VERSION=4.4
+VIRTIO_WIN_DRIVERS_PATH=/home/gzaidman/workspace/upstream/virtio-win-guest-tools-installer/vwi/
+# Install dependencies
 if [ -e /etc/fedora-release ]; then
-	dnf builddep --spec ovirt-wgt-wix.spec
+    dnf -y install $(cat build-artifacts.packages)
 else
-	yum-builddep ovirt-wgt-wix.spec
+    yum -y install $(cat build-artifacts.packages)
 fi
 
-make dist
+# Pack all files is tar.gz file
+make dist VERSION=${VERSION}
 
-if git describe --exact-match --tags --match "[0-9]*" > /dev/null 2>&1 ; then
-    SUFFIX=""
-else
-    SUFFIX=".$(date -u +%Y%m%d%H%M%S).git$(git rev-parse --short HEAD)"
-fi
+# Extract tar.gz to tmp-build-dir (to build in a clean dir)
+find \
+    ./ \
+    -iname \*.tar.gz \
+    -exec tar -C tmp/ -xvf {} \;
 
-rpmbuild \
-    -D "_topdir $PWD/tmp" \
-    -D "_sourcedir $PWD" \
-    ${SUFFIX:+-D "release_suffix ${SUFFIX}"} \
-    -ba ovirt-wgt-wix.spec
+# Build the installer
+pushd tmp
+make ARCH=x64 VERSION=${VERSION} VIRTIO_WIN_DRIVERS_PATH=${VIRTIO_WIN_DRIVERS_PATH}
+make clean
+make ARCH=x86 VERSION=${VERSION} VIRTIO_WIN_DRIVERS_PATH=${VIRTIO_WIN_DRIVERS_PATH}
 
-rm -f ./*.iso
-mv *.tar.gz exported-artifacts
+make test
+popd
 
 find \
-    "$PWD/tmp/"{RPMS,SRPMS} \
-    -iname \*.rpm \
+    "$PWD/" \
+    -regex ".*\.\(virtio*\.msi\|tar\.gz\)" \
     -exec mv {} exported-artifacts/ \;

@@ -1,49 +1,44 @@
 SHELL=/bin/bash
 
-NAME=ovirt-wgt-wix
-VERSION=4.4
-DISPLAYED_VERSION=$(DISPLAYED_VERSION)
+# Parameters that we must pass to make
+VERSION=$(VERSION)
+ARCH=$(ARCH)
+VIRTIO_WIN_DRIVERS_PATH=$(VIRTIO_WIN_DRIVERS_PATH)
+
+NAME=virtio-guest-tools-installer
 ARCHIVE=$(NAME)-$(VERSION).tar.gz
-RELEASE_SUFFIX=_master
-ARCH=x64
+# Location of installed RPMS that we package:
+# ovirt-guest-agent-windows.rpm
+# mingw32\64-spice-vdagent.rpm
+# wix311-binaries
+OVIRTGA_PATH=/usr/share/ovirt-guest-agent-windows
+VDA32BIN=/usr/i686-w64-mingw32/sys-root/mingw/bin/
+VDA64BIN=/usr/x86_64-w64-mingw32/sys-root/mingw/bin/
+WIX_BINARIES_URL="https://github.com/wixtoolset/wix3/releases/download/wix3111rtm/wix311-binaries.zip"
+# Available from http://www.microsoft.com/en-us/download/details.aspx?id=5582
+# RPM wrapping this available from http://resources.ovirt.org/
+VCREDIST=/usr/share/vcredist-x86/vcredist_x86.exe
 # Project Paths #
-VIRTIO_WIN_DRIVERS_PATH=$(CURDIR)/virtio-win
 VDAGENT_PATH=$(CURDIR)/vdagent
 WIX_BINARIES_PATH=$(CURDIR)/wix311-binaries
 OVIRT_GA_PATH=$(CURDIR)/ovirt-guest-agent
-ISO_PATH=$(CURDIR)/ISO
-# Windows Paths #
+# Windows Paths 
+# Due to https://github.com/wixtoolset/issues/issues/5314
+# It is that the path will be under 260 chars
+# If we get an light.exe error "The system cannot find the file..."
+# This is probably the cause
 VIRTIO_WIN_PATH=$(shell winepath -w $(VIRTIO_WIN_DRIVERS_PATH)|sed 's|\\|\\\\\\\\|g')
 OVIRT_GA_WIN_PATH=$(shell winepath -w $(OVIRT_GA_PATH)|sed 's|\\|\\\\\\\\|g')
 VDAGENT_WIN_PATH=$(shell winepath -w $(VDAGENT_PATH)|sed 's|\\|\\\\\\\\|g')
 WIX_BINARIES_WIN_PATH=$(shell winepath -w $(WIX_BINARIES_PATH)|sed 's|\\|\\\\\\\\|g')
 INSTALLER_WIN_PATH=$(shell winepath -w $(CURDIR)/installer|sed 's|\\|\\\\\\\\|g')
-#Paths come from the location of virtio-win ovirt-guest-agent rpm files
-VIRTIO_WIN_ISO=/usr/share/virtio-win/virtio-win.iso
-OVIRTGA_PATH=/usr/share/ovirt-guest-agent-windows
-VDA32BIN=/usr/i686-w64-mingw32/sys-root/mingw/bin/
-VDA64BIN=/usr/x86_64-w64-mingw32/sys-root/mingw/bin/
-WIX_BINARIES_URL="https://github.com/wixtoolset/wix3/releases/download/wix3111rtm/wix311-binaries.zip"
 #Package names for manifest
 VIRTIO_WIN_VER=$(shell rpm -q virtio-win)
 OVIRT_GA_WINDOWS_VER=$(shell rpm -q ovirt-guest-agent-windows)
 SPICE_AGENT_VER=$(shell rpm -q mingw32-spice-vdagent)
 VCREDIST_VER=$(shell rpm -q vcredist-x86)
 WIX_TOOLSET_VER=$(shell rpm -q wix-toolset-binaries)
-# install targets
-PREFIX=/usr/local
-DATAROOT_DIR=$(PREFIX)/share
-INSTALL_DATA_DIR=$(DATAROOT_DIR)/$(NAME)
-ISO_IMAGE=oVirt-toolsSetup_Wix_$(ARCH)_$(DISPLAYED_VERSION).iso
-ISO_GENERIC=ovirt-wgt-wix-setup-$(ARCH).iso
-ISO_P_TEXT=oVirt - Open Virtualization Project (www.ovirt.org)
-# Up to 16 digits will be displayed in windows, to fit in the iso label
-ISO_LABEL=oVirt-WGT-$(ARCH)-$(DISPLAYED_VERSION)
-# Available from http://www.microsoft.com/en-us/download/details.aspx?id=5582
-# RPM wrapping this available from http://resources.ovirt.org/
-VCREDIST=/usr/share/vcredist-x86/vcredist_x86.exe
 
-# GENERATED=$(shell find ./* -name *.in)
 
 GENERATED = \
 	installer/constants.wxi \
@@ -53,20 +48,18 @@ GENERATED = \
 	installer/build_args/light_argsx86.txt \
 	$(NULL)
 
-all: make-dirs init-files $(GENERATED) create-iso
+
+all: make-dirs init-files $(GENERATED) create-installer
+
 
 make-dirs:
 	mkdir -p $(VDAGENT_PATH)
 	mkdir -p $(VIRTIO_WIN_DRIVERS_PATH)
 	mkdir -p $(WIX_BINARIES_PATH)
-	mkdir -p $(ISO_PATH)
+
 
 init-files: virtio-win ovirt-guest-agent vdagent wix manifest
 
-# extract the iso to get the drivers
-virtio-win: make-dirs
-	7z -o"$(VIRTIO_WIN_DRIVERS_PATH)" x "$(VIRTIO_WIN_ISO)"
-	hardlink -vv "$(VIRTIO_WIN_DRIVERS_PATH)"
 
 # link ovirt-guest-agent to the original folder from the rpm
 ovirt-guest-agent:
@@ -92,51 +85,26 @@ manifest:
 	-e "s|@@WIX_TOOLSET@@|${WIX_TOOLSET_VER}|g" \
 	-i manifest.txt
 
-create-iso: create-installer clean-installer-dir iso
-
 
 create-installer: $(GENERATED) wix vdagent ovirt-guest-agent virtio-win
 	pushd installer/ ;\
 	wine cmd.exe /c "$(WIX_BINARIES_PATH)/candle.exe @build_args/candle_args$(ARCH).txt" ;\
 	wine cmd.exe /c "$(WIX_BINARIES_PATH)/light.exe -sval @build_args/light_args$(ARCH).txt" ;\
+	rm -rf wixobjx*; \
 	popd
 
 
-clean-installer-dir: create-installer
-	rm -rf installer/wixobjx*
-
-
-iso: create-installer clean-installer-dir
-	mkisofs -J \
-			-rational-rock \
-			-full-iso9660-filenames \
-			-verbose \
-			-V "$(ISO_LABEL)" \
-			-preparer "$(ISO_P_TEXT)" \
-			-publisher "$(ISO_P_TEXT)" \
-			-o "$(ISO_IMAGE)" \
-			-graft-points \
-			"linux/"="./linux/" \
-			"Drivers/"="$(VIRTIO_WIN_DRIVERS_PATH)/" \
-			"Sources/"="./installer/" \
-			./manifest.txt \
-			./ovirt-wgt$(ARCH).msi
-
-
-install:
-	mkdir -p "$(DESTDIR)$(INSTALL_DATA_DIR)"
-	cp "$(ISO_IMAGE)" "$(DESTDIR)$(INSTALL_DATA_DIR)"
-	ln -s "$(ISO_IMAGE)" "$(DESTDIR)$(INSTALL_DATA_DIR)/$(ISO_GENERIC)"
+test:
+	python3 -m pytest test/test.py
 
 
 clean:
-	rm -rf exported-artifacts tmp 
+	rm -rf exported-artifacts tmp
 	rm -rf .wine .local .config .cache
+	rm -f wix311-binaries.zip
 	rm -rf *.tar.gz
 	rm -rf $(VDAGENT_PATH)
-	rm -rf $(VIRTIO_WIN_DRIVERS_PATH)
 	rm -rf $(WIX_BINARIES_PATH)
-	rm -rf $(ISO_PATH)
 	rm -f $(OVIRT_GA_PATH)
 	rm -f $(GENERATED)
 
@@ -157,7 +125,8 @@ clean:
 
 
 dist:
-	tar -cvf "$(ARCHIVE)" --owner=root --group=root --transform 's,^,$(NAME)-$(VERSION)/,S' ./*
+	tar -cvf "$(ARCHIVE)" --owner=root --group=root ./*
+
 
 .PHONY : all make-dirs init-files virtio-win ovirt-guest-agent \
-		vdagent qemu-ga wix create-iso create-installer iso install dist
+		vdagent qemu-ga wix create-installer dist test

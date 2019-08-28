@@ -1,7 +1,6 @@
 wine
 make
 wget
-virtio-win
 ovirt-guest-agent-windows
 mingw32-spice-vdagent
 mingw64-spice-vdagent
@@ -13,3 +12,5 @@ p7zip
 p7zip-plugins
 dnf
 dnf-utils
+msitools
+python3-pytest
