@@ -16,9 +16,9 @@ VERSION=4.4
 VIRTIO_WIN_DRIVERS_PATH=/home/gzaidman/workspace/upstream/virtio-win-guest-tools-installer/vwi/
 # Install dependencies
 if [ -e /etc/fedora-release ]; then
-    dnf -y install $(cat build-artifacts.packages)
+    dnf -y install $(cat automation/build-artifacts.packages)
 else
-    yum -y install $(cat build-artifacts.packages)
+    yum -y install $(cat automation/build-artifacts.packages)
 fi
 
 # Pack all files is tar.gz file
@@ -41,5 +41,11 @@ popd
 
 find \
     "$PWD/" \
-    -regex ".*\.\(virtio*\.msi\|tar\.gz\)" \
+    -iname virtio*tar.gz \
     -exec mv {} exported-artifacts/ \;
+
+find \
+    "$PWD/" \
+    -iname virtio*msi \
+    -exec mv {} exported-artifacts/ \;
+
