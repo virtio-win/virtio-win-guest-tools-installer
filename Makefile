@@ -14,7 +14,7 @@ ARCHIVE=$(NAME)-$(VERSION).tar.gz
 OVIRTGA_PATH=/usr/share/ovirt-guest-agent-windows
 VDA32BIN=/usr/i686-w64-mingw32/sys-root/mingw/bin/
 VDA64BIN=/usr/x86_64-w64-mingw32/sys-root/mingw/bin/
-WIX_BINARIES_URL="https://github.com/wixtoolset/wix3/releases/download/wix3111rtm/wix311-binaries.zip"
+WIX_BINARIES_FILES=/usr/share/wix-toolset-binaries
 # Available from http://www.microsoft.com/en-us/download/details.aspx?id=5582
 # RPM wrapping this available from http://resources.ovirt.org/
 VCREDIST=/usr/share/vcredist-x86/vcredist_x86.exe
@@ -49,32 +49,25 @@ GENERATED = \
 	$(NULL)
 
 
-all: make-dirs init-files $(GENERATED) create-installer
+all: init-files $(GENERATED) create-installer
 
 
-make-dirs:
-	mkdir -p $(VDAGENT_PATH)
-	mkdir -p $(VIRTIO_WIN_DRIVERS_PATH)
-	mkdir -p $(WIX_BINARIES_PATH)
+init-files: ovirt-guest-agent vdagent wix manifest
 
 
-init-files: virtio-win ovirt-guest-agent vdagent wix manifest
-
-
-# link ovirt-guest-agent to the original folder from the rpm
 ovirt-guest-agent:
 	ln -s "$(OVIRTGA_PATH)" "$(OVIRT_GA_PATH)"
 
-vdagent: make-dirs
+
+vdagent:
+	mkdir -p $(VDAGENT_PATH)
 	ln -s "$(VDA32BIN)" $(VDAGENT_PATH)/x86
 	ln -s "$(VDA64BIN)" $(VDAGENT_PATH)/x64
 
 
-# Download the wix binaries
-# TODO: package wix as rpm
-wix: make-dirs
-	wget $(WIX_BINARIES_URL)
-	unzip wix311-binaries.zip -d $(WIX_BINARIES_PATH)
+wix:
+	ln -s "$(WIX_BINARIES_FILES)" $(WIX_BINARIES_PATH)
+
 
 manifest:
 	sed \
@@ -86,7 +79,7 @@ manifest:
 	-i manifest.txt
 
 
-create-installer: $(GENERATED) wix vdagent ovirt-guest-agent virtio-win
+create-installer: $(GENERATED) wix vdagent ovirt-guest-agent
 	pushd installer/ ;\
 	wine cmd.exe /c "$(WIX_BINARIES_PATH)/candle.exe @build_args/candle_args$(ARCH).txt" ;\
 	wine cmd.exe /c "$(WIX_BINARIES_PATH)/light.exe -sval @build_args/light_args$(ARCH).txt" ;\
@@ -128,5 +121,4 @@ dist:
 	tar -cvf "$(ARCHIVE)" --owner=root --group=root ./*
 
 
-.PHONY : all make-dirs init-files virtio-win ovirt-guest-agent \
-		vdagent qemu-ga wix create-installer dist test
+.PHONY : all init-files ovirt-guest-agent vdagent wix manifest create-installer dist test
