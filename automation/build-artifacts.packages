@@ -1,16 +1,12 @@
 wine
 make
-wget
 ovirt-guest-agent-windows
 mingw32-spice-vdagent
 mingw64-spice-vdagent
 vcredist-x86
 git
-genisoimage
-hardlink
-p7zip
-p7zip-plugins
 dnf
 dnf-utils
 msitools
 python3-pytest
+wix-toolset-binaries

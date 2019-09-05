@@ -48,4 +48,3 @@ find \
     "$PWD/" \
     -iname virtio*msi \
     -exec mv {} exported-artifacts/ \;
-
