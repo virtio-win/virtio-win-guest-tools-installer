@@ -1,5 +1,8 @@
 #!/bin/bash -xe
 
+# Silence wine 'fixme' warnings
+export WINEDEBUG=fixme-all
+
 # cleanup leftovers from previous builds
 make clean
 
