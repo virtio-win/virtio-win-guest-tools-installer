@@ -18,17 +18,19 @@ WIX_BINARIES_FILES=/usr/share/wix-toolset-binaries
 # Available from http://www.microsoft.com/en-us/download/details.aspx?id=5582
 # RPM wrapping this available from http://resources.ovirt.org/
 VCREDIST=/usr/share/vcredist-x86/vcredist_x86.exe
+
 # Project Paths #
-VDAGENT_PATH=$(CURDIR)/vdagent
+VDAGENT_LINK=$(CURDIR)/vdagent
+WIX_BINARIES_LINK=$(CURDIR)/wix311-binaries
 SSO_PATH=$(CURDIR)/3rdParty/SSO
-WIX_BINARIES_PATH=$(CURDIR)/wix311-binaries
-OVIRT_GA_PATH=$(CURDIR)/ovirt-guest-agent
+OVIRTGA_LINK=$(CURDIR)/ovirt-guest-agent
+
 # Windows Paths 
 VIRTIO_WIN_PATH=$(shell winepath -w $(VIRTIO_WIN_DRIVERS_PATH)|sed 's|\\|\\\\\\\\|g')
-OVIRT_GA_WIN_PATH=$(shell winepath -w $(OVIRT_GA_PATH)|sed 's|\\|\\\\\\\\|g')
-VDAGENT_WIN_PATH=$(shell winepath -w $(VDAGENT_PATH)|sed 's|\\|\\\\\\\\|g')
+OVIRT_GA_WIN_PATH=$(shell winepath -w $(OVIRTGA_LINK)|sed 's|\\|\\\\\\\\|g')
+VDAGENT_WIN_PATH=$(shell winepath -w $(VDAGENT_LINK)|sed 's|\\|\\\\\\\\|g')
 SSO_WIN_PATH=$(shell winepath -w $(SSO_PATH)|sed 's|\\|\\\\\\\\|g')
-WIX_BINARIES_WIN_PATH=$(shell winepath -w $(WIX_BINARIES_PATH)|sed 's|\\|\\\\\\\\|g')
+WIX_BINARIES_WIN_PATH=$(shell winepath -w $(WIX_BINARIES_LINK)|sed 's|\\|\\\\\\\\|g')
 INSTALLER_WIN_PATH=$(shell winepath -w $(CURDIR)/installer|sed 's|\\|\\\\\\\\|g')
 #Package names for manifest
 VIRTIO_WIN_VER=$(shell rpm -q virtio-win)
@@ -54,17 +56,17 @@ init-files: ovirt-guest-agent vdagent wix manifest
 
 
 ovirt-guest-agent:
-	ln -s "$(OVIRTGA_PATH)" "$(OVIRT_GA_PATH)"
+	ln -s "$(OVIRTGA_PATH)" "$(OVIRTGA_LINK)"
 
 
 vdagent:
-	mkdir -p $(VDAGENT_PATH)
-	ln -s "$(VDA32BIN)" $(VDAGENT_PATH)/x86
-	ln -s "$(VDA64BIN)" $(VDAGENT_PATH)/x64
+	mkdir -p $(VDAGENT_LINK)
+	ln -s "$(VDA32BIN)" $(VDAGENT_LINK)/x86
+	ln -s "$(VDA64BIN)" $(VDAGENT_LINK)/x64
 
 
 wix:
-	ln -s "$(WIX_BINARIES_FILES)" $(WIX_BINARIES_PATH)
+	ln -s "$(WIX_BINARIES_FILES)" $(WIX_BINARIES_LINK)
 
 
 manifest:
@@ -79,8 +81,8 @@ manifest:
 
 create-installer: $(GENERATED) wix vdagent ovirt-guest-agent
 	pushd installer/ ;\
-	wine cmd.exe /c "$(WIX_BINARIES_PATH)/candle.exe @build_args/candle_args$(ARCH).txt" ;\
-	wine cmd.exe /c "$(WIX_BINARIES_PATH)/light.exe -sval @build_args/light_args$(ARCH).txt" ;\
+	wine cmd.exe /c "$(WIX_BINARIES_LINK)/candle.exe @build_args/candle_args$(ARCH).txt" ;\
+	wine cmd.exe /c "$(WIX_BINARIES_LINK)/light.exe -sval @build_args/light_args$(ARCH).txt" ;\
 	rm -rf wixobjx*; \
 	popd
 
@@ -94,9 +96,9 @@ clean:
 	rm -rf .wine .local .config .cache
 	rm -f wix311-binaries.zip
 	rm -rf *.tar.gz
-	rm -rf $(VDAGENT_PATH)
-	rm -rf $(WIX_BINARIES_PATH)
-	rm -f $(OVIRT_GA_PATH)
+	rm -rf $(VDAGENT_LINK)
+	rm -rf $(WIX_BINARIES_LINK)
+	rm -f $(OVIRTGA_LINK)
 	rm -f $(GENERATED)
 
 
