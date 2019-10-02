@@ -20,16 +20,14 @@ WIX_BINARIES_FILES=/usr/share/wix-toolset-binaries
 VCREDIST=/usr/share/vcredist-x86/vcredist_x86.exe
 # Project Paths #
 VDAGENT_PATH=$(CURDIR)/vdagent
+SSO_PATH=$(CURDIR)/3rdParty/SSO
 WIX_BINARIES_PATH=$(CURDIR)/wix311-binaries
 OVIRT_GA_PATH=$(CURDIR)/ovirt-guest-agent
 # Windows Paths 
-# Due to https://github.com/wixtoolset/issues/issues/5314
-# It is that the path will be under 260 chars
-# If we get an light.exe error "The system cannot find the file..."
-# This is probably the cause
 VIRTIO_WIN_PATH=$(shell winepath -w $(VIRTIO_WIN_DRIVERS_PATH)|sed 's|\\|\\\\\\\\|g')
 OVIRT_GA_WIN_PATH=$(shell winepath -w $(OVIRT_GA_PATH)|sed 's|\\|\\\\\\\\|g')
 VDAGENT_WIN_PATH=$(shell winepath -w $(VDAGENT_PATH)|sed 's|\\|\\\\\\\\|g')
+SSO_WIN_PATH=$(shell winepath -w $(SSO_PATH)|sed 's|\\|\\\\\\\\|g')
 WIX_BINARIES_WIN_PATH=$(shell winepath -w $(WIX_BINARIES_PATH)|sed 's|\\|\\\\\\\\|g')
 INSTALLER_WIN_PATH=$(shell winepath -w $(CURDIR)/installer|sed 's|\\|\\\\\\\\|g')
 #Package names for manifest
@@ -112,6 +110,7 @@ clean:
 	-e "s|@@VIRTIO-WIN-PATH@@|${VIRTIO_WIN_PATH}|g" \
 	-e "s|@@OVIRT-GA-PATH@@|${OVIRT_GA_WIN_PATH}|g" \
 	-e "s|@@VDAGENT-WIN-PATH@@|${VDAGENT_WIN_PATH}|g" \
+	-e "s|@@SSO-WIN-PATH@@|${SSO_WIN_PATH}|g" \
 	-e "s|@@WIX_BIN_PATH@@|${WIX_BINARIES_WIN_PATH}|g" \
 	-e "s|@@INSTALLER_PATH@@|${INSTALLER_WIN_PATH}|g" \
 	$< > $@

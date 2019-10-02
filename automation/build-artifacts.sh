@@ -13,7 +13,11 @@ winecfg
 
 # Define VARS for make
 VERSION=4.4
-VIRTIO_WIN_DRIVERS_PATH=/home/gzaidman/workspace/upstream/virtio-win-guest-tools-installer/vwi/
+# Due to https://github.com/wixtoolset/issues/issues/5314
+# It is that the path will be under 260 chars
+# If we get an light.exe error "The system cannot find the file..."
+# This is probably the cause
+VIRTIO_WIN_DRIVERS_PATH=${1:-"$PWD/vwi"}
 # Install dependencies
 if [ -e /etc/fedora-release ]; then
     dnf -y install $(cat automation/build-artifacts.packages)
