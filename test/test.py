@@ -1,3 +1,4 @@
+import os
 import subprocess
 import pytest
 import msi_values
@@ -52,8 +53,14 @@ class MSI(object):
     def __init__(self, msi_file, arch, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.msi_file = msi_file
-        self.init_tables()
         self.arch = arch
+
+        if not os.path.exists(self.msi_file):
+            pytest.fail("msi was not generated: %s" %
+                    os.path.abspath(self.msi_file))
+
+        self.init_tables()
+
 
     def init_tables(self):
         def _get_table_list():
