@@ -14,7 +14,7 @@
 <?define spice_agent_path = '@@VDAGENT-WIN-PATH@@' ?>
 <?define ovirt_agent_path = '@@OVIRT-GA-PATH@@' ?>
 <?define virtio_path = '@@VIRTIO-WIN-PATH@@' ?>
-<?define sso_path = '@@@@' ?>
+<?define sso_path = '@@SSO-WIN-PATH@@' ?>
 <!-- Win Versions Conditions -->
 <?define condition_2k12 = '(VersionNT64 = 602 AND MsiNTProductType > 1)' ?>
 <?define condition_2k12r2 = '(REGISTRY_PRODUCT_NAME >< "2012" AND MsiNTProductType > 1)' ?>

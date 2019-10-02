@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
 <?define destDirName = "RHVAGENT" ?>
+<?define destDirSSO = "SSODRIVER" ?>
+<?define SSO_fileName = "RHEVcredProv.dll" ?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <?define guid_OvirtGuestService = "F5FEBAC2-6022-4ECA-9E73-D1ECF6B46C38"?>
 <?define guid_msvcr90.dll = "91BF21EE-955B-4512-95E0-A99897DFC9AC"?>
@@ -11,6 +13,10 @@
 <?define guid_hook_dirs_AFTER_MIGRATION = "7C5FC881-A5B7-4E94-A6CF-42C080B60DC5"?>
 <?define guid_hook_dirs_BEFORE_HIBERNATION = "54DDAB50-5F24-493F-9A0B-AB737B4F2005"?>
 <?define guid_hook_dirs_AFTER_HIBERNATION = "75F939D2-A9FF-4FAB-BE62-7D607F5ABE86"?>
+<?define guid_SSO = "446AE311-B8F2-4146-AC50-503468B4DDAB"?>
+<?define guid_reg = "4B41E951-24EE-4703-91E6-62455968EB19"?>
+<?define condition = "$(var.condition_w8x64) OR $(var.condition_w81x64) OR $(var.condition_w10x64)" ?>
+<?define ISA = "amd64" ?>
 <?define Win64 = "yes" ?>
 <?else ?>
 <?define guid_OvirtGuestService = "812D719C-CC0E-4797-BEF0-9902C4B8BFC5"?>
@@ -22,6 +28,10 @@
 <?define guid_hook_dirs_AFTER_MIGRATION = "C52210B7-6E33-447F-88B0-7EA230B2AA16"?>
 <?define guid_hook_dirs_BEFORE_HIBERNATION = "041F013B-201D-4F96-9822-EBB9AA5ADB70"?>
 <?define guid_hook_dirs_AFTER_HIBERNATION = "6F9FA3FB-8AED-4253-A021-365FEAFEFCC7"?>
+<?define guid_SSO = "101C5A02-3C52-442F-9094-976B1FD635FB"?>
+<?define guid_reg = "218F8854-65AE-4668-9DDF-079504F361C4"?>
+<?define condition = "$(var.condition_w8x86) OR $(var.condition_w81x86) OR $(var.condition_w10x86)" ?>
+<?define ISA = "x86" ?>
 <?define Win64 = "no" ?>
- <?endif ?>
+<?endif ?>
 </Include>

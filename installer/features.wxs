@@ -18,15 +18,13 @@
         <Feature Id='FE_spice_Agent' Title='Spice Agent' Level='1'>
                 <ComponentGroupRef Id='CMPG_spice_agent' />
         </Feature>
-        <Feature Id='FE_RHEV_Agent' Title='RHEV Agent' Level='1'>
+        <Feature Id='FE_RHEV_Agent' Title='RHEV Agent' Level='2'>
                 <ComponentGroupRef Id='CMPG_rhev_agent' />
+                <ComponentGroupRef Id='CMPG_SSO' />
         </Feature>
         <Feature Id='FE_spice_driver' Title='Spice Driver' Level='1'>
                 <ComponentGroupRef Id='CMPG_qxldod_driver' />
         </Feature>
-        <!-- <Feature Id='FE_sso_driver' Title='SSO' Level='1'>
-                <ComponentGroupRef Id='CMPG_SSO' />
-        </Feature> -->
         <Feature Id='FE_viorng_driver' Title='Viorng' Level='1'>
                 <ComponentGroupRef Id='CMPG_viorng_driver' />
         </Feature>

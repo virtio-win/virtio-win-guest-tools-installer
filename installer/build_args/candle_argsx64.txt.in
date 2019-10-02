@@ -7,7 +7,7 @@
 @@INSTALLER_PATH@@\Drivers\vioscsi\*.wxs
 @@INSTALLER_PATH@@\Drivers\vioserial\*.wxs
 @@INSTALLER_PATH@@\Drivers\viostor\*.wxs
-@@INSTALLER_PATH@@\Agents\rhv_agent\*.wxs
+@@INSTALLER_PATH@@\Agents\ovirt_agent\*.wxs
 @@INSTALLER_PATH@@\Agents\spice_agent\*.wxs
 -out wixobjx64\
 -nologo
