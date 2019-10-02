@@ -20,6 +20,12 @@ fi
 
 VERSION=${2:?"Must pass in the version of the installer"}
 
+PACKAGES="$(cat automation/build-artifacts.packages | xargs)"
+if ! rpm -q --quiet $PACKAGES ; then
+    echo "ERROR: Not all of the required packages are installed: $PACKAGES"
+    exit 1
+fi
+
 # Enable command tracing
 set -x
 
@@ -31,15 +37,7 @@ mkdir -p exported-artifacts
 mkdir -p tmp
 
 # init wine
-chown $(whoami) $(pwd)
 winecfg
-
-# Install dependencies
-if [ -e /etc/fedora-release ]; then
-    dnf -y install $(cat automation/build-artifacts.packages)
-else
-    yum -y install $(cat automation/build-artifacts.packages)
-fi
 
 # Pack all files is tar.gz file
 make dist VERSION=${VERSION}
