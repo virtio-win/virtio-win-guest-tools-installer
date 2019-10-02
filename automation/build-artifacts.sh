@@ -1,7 +1,27 @@
-#!/bin/bash -xe
+#!/bin/bash -e
 
 # Silence wine 'fixme' warnings
 export WINEDEBUG=fixme-all
+
+# Define VARS for make
+# Due to https://github.com/wixtoolset/issues/issues/5314
+# It is that the path will be under 260 chars
+# If we get an light.exe error "The system cannot find the file..."
+# This is probably the cause
+VIRTIO_WIN_DRIVERS_PATH=${1:-"$PWD/vwi"}
+
+if [ ! -e "${VIRTIO_WIN_DRIVERS_PATH}" -o \
+     ! -e "${VIRTIO_WIN_DRIVERS_PATH}/viorng" ] ; then
+    echo "Must pass in a directory containing virtio-win iso content. "
+    echo "If using virtio-win-pkg-scripts, this is something like "
+    echo "tmp*/make-driver-dir-output-*"
+    exit 1
+fi
+
+VERSION=${2:?"Must pass in the version of the installer"}
+
+# Enable command tracing
+set -x
 
 # cleanup leftovers from previous builds
 make clean
@@ -14,13 +34,6 @@ mkdir -p tmp
 chown $(whoami) $(pwd)
 winecfg
 
-# Define VARS for make
-# Due to https://github.com/wixtoolset/issues/issues/5314
-# It is that the path will be under 260 chars
-# If we get an light.exe error "The system cannot find the file..."
-# This is probably the cause
-VIRTIO_WIN_DRIVERS_PATH=${1:-"$PWD/vwi"}
-VERSION=${2:?"Must pass in the version of the installer"}
 # Install dependencies
 if [ -e /etc/fedora-release ]; then
     dnf -y install $(cat automation/build-artifacts.packages)
