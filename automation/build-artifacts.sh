@@ -36,9 +36,6 @@ make clean
 mkdir -p exported-artifacts
 mkdir -p tmp
 
-# init wine
-winecfg
-
 # Pack all files is tar.gz file
 make dist VERSION=${VERSION}
 
