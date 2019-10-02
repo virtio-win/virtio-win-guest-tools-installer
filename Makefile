@@ -55,17 +55,17 @@ all: init-files $(GENERATED) create-installer
 init-files: ovirt-guest-agent vdagent wix manifest
 
 
-ovirt-guest-agent:
+ovirt-guest-agent: $(OVIRTGA_PATH)
 	ln -s "$(OVIRTGA_PATH)" "$(OVIRTGA_LINK)"
 
 
-vdagent:
+vdagent: $(VDA32BIN) $(VDA64BIN)
 	mkdir -p $(VDAGENT_LINK)
 	ln -s "$(VDA32BIN)" $(VDAGENT_LINK)/x86
 	ln -s "$(VDA64BIN)" $(VDAGENT_LINK)/x64
 
 
-wix:
+wix: $(WIX_BINARIES_FILES)
 	ln -s "$(WIX_BINARIES_FILES)" $(WIX_BINARIES_LINK)
 
 
