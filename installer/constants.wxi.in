@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
 <?define Version = "@@VERSION@@" ?>
-<?define Upstream = "upstream" ?>
 <?if $(sys.BUILDARCH) = "x64" ?>
       <?define UpgradeCode = "{05294E2F-7778-4E46-B2A3-CF039D5767C8}" ?>
       <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
