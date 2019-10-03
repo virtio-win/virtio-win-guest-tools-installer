@@ -113,6 +113,7 @@ clean:
 	-e "s|@@SSO-WIN-PATH@@|${SSO_WIN_PATH}|g" \
 	-e "s|@@WIX_BIN_PATH@@|${WIX_BINARIES_WIN_PATH}|g" \
 	-e "s|@@INSTALLER_PATH@@|${INSTALLER_WIN_PATH}|g" \
+	-e "s|@@VERSION@@|${VERSION}|g" \
 	$< > $@
 
 

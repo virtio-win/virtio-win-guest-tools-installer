@@ -12,12 +12,12 @@ chown $(whoami) $(pwd)
 winecfg
 
 # Define VARS for make
-VERSION=4.4
 # Due to https://github.com/wixtoolset/issues/issues/5314
 # It is that the path will be under 260 chars
 # If we get an light.exe error "The system cannot find the file..."
 # This is probably the cause
 VIRTIO_WIN_DRIVERS_PATH=${1:-"$PWD/vwi"}
+VERSION=${2:?"Must pass in the version of the installer"}
 # Install dependencies
 if [ -e /etc/fedora-release ]; then
     dnf -y install $(cat automation/build-artifacts.packages)
