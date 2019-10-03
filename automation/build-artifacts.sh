@@ -44,6 +44,7 @@ find \
     ./ \
     -iname \*.tar.gz \
     -exec tar -C tmp/ -xvf {} \;
+mv *.tar.gz exported-artifacts/
 
 # Build the installer
 pushd tmp
@@ -55,11 +56,6 @@ make test
 popd
 
 find \
-    "$PWD/" \
-    -iname virtio*tar.gz \
-    -exec mv {} exported-artifacts/ \;
-
-find \
-    "$PWD/" \
+    tmp/ \
     -iname virtio*msi \
     -exec mv {} exported-artifacts/ \;
