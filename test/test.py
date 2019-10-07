@@ -3,8 +3,8 @@ import subprocess
 import pytest
 import msi_values
 
-MSIx64_PATH = 'virtio-win-gtx64.msi'
-MSIx86_PATH = 'virtio-win-gtx86.msi'
+MSIx64_PATH = 'virtio-win-gt-x64.msi'
+MSIx86_PATH = 'virtio-win-gt-x86.msi'
 
 
 def run_command(command):
