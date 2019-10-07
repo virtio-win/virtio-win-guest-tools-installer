@@ -9,6 +9,9 @@
         <Feature Id='FE_network_driver' Title='Network' Level='1'>
                 <ComponentGroupRef Id='CMPG_netkvm_driver' />
         </Feature>
+        <Feature Id='FE_pvpanic_driver' Title='Pvpanic' Level='1'>
+                <ComponentGroupRef Id='CMPG_pvpanic_driver' />
+        </Feature>
         <Feature Id='FE_qemufwcfg_driver' Title='Qemufwcfg' Level='1'>
                 <ComponentGroupRef Id='CMPG_qemufwcfg_driver' />
         </Feature>

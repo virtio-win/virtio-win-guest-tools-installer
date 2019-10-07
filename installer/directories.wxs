@@ -8,6 +8,7 @@
                 <Directory Id="INSTALLERDIR" Name="Virtio-Win">
                     <Directory Id="BALLOON" Name="Balloon"/>
                     <Directory Id="NETWORK" Name="Network"/>
+                    <Directory Id="PVPANIC" Name="Pvpanic"/>
                     <Directory Id="QEMUFWCFG" Name="Qemufwcfg"/>
                     <Directory Id="SSODRIVER" Name="SSO"/>
                     <Directory Id="RHVAGENT" Name="RHV_Agent">
