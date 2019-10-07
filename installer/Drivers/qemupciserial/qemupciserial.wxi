@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+<?define driverName = "qemupciserial" ?>
+<?define srcDirName = "qemupciserial" ?>
+<?define destDirName = "QEMUPCISERIAL" ?>
+<?define with_sys = "false"?>
+<?define extra_components = "false"?>
+<?if $(sys.BUILDARCH) = "x64" ?>
+<!-- 2k12 -->
+<?define guid = "1E798601-0CC3-482E-A696-3099CDB5AA12"?>
+<?include ../GenericWindowsComponets/2k12.wxi ?>
+<?undef guid?>
+<!-- 2k12R2 -->
+<?define guid = "A5F193FC-2901-455D-A2C9-6322C6584975"?>
+<?include ../GenericWindowsComponets/2k12R2.wxi ?>
+<?undef guid?>
+<!-- 2k16 -->
+<?define guid = "303E00A1-A39B-4BA8-86E8-90D8C2D57C76"?>
+<?include ../GenericWindowsComponets/2k16.wxi ?>
+<?undef guid?>
+<!-- 2k19 -->
+<?define guid = "5AC49865-C919-40F7-B254-C19AEB675254"?>
+<?include ../GenericWindowsComponets/2k19.wxi ?>
+<?undef guid?>
+<!-- w8x64 -->
+<?define guid = "DFA1E88B-8A5F-42A9-ACB7-F045C22E867D"?>
+<?include ../GenericWindowsComponets/w8x64.wxi ?>
+<?undef guid?>
+<!-- w81x64 -->
+<?define guid = "11E7D9E1-9947-4704-9B6C-9000A0DF0392"?>
+<?include ../GenericWindowsComponets/w81x64.wxi ?>
+<?undef guid?>
+<!-- w10x64 -->
+<?define guid = "9C9D1ED6-9C12-4E1B-8146-AA268BB389B1"?>
+<?include ../GenericWindowsComponets/w10x64.wxi ?>
+<?undef guid?>
+<?else ?>
+<!-- w8x86 -->
+<?define guid = "473B878E-BC48-48D3-93B8-D00E4C9436AC"?>
+<?include ../GenericWindowsComponets/w8x86.wxi ?>
+<?undef guid?>
+<!-- w81x86 -->
+<?define guid = "97533805-A6C3-4A32-A6F4-32720DBCC23F"?>
+<?include ../GenericWindowsComponets/w81x86.wxi ?>
+<?undef guid?>
+<!-- w10x86 -->
+<?define guid = "74CE2702-57A0-4943-88FB-380A16338866"?>
+<?include ../GenericWindowsComponets/w10x86.wxi ?>
+<?undef guid?>
+<?endif ?>
+</Include>
+

@@ -15,6 +15,9 @@
         <Feature Id='FE_qemufwcfg_driver' Title='Qemufwcfg' Level='1'>
                 <ComponentGroupRef Id='CMPG_qemufwcfg_driver' />
         </Feature>
+        <Feature Id='FE_qemupciserial_driver' Title='Qemupciserial' Level='1'>
+                <ComponentGroupRef Id='CMPG_qemupciserial_driver' />
+        </Feature>
         <Feature Id='FE_qxl_driver' Title='Qxl' Level='1'>
                 <ComponentGroupRef Id='CMPG_qxldod_driver' />
         </Feature>

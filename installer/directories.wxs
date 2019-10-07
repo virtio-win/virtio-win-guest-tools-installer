@@ -10,6 +10,7 @@
                     <Directory Id="NETWORK" Name="Network"/>
                     <Directory Id="PVPANIC" Name="Pvpanic"/>
                     <Directory Id="QEMUFWCFG" Name="Qemufwcfg"/>
+                    <Directory Id="QEMUPCISERIAL" Name="Qemupciserial"/>
                     <Directory Id="SSODRIVER" Name="SSO"/>
                     <Directory Id="RHVAGENT" Name="RHV_Agent">
                         <Directory Id="BEFORE_MIGRATION" Name="before_migration"/>
