@@ -5,7 +5,7 @@ VERSION=$(VERSION)
 ARCH=$(ARCH)
 VIRTIO_WIN_DRIVERS_PATH=$(VIRTIO_WIN_DRIVERS_PATH)
 
-NAME=virtio-guest-tools-installer
+NAME=virtio-win-guest-tools-installer
 ARCHIVE=$(NAME)-$(VERSION).tar.gz
 # Location of installed RPMS that we package:
 # ovirt-guest-agent-windows.rpm
