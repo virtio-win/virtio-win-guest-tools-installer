@@ -26,6 +26,10 @@ if ! rpm -q --quiet $PACKAGES ; then
     exit 1
 fi
 
+# Add a /tmp link to the drivers directory, to try and avoid length limitations
+VIRTIO_WIN_DRIVERS_LINK=$(mktemp -t vwi.XXXX)
+ln -sf ${VIRTIO_WIN_DRIVERS_PATH} ${VIRTIO_WIN_DRIVERS_LINK}
+
 # Enable command tracing
 set -x
 
@@ -48,10 +52,11 @@ mv *.tar.gz exported-artifacts/
 
 # Build the installer
 pushd tmp
-make ARCH=x64 VERSION=${VERSION} VIRTIO_WIN_DRIVERS_PATH=${VIRTIO_WIN_DRIVERS_PATH}
+make ARCH=x64 VERSION=${VERSION} VIRTIO_WIN_DRIVERS_PATH=${VIRTIO_WIN_DRIVERS_LINK}
 make clean
-make ARCH=x86 VERSION=${VERSION} VIRTIO_WIN_DRIVERS_PATH=${VIRTIO_WIN_DRIVERS_PATH}
+make ARCH=x86 VERSION=${VERSION} VIRTIO_WIN_DRIVERS_PATH=${VIRTIO_WIN_DRIVERS_LINK}
 
+unlink ${VIRTIO_WIN_DRIVERS_LINK}
 make test
 popd
 
