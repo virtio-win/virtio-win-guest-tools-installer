@@ -3,44 +3,57 @@
 <?include constants.wxi ?>
     <Fragment>
         <Property Id="FeatureProperty" Value="1" />
-        <Feature Id='FE_balloon_driver' Title='Balloon' Level='1'>
+        <Feature Id='FE_balloon_driver' Title='Balloon' Level='1'
+                Description='Virtio-balloon is used to control the amount of memory a virtual machine actually accesses. It offers improved memory overcommitment.'>
                 <ComponentGroupRef Id='CMPG_balloon_driver' />
         </Feature>
-        <Feature Id='FE_network_driver' Title='Network' Level='1'>
+        <Feature Id='FE_network_driver' Title='Network' Level='1'
+                Description='Paravirtualized network driver provides enhanced performance over emulated devices.'>
                 <ComponentGroupRef Id='CMPG_netkvm_driver' />
         </Feature>
-        <Feature Id='FE_pvpanic_driver' Title='Pvpanic' Level='1'>
+        <Feature Id='FE_pvpanic_driver' Title='Pvpanic' Level='1'
+                Description='QEMU pvpanic device driver'>
                 <ComponentGroupRef Id='CMPG_pvpanic_driver' />
         </Feature>
-        <Feature Id='FE_qemufwcfg_driver' Title='Qemufwcfg' Level='1'>
+        <Feature Id='FE_qemufwcfg_driver' Title='Qemufwcfg' Level='1'
+                Description='QEMU FWCfg device driver'>
                 <ComponentGroupRef Id='CMPG_qemufwcfg_driver' />
         </Feature>
-        <Feature Id='FE_qemupciserial_driver' Title='Qemupciserial' Level='1'>
+        <Feature Id='FE_qemupciserial_driver' Title='Qemupciserial' Level='1'
+                Description='QEMU PCI serial device driver'>
                 <ComponentGroupRef Id='CMPG_qemupciserial_driver' />
         </Feature>
+        <!-- remove on the next patch -->
         <Feature Id='FE_qxl_driver' Title='Qxl' Level='1'>
                 <ComponentGroupRef Id='CMPG_qxldod_driver' />
         </Feature>
-        <Feature Id='FE_spice_Agent' Title='Spice Agent' Level='1'>
+        <Feature Id='FE_spice_Agent' Title='Spice Agent' Level='1'
+                Description='Supports multiple monitors, responsible for client-mouse-mode support, reduces bandwidth usage, enables clipboard support between client and virtual machine, provide a better user experience and improved responsiveness'>
                 <ComponentGroupRef Id='CMPG_spice_agent' />
         </Feature>
-        <Feature Id='FE_RHEV_Agent' Title='RHEV Agent' Level='2'>
+        <Feature Id='FE_spice_driver' Title='Spice Driver' Level='1'
+                Description='A paravirtualized display driver reduces CPU usage on the host and provides better performance through reduced network bandwidth on most workloads.'>
+                <ComponentGroupRef Id='CMPG_qxldod_driver' />
+        </Feature>
+        <Feature Id='FE_RHEV_Agent' Title='RHEV Agent' Level='2'
+                Description='Enables the Red Hat Virtualization Manager to receive internal virtual machine events and information, SSO support, Also enables the Manager to execute specific commands on a virtual machine'>
                 <ComponentGroupRef Id='CMPG_rhev_agent' />
                 <ComponentGroupRef Id='CMPG_SSO' />
         </Feature>
-        <Feature Id='FE_spice_driver' Title='Spice Driver' Level='1'>
-                <ComponentGroupRef Id='CMPG_qxldod_driver' />
-        </Feature>
-        <Feature Id='FE_viorng_driver' Title='Viorng' Level='1'>
+        <Feature Id='FE_viorng_driver' Title='Viorng' Level='1'
+                Description='VirtIO RNG device driver'>
                 <ComponentGroupRef Id='CMPG_viorng_driver' />
         </Feature>
-        <Feature Id='FE_vioscsi_driver' Title='Vioscsi' Level='1'>
+        <Feature Id='FE_vioscsi_driver' Title='Vioscsi' Level='1'
+                Description='VirtIO SCSI pass-through controller'>
                 <ComponentGroupRef Id='CMPG_vioscsi_driver' />
         </Feature>
-        <Feature Id='FE_vioserial_driver' Title='Vioserial' Level='1'>
+        <Feature Id='FE_vioserial_driver' Title='Vioserial' Level='1'
+                Description='VirtIO Serial device driver'>
                 <ComponentGroupRef Id='CMPG_vioserial_driver' />
         </Feature>
-        <Feature Id='FE_viostor_driver' Title='Viostor' Level='1'>
+        <Feature Id='FE_viostor_driver' Title='Viostor' Level='1'
+                Description='Virtio Block driver'>
                 <ComponentGroupRef Id='CMPG_viostor_driver' />
         </Feature>
     </Fragment>
