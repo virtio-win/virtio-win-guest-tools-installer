@@ -14,6 +14,13 @@
     </Fragment>
     <!-- Launch Condition to disable launch on arch x86-->
     <Fragment>
+        <Property Id="LaunchConditionsSupportedOS" Value="1" />
+        <Condition Message="OS must be Windows 8, Windows Server 2012 or higher.">
+            <![CDATA[Installed OR VersionNT >= 602]]>
+        </Condition>
+    </Fragment>
+    <!-- Launch Condition to disable launch on arch x86-->
+    <Fragment>
         <Property Id="x86_Validation" Value="1" />
         <Condition Message= "Detected x64 Windows version, please use a x64 installer">
                 <![CDATA[VersionNT <> VersionNT64 AND "$(sys.BUILDARCH)" = "x86"]]>
