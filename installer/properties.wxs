@@ -7,12 +7,19 @@
     <?define Win64 = "no" ?>
     <?define WinUninstallRegLocation = '' ?>
 <?endif ?>
+    <!-- Disable repair and upgrade buttens in the UI -->
+    <!-- TODO fix repair and upgrade flows -->
+    <Fragment>
+        <Property Id="Disable_repair_and_modify" Value="1" />
+        <Property Id='ARPNOREPAIR'>1</Property>
+        <Property Id='ARPNOMODIFY'>1</Property>
+    </Fragment>
     <!-- Set Cited Properties -->
     <Fragment>
         <Property Id="Set_Cited_properties" Value="1" />
         <SetProperty Id="ARPINSTALLLOCATION" Value="[INSTALLERDIR]" After="CostFinalize" />
     </Fragment>
-    <!-- Launch Condition to disable launch on arch x86-->
+    <!-- Launch Condition supported os-->
     <Fragment>
         <Property Id="LaunchConditionsSupportedOS" Value="1" />
         <Condition Message="OS must be Windows 8, Windows Server 2012 or higher.">

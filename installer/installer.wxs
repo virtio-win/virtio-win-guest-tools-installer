@@ -16,6 +16,7 @@
                   InstallScope="perMachine"
                   Description="Virtio-win installer for drivers and agents"/>
             <PropertyRef Id="$(var.LaunchCondition)" />
+            <PropertyRef Id="Disable_repair_and_modify" />
             <PropertyRef Id="LaunchConditionsSupportedOS" />
             <PropertyRef Id="Set_ProductName" />
             <PropertyRef Id="Set_oVirt_Agent_Properties" />
