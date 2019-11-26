@@ -52,7 +52,7 @@
                     DisplayName="oVirt Agent"
                     Description="Manages events detection and alerts"
                     Start="auto"
-                    ErrorControl="normal"
+                    ErrorControl="ignore"
                     Type="ownProcess">
                     <ServiceDependency Id="VirtioSerial" />
                     <ServiceDependency Id="[TermService]" />

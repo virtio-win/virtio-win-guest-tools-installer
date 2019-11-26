@@ -27,7 +27,7 @@
                     DisplayName="VdService"
                     Description="Spice Agent"
                     Start="auto"
-                    ErrorControl="normal"
+                    ErrorControl="ignore"
                     Type="ownProcess">
                     <ServiceDependency Id="VirtioSerial" />
                 </ServiceInstall>
