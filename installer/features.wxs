@@ -23,10 +23,6 @@
                 Description='QEMU PCI serial device driver'>
                 <ComponentGroupRef Id='CMPG_qemupciserial_driver' />
         </Feature>
-        <!-- remove on the next patch -->
-        <Feature Id='FE_qxl_driver' Title='Qxl' Level='1'>
-                <ComponentGroupRef Id='CMPG_qxldod_driver' />
-        </Feature>
         <Feature Id='FE_spice_Agent' Title='Spice Agent' Level='1'
                 Description='Supports multiple monitors, responsible for client-mouse-mode support, reduces bandwidth usage, enables clipboard support between client and virtual machine, provide a better user experience and improved responsiveness'>
                 <ComponentGroupRef Id='CMPG_spice_agent' />
