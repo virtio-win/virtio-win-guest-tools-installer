@@ -21,6 +21,7 @@
                     <Directory Id="SPICE" Name="Spice">
                         <Directory Id="QXL" Name="qxl"/>
                     </Directory>
+                    <Directory Id="VIOINPUT" Name="Vioinput"/>
                     <Directory Id="VIORNG" Name="Viorng"/>
                     <Directory Id="VIOSCSI" Name="Vioscsi"/>
                     <Directory Id="VIOSERIAL" Name="Vioserial"/>

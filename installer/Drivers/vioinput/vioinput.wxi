@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+<?define driverName = "vioinput" ?>
+<?define srcDirName = "vioinput" ?>
+<?define destDirName = "VIOINPUT" ?>
+<?define with_sys = "true"?>
+<?define extra_components = "false"?>
+<?if $(sys.BUILDARCH) = "x64" ?>
+<!-- 2k12 -->
+<?define guid = "A6F6D72A-2DE6-4D95-BBE5-67E98999E6DD"?>
+<?include ../GenericWindowsComponets/2k12.wxi ?>
+<?undef guid?>
+<!-- 2k12R2 -->
+<?define guid = "51337132-A046-4519-825F-69A5BC303B4C"?>
+<?include ../GenericWindowsComponets/2k12R2.wxi ?>
+<?undef guid?>
+<!-- 2k16 -->
+<?define guid = "9C1C516E-57B9-4B8E-ADAB-84C9EFB86E89"?>
+<?include ../GenericWindowsComponets/2k16.wxi ?>
+<?undef guid?>
+<!-- 2k19 -->
+<?define guid = "C1C61635-5BD8-4318-8F3E-588374DF0FED"?>
+<?include ../GenericWindowsComponets/2k19.wxi ?>
+<?undef guid?>
+<!-- w8x64 -->
+<?define guid = "F4B3C864-E684-419D-8494-410F5088DF6F"?>
+<?include ../GenericWindowsComponets/w8x64.wxi ?>
+<?undef guid?>
+<!-- w81x64 -->
+<?define guid = "E77162F5-8897-4024-9D4A-DB0183F31030"?>
+<?include ../GenericWindowsComponets/w81x64.wxi ?>
+<?undef guid?>
+<!-- w10x64 -->
+<?define guid = "54B8CF60-EA08-4167-8329-6E3CB02FABEC"?>
+<?include ../GenericWindowsComponets/w10x64.wxi ?>
+<?undef guid?>
+<?else ?>
+<!-- w8x86 -->
+<?define guid = "024EEE9E-EF74-4E9E-BAC5-B284F899C1BD"?>
+<?include ../GenericWindowsComponets/w8x86.wxi ?>
+<?undef guid?>
+<!-- w81x86 -->
+<?define guid = "8948023E-E633-4450-B32D-688ACA9C6414"?>
+<?include ../GenericWindowsComponets/w81x86.wxi ?>
+<?undef guid?>
+<!-- w10x86 -->
+<?define guid = "6B54D870-E342-40F9-8CEE-42FA2C2EDEEA"?>
+<?include ../GenericWindowsComponets/w10x86.wxi ?>
+<?undef guid?>
+<?endif ?>
+</Include>

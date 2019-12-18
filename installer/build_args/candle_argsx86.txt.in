@@ -5,6 +5,7 @@
 @@INSTALLER_PATH@@\Drivers\qemufwcfg\*.wxs
 @@INSTALLER_PATH@@\Drivers\qemupciserial\*.wxs
 @@INSTALLER_PATH@@\Drivers\qxldod\*.wxs
+@@INSTALLER_PATH@@\Drivers\vioinput\*.wxs
 @@INSTALLER_PATH@@\Drivers\viorng\*.wxs
 @@INSTALLER_PATH@@\Drivers\vioscsi\*.wxs
 @@INSTALLER_PATH@@\Drivers\vioserial\*.wxs

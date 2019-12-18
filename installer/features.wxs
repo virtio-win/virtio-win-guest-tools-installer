@@ -36,6 +36,10 @@
                 <ComponentGroupRef Id='CMPG_rhev_agent' />
                 <ComponentGroupRef Id='CMPG_SSO' />
         </Feature>
+        <Feature Id='FE_vioinput_driver' Title='Vioinput' Level='1'
+                Description='VirtIO Input Driver'>
+                <ComponentGroupRef Id='CMPG_vioinput_driver' />
+        </Feature>
         <Feature Id='FE_viorng_driver' Title='Viorng' Level='1'
                 Description='VirtIO RNG device driver'>
                 <ComponentGroupRef Id='CMPG_viorng_driver' />
