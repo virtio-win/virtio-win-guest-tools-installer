@@ -3,7 +3,6 @@ make
 ovirt-guest-agent-windows
 mingw32-spice-vdagent
 mingw64-spice-vdagent
-vcredist-x86
 git
 dnf
 dnf-utils

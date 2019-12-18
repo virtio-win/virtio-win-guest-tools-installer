@@ -17,7 +17,6 @@ VDA64BIN=/usr/x86_64-w64-mingw32/sys-root/mingw/bin/
 WIX_BINARIES_FILES=/usr/share/wix-toolset-binaries
 # Available from http://www.microsoft.com/en-us/download/details.aspx?id=5582
 # RPM wrapping this available from http://resources.ovirt.org/
-VCREDIST=/usr/share/vcredist-x86/vcredist_x86.exe
 
 # Project Paths #
 VDAGENT_LINK=$(CURDIR)/vdagent
@@ -36,7 +35,6 @@ INSTALLER_WIN_PATH=$(shell winepath -w $(CURDIR)/installer|sed 's|\\|\\\\\\\\|g'
 VIRTIO_WIN_VER=$(shell rpm -q virtio-win)
 OVIRT_GA_WINDOWS_VER=$(shell rpm -q ovirt-guest-agent-windows)
 SPICE_AGENT_VER=$(shell rpm -q mingw32-spice-vdagent)
-VCREDIST_VER=$(shell rpm -q vcredist-x86)
 WIX_TOOLSET_VER=$(shell rpm -q wix-toolset-binaries)
 
 
@@ -74,7 +72,6 @@ manifest:
 	-e "s|@@VIRTIO_WIN@@|${VIRTIO_WIN_VER}|g" \
 	-e "s|@@OVIRT_GA_WINDOWS@@|${OVIRT_GA_WINDOWS_VER}|g" \
 	-e "s|@@SPICE_AGENT@@|${SPICE_AGENT_VER}|g" \
-	-e "s|@@VCREDIST@@|${VCREDIST_VER}|g" \
 	-e "s|@@WIX_TOOLSET@@|${WIX_TOOLSET_VER}|g" \
 	-i manifest.txt
 
