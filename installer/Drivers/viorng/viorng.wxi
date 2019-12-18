@@ -5,6 +5,7 @@
 <?define destDirName = "VIORNG" ?>
 <?define with_sys = "true"?>
 <?define extra_components = "true"?>
+<?define permanent = "no"?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k12 -->
 <?define guid = "93C2AE75-81D3-437C-A445-9FFF42D1F340"?>

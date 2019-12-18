@@ -5,6 +5,7 @@
 <?define destDirName = "QXL" ?>
 <?define with_sys = "true"?>
 <?define extra_components = "false"?>
+<?define permanent = "no"?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- w10x64 -->
 <?define guid = "6B0B39CC-125E-42E0-BA15-9BF05D6A9BDC"?>

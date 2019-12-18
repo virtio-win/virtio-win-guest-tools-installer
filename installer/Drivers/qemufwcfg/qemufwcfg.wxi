@@ -5,6 +5,7 @@
 <?define destDirName = "QEMUFWCFG" ?>
 <?define with_sys = "false"?>
 <?define extra_components = "false"?>
+<?define permanent = "no"?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k16 -->
 <?define guid = "FD7F28EB-5DD0-4BC8-9C3B-317DB59F6FD5"?>

@@ -8,6 +8,7 @@
             <Component Id='CMP_$(var.osFullName)_$(var.driverName)'
                 Guid='$(var.guid)'
                 Transitive='yes'
+                Permanent='$(var.permanent)'
                 Win64='$(var.Win64)'>
                 <Condition><![CDATA[$(var.condition)]]></Condition>
                 <File Id='FILE_$(var.driverName)_$(var.osShort)_$(var.ISA).inf'

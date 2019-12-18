@@ -5,7 +5,7 @@
 <?define destDirName = "BALLOON" ?>
 <?define with_sys = "true"?>
 <?define extra_components = "true"?>
-
+<?define permanent = "no"?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k12 -->
 <?define guid = "96F961AC-18DC-4C70-A996-72B5BDD7D276"?>

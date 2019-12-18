@@ -5,6 +5,7 @@
 <?define destDirName = "VIOINPUT" ?>
 <?define with_sys = "true"?>
 <?define extra_components = "false"?>
+<?define permanent = "no"?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k12 -->
 <?define guid = "A6F6D72A-2DE6-4D95-BBE5-67E98999E6DD"?>

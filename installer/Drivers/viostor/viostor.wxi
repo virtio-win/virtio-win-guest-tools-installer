@@ -5,6 +5,7 @@
 <?define destDirName = "VIOSTOR" ?>
 <?define with_sys = "true"?>
 <?define extra_components = "false"?>
+<?define permanent = "yes"?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k12 -->
 <?define guid = "E706318F-9E7A-4421-A951-C2A3562C8EC4"?>

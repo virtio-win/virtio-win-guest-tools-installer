@@ -5,6 +5,7 @@
 <?define destDirName = "VIOSCSI" ?>
 <?define with_sys = "true"?>
 <?define extra_components = "false"?>
+<?define permanent = "no"?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k12 -->
 <?define guid = "DF58EBA6-EFA5-4997-AC9E-618EC9093800"?>
