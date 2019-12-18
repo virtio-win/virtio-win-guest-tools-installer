@@ -16,7 +16,7 @@
 <?define sso_path = '@@SSO-WIN-PATH@@' ?>
 <!-- Win Versions Conditions -->
 <?define condition_2k12 = '(VersionNT64 = 602 AND MsiNTProductType > 1)' ?>
-<?define condition_2k12r2 = '(REGISTRY_PRODUCT_NAME >< "2012" AND MsiNTProductType > 1)' ?>
+<?define condition_2k12r2 = '(VersionNT64 = 603 AND REGISTRY_PRODUCT_NAME >< "2012" AND MsiNTProductType > 1)' ?>
 <?define condition_2k16 = '(REGISTRY_PRODUCT_NAME >< "2016" AND MsiNTProductType > 1)' ?>
 <?define condition_2k19 = '(REGISTRY_PRODUCT_NAME >< "2019" AND MsiNTProductType > 1)' ?>
 <?define condition_w8x64 = '(VersionNT = 602 AND VersionNT = VersionNT64 AND MsiNTProductType = 1)' ?>
