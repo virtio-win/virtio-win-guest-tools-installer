@@ -15,8 +15,6 @@ OVIRTGA_PATH=/usr/share/ovirt-guest-agent-windows
 VDA32BIN=/usr/i686-w64-mingw32/sys-root/mingw/bin/
 VDA64BIN=/usr/x86_64-w64-mingw32/sys-root/mingw/bin/
 WIX_BINARIES_FILES=/usr/share/wix-toolset-binaries
-# Available from http://www.microsoft.com/en-us/download/details.aspx?id=5582
-# RPM wrapping this available from http://resources.ovirt.org/
 
 # Project Paths #
 VDAGENT_LINK=$(CURDIR)/vdagent
@@ -110,7 +108,7 @@ clean:
 	-e "s|@@OVIRT-GA-PATH@@|${OVIRT_GA_WIN_PATH}|g" \
 	-e "s|@@VDAGENT-WIN-PATH@@|${VDAGENT_WIN_PATH}|g" \
 	-e "s|@@SSO-WIN-PATH@@|${SSO_WIN_PATH}|g" \
-	-e "s|@@WIX_BIN_PATH@@|${WIX_BINARIES_WIN_PATH}|g" \
+	-e "s|@@WIX_BIN_PATH@@|${WIX_BINARIES_WIN_PATH}\\\\|g" \
 	-e "s|@@INSTALLER_PATH@@|${INSTALLER_WIN_PATH}|g" \
 	-e "s|@@VERSION@@|${VERSION}|g" \
 	$< > $@

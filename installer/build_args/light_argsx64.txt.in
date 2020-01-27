@@ -1,10 +1,9 @@
-@@INSTALLER_PATH@@\wixobjx64\*.wixobj
-@@WIX_BIN_PATH@@\difxapp_x64.wixlib
+"@@INSTALLER_PATH@@\wixobjx64\*.wixobj"
+"@@WIX_BIN_PATH@@difxapp_x64.wixlib"
 -out ..\virtio-win-gt-x64.msi
 -nologo
--sma
 -pedantic
 -v
--ext "@@WIX_BIN_PATH@@\WixDifxAppExtension.dll"
--ext "@@WIX_BIN_PATH@@\WixUtilExtension.dll"
--ext "@@WIX_BIN_PATH@@\WixUIExtension.dll"
+-ext "@@WIX_BIN_PATH@@WixDifxAppExtension.dll"
+-ext "@@WIX_BIN_PATH@@WixUtilExtension.dll"
+-ext "@@WIX_BIN_PATH@@WixUIExtension.dll"

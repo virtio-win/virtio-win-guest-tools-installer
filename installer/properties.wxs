@@ -2,7 +2,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 <?if $(sys.BUILDARCH) = "x64" ?>
     <?define Win64 = "yes" ?>
-    <?define WinUninstallRegLocation = Wow6432Node ?>
+    <?define WinUninstallRegLocation = Wow6432Node\ ?>
 <?else ?>
     <?define Win64 = "no" ?>
     <?define WinUninstallRegLocation = '' ?>
@@ -89,7 +89,7 @@
         <Property Id="REGISTRYSEARCH_OLD_WGT_UNINSTALL_PATH">
             <RegistrySearch Id="wgt_uninstall_path"
                 Root="HKLM"
-                Key="SOFTWARE\$(var.WinUninstallRegLocation)\Microsoft\Windows\CurrentVersion\Uninstall\{042CD13C-735D-4140-B146-D3F8263D7E4C}"
+                Key="SOFTWARE\$(var.WinUninstallRegLocation)Microsoft\Windows\CurrentVersion\Uninstall\{042CD13C-735D-4140-B146-D3F8263D7E4C}"
                 Type="raw"
                 Name="UninstallString"
                 Win64='$(var.Win64)'/>
