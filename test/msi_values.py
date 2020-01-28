@@ -203,7 +203,7 @@ def get_expected_RegLocator():
         'MyRegistrySearch':[r'SOFTWARE\Microsoft\Windows NT\CurrentVersion', 'ProductName'],
         'is_TermService_exist':[r'SYSTEM\CurrentControlSet\Services\TermService', 'DisplayName'],
         'is_spiceusbredirector_exist':[r'SYSTEM\CurrentControlSet\Services\spiceusbredirector', 'DisplayName'],
-        'wgt_uninstall_path':[r'SOFTWARE\\Microsoft\Windows\CurrentVersion\Uninstall\{042CD13C-735D-4140-B146-D3F8263D7E4C}', 'UninstallString'],
+        'wgt_uninstall_path':[r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{042CD13C-735D-4140-B146-D3F8263D7E4C}', 'UninstallString'],
     }
     return (
         ("Signature", "Key", "Name"),

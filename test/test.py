@@ -3,8 +3,8 @@ import subprocess
 import pytest
 import msi_values
 
-MSIx64_PATH = 'virtio-win-gt-x64.msi'
-MSIx86_PATH = 'virtio-win-gt-x86.msi'
+MSIx64_PATH = '../virtio-win-gt-x64.msi'
+MSIx86_PATH = '../virtio-win-gt-x86.msi'
 
 
 def run_command(command):
@@ -108,11 +108,8 @@ def _generic_msi_value_test(msis, table, expected):
         msi_table = msi.get_table(table)
         expected_values = expected[msi.get_arch()]
         for comp_id in expected_values.keys():
-            assert all(
-                [
-                    val in msi_table.get_row(comp_id) 
-                    for val in expected_values[comp_id]
-                ])
+            for val in expected_values[comp_id]:
+                assert val in msi_table.get_row(comp_id)
 
 
 def test_component_ids(get_msis):
@@ -153,7 +150,6 @@ def test_allusers(get_msis):
         expected_values
     )
 
-
 def test_old_wgt_uninstall_path(get_msis):
     _ , expected_values = msi_values.get_expected_RegLocator()
     _generic_msi_value_test(
@@ -170,6 +166,3 @@ def test_Registry(get_msis):
         'Registry',
         expected_values
     )
-
-if __name__ == "__main__":
-    test_component_ids(get_msis())
