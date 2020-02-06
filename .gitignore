@@ -4,3 +4,10 @@ tmp/
 .local
 .wget-hsts
 ./mocker*
+.pytest_cache
+.vscode
+.idea
+.pki
+.config/
+vwi/
+*/__pycache__
