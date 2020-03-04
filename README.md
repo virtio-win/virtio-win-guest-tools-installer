@@ -1,24 +1,30 @@
 # Virtio-win guest tools installer
 
-## Introduction:
+## Introduction
 
-Virtio-win guest tools installer is a msi (Microsoft installer) created with [Wix Toolset](https://wixtoolset.org/releases/) which installs:
+Virtio-win guest tools installer is a MSI (Microsoft installer) created with [Wix Toolset](https://wixtoolset.org/releases/) which installs:
 
-<u>Virtio-win drivers</u> - KVM/QEMUY windows guest drivers for both paravirtual and emulated hardware, more on [Github Repo](https://github.com/virtio-win/kvm-guest-drivers-windows).
+ * virtio-win drivers
 
-<u>Spice guest agent and driver</u> - Spice is an open remote computing solution, providing client access to remote machine display and devices, more info on the [Offical website](www.spice-space.org).
+   KVM/QEMU Windows guest drivers for both para-virtual and emulated hardware, more on [GitHub Repo](https://github.com/virtio-win/kvm-guest-drivers-windows).
 
-<u>Ovirt guest agent(optional)</u> - Enables the ovirt engine to receive internal machine events and information, SSO support, and enables the engine to execute specific commands on the Windows virtual machine, More on [Ovirt Docs](https://www.ovirt.org/develop/internal/guest-agent/guest-agent.html) and [Github Repo](https://github.com/oVirt/ovirt-guest-agent).
+ * SPICE guest agent and driver
+
+   SPICE is an open remote computing solution, providing client access to remote machine display and devices, more info on the [offical website](https://www.spice-space.org/).
+
+ * oVirt guest agent (optional)
+
+   Enables the oVirt engine to receive internal machine events and information, SSO support, and enables the engine to execute specific commands on the Windows virtual machine, more on [oVirt docs](https://www.ovirt.org/develop/internal/guest-agent/guest-agent.html) and [GitHub Repo](https://github.com/oVirt/ovirt-guest-agent).
 
 The installer is distributed as part of virtio-win package on [Fedora](https://fedorapeople.org/groups/virt/virtio-win/repo/rpms/).
 
-## Building from sources:
+## Build from source
 
-The installer can be built in two ways, using [oVirt CI mock runner tool](https://ovirt-infra-docs.readthedocs.io/en/latest/CI/Using_mock_runner/index.html) and a manual build using make.
+The installer can be built in two ways, using [oVirt CI mock runner tool](https://ovirt-infra-docs.readthedocs.io/en/latest/CI/Using_mock_runner/index.html) or make.
 
-### Prerequsits:
+### Prerequisites
 
-Before buidling the installer you must have the virtio-win drivers localy on the format which they are distributed on the iso:
+Before building the installer you need pre-built virtio-win drivers, conforming to the layout as the virtio-win ISO image:
 ```
 |-Balloon['2k12', '2k12R2', '2k16', '2k19', '2k3', '2k8', '2k8R2', 'w10', 'w7', 'w8', 'w8.1', 'xp']
 |-NetKVM['2k12', '2k12R2', '2k16', '2k19', '2k3', '2k8', '2k8R2', 'w10', 'w7', 'w8', 'w8.1', 'xp']
@@ -31,13 +37,10 @@ Before buidling the installer you must have the virtio-win drivers localy on the
 |-vioserial['2k12', '2k12R2', '2k16', '2k19', '2k3', '2k8', '2k8R2', 'w10', 'w7', 'w8', 'w8.1', 'xp']
 |-viostor['2k12', '2k12R2', '2k16', '2k19', '2k3', '2k8', '2k8R2', 'w10', 'w7', 'w8', 'w8.1', 'xp']
 ```
-You can get it by:
 
-- Extracting the virtio-win iso content (availabe on virtio-win rpm package).
+You can get it by either extract the virtio-win ISO content (available in virtio-win rpm package) or run `make-driver-dir.py` from [virtio-win-pkg-scripts GitHub repo](https://github.com/crobinso/virtio-win-pkg-scripts).
 
-- Run make-driver-dir.py from [virtio-win-pkg-scripts github repo](https://github.com/crobinso/virtio-win-pkg-scripts).
-
-### Building with Mock Runner:
+### Build with Mock Runner:
 
 1. Follow the instructions on [oVirt CI mock runner docs](https://ovirt-infra-docs.readthedocs.io/en/latest/CI/Using_mock_runner/index.html) for setting up and installing mock runner.
 
@@ -53,20 +56,16 @@ You can get it by:
    path/to/jenkins/mock_configs/mock_runner.sh -b fc30
    ```
 
-4. The build artifacts which are 2 msis (x64, x86) will be on the exported artifacts directory, which was created during the build process.
+4. The build artifacts which are 2 MSIs (x64, x86) will be in the exported artifacts directory, which was created during the build process.
 
-### Building with make:
+### Build with make
 
-1. Make sure all the packages on automation/build-artifacts.packages are installed on the machine, relevant repos can be found on automation/build-artifacts.repos.
+1. Make sure all the packages on `automation/build-artifacts.packages` are installed on the machine, relevant repos can be found on `automation/build-artifacts.repos`.
 
-2. Run the build script automation/build-artifacts.sh VIRTIO_WIN_DRIVERS_PATH INSTALLER_VERSION
+2. Run the build script `automation/build-artifacts.sh VIRTIO_WIN_DRIVERS_PATH INSTALLER_VERSION`
 
-3. The build artifacts which are 2 msis (x64, x86) will be on the exported artifacts directory, which was created during the build process.
+3. The build artifacts which are 2 MSIs (x64, x86) will be in the exported artifacts directory, which was created during the build process.
 
-## Contributions:
+## Contribution
 
 Contributions are more than welcome, please fork the repository and create a PR.
-
-
-
-
