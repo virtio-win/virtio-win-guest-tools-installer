@@ -27,7 +27,8 @@
                 Description="Balloon Service"
                 Start="auto"
                 ErrorControl="ignore"
-                Type="ownProcess" />
+                Type="ownProcess"
+                Vital="no"/>
             <ServiceControl
                 Id="sc_BalloonService_$(var.osShort)_$(var.ISA)"
                 Name="BalloonService"

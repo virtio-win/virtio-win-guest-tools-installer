@@ -28,7 +28,8 @@
                     Description="Spice Agent"
                     Start="auto"
                     ErrorControl="ignore"
-                    Type="ownProcess">
+                    Type="ownProcess"
+                    Vital="no">
                     <ServiceDependency Id="VirtioSerial" />
                 </ServiceInstall>
                 <ServiceControl

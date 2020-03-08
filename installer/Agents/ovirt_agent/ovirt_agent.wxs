@@ -53,7 +53,8 @@
                     Description="Manages events detection and alerts"
                     Start="auto"
                     ErrorControl="ignore"
-                    Type="ownProcess">
+                    Type="ownProcess"
+                    Vital="no">
                     <ServiceDependency Id="VirtioSerial" />
                     <ServiceDependency Id="[TermService]" />
                     <ServiceDependency Id="[spiceusbredirector]" />
