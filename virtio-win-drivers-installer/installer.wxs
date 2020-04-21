@@ -5,7 +5,7 @@
      <?include constants.wxi ?>
 
       <Product Id="*"
-            Name="Virtio-win-guest-tools"
+            Name="Virtio-win-driver-installer"
             Language="1033"
             Version="$(var.Version)"
             Manufacturer="Red Hat, Inc."
@@ -14,12 +14,11 @@
                   InstallerVersion="200"
                   Compressed="yes"
                   InstallScope="perMachine"
-                  Description="Virtio-win installer for drivers and agents"/>
+                  Description="Virtio-win installer for drivers"/>
             <PropertyRef Id="$(var.LaunchCondition)" />
             <PropertyRef Id="Disable_repair_and_modify" />
             <PropertyRef Id="LaunchConditionsSupportedOS" />
             <PropertyRef Id="Set_ProductName" />
-            <PropertyRef Id="Set_oVirt_Agent_Properties" />
             <PropertyRef Id="Set_Old_WGT_props" />
             <MajorUpgrade 
                   DowngradeErrorMessage="A newer version of [ProductName] is already installed."

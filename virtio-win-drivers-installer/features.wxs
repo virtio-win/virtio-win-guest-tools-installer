@@ -23,19 +23,6 @@
                 Description='QEMU PCI serial device driver'>
                 <ComponentGroupRef Id='CMPG_qemupciserial_driver' />
         </Feature>
-        <Feature Id='FE_spice_Agent' Title='Spice Agent' Level='1'
-                Description='Supports multiple monitors, responsible for client-mouse-mode support, reduces bandwidth usage, enables clipboard support between client and virtual machine, provide a better user experience and improved responsiveness'>
-                <ComponentGroupRef Id='CMPG_spice_agent' />
-        </Feature>
-        <Feature Id='FE_spice_driver' Title='Spice Driver' Level='1'
-                Description='A paravirtualized display driver reduces CPU usage on the host and provides better performance through reduced network bandwidth on most workloads.'>
-                <ComponentGroupRef Id='CMPG_qxldod_driver' />
-        </Feature>
-        <Feature Id='FE_RHEV_Agent' Title='RHEV Agent' Level='2'
-                Description='Enables the Red Hat Virtualization Manager to receive internal virtual machine events and information, SSO support, Also enables the Manager to execute specific commands on a virtual machine'>
-                <ComponentGroupRef Id='CMPG_rhev_agent' />
-                <ComponentGroupRef Id='CMPG_SSO' />
-        </Feature>
         <Feature Id='FE_vioinput_driver' Title='Vioinput' Level='1'
                 Description='VirtIO Input Driver'>
                 <ComponentGroupRef Id='CMPG_vioinput_driver' />

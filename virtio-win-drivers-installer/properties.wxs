@@ -51,38 +51,6 @@
                 Type="raw" />
         </Property>
     </Fragment>
-    <!-- This Properties are for the oVirt Agent service dependency logic -->
-    <Fragment>
-        <Property Id="Set_oVirt_Agent_Properties" Value="1" />
-        <Property Id="REGISTRYSEARCH_IS_TERMSERVICE_EXIST">
-            <RegistrySearch Id="is_TermService_exist"
-                Root="HKLM"
-                Key="SYSTEM\CurrentControlSet\Services\TermService"
-                Type="raw"
-                Name="DisplayName"
-                Win64='$(var.Win64)'/>
-        </Property>
-        <Property Id="REGISTRYSEARCH_IS_SPICEUSBREDIRECTOR_EXIST">
-            <RegistrySearch Id="is_spiceusbredirector_exist"
-                Root="HKLM"
-                Key="SYSTEM\CurrentControlSet\Services\spiceusbredirector"
-                Type="raw"
-                Name="DisplayName"
-                Win64='$(var.Win64)'/>
-        </Property>
-        <SetProperty Id="TermService"
-            Value="TermService"
-            After="InstallInitialize"
-            Sequence="execute">
-            NOT REGISTRYSEARCH_IS_TERMSERVICE_EXIST
-        </SetProperty>
-        <SetProperty Id="spiceusbredirector"
-            Value="spiceusbredirector"
-            After="InstallInitialize"
-            Sequence="execute">
-            NOT REGISTRYSEARCH_IS_SPICEUSBREDIRECTOR_EXIST
-        </SetProperty>
-    </Fragment>
     <!-- This Properties are for the upgrade from RHV WGT logic -->
     <Fragment>
         <Property Id="Set_Old_WGT_props" Value="1" />

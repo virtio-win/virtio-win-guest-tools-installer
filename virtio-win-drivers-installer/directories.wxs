@@ -11,16 +11,6 @@
                     <Directory Id="PVPANIC" Name="Pvpanic"/>
                     <Directory Id="QEMUFWCFG" Name="Qemufwcfg"/>
                     <Directory Id="QEMUPCISERIAL" Name="Qemupciserial"/>
-                    <Directory Id="SSODRIVER" Name="SSO"/>
-                    <Directory Id="RHVAGENT" Name="RHV_Agent">
-                        <Directory Id="BEFORE_MIGRATION" Name="before_migration"/>
-                        <Directory Id="AFTER_MIGRATION" Name="after_migration"/>
-                        <Directory Id="BEFORE_HIBERNATION" Name="before_hibernation"/>
-                        <Directory Id="AFTER_HIBERNATION" Name="after_hibernation"/>
-                    </Directory>
-                    <Directory Id="SPICE" Name="Spice">
-                        <Directory Id="QXL" Name="qxl"/>
-                    </Directory>
                     <Directory Id="VIOINPUT" Name="Vioinput"/>
                     <Directory Id="VIORNG" Name="Viorng"/>
                     <Directory Id="VIOSCSI" Name="Vioscsi"/>
