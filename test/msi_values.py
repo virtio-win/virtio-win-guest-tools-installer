@@ -43,18 +43,6 @@ def get_expected_componentids():
         'CMP_WinServer2016_qemufwcfg':['{FD7F28EB-5DD0-4BC8-9C3B-317DB59F6FD5}'],
         'CMP_WinServer2019_qemufwcfg':['{DEEF577E-EA8D-4E8E-9D91-44DA8AB8EA63}'],
         'CMP_Win10x64_qemufwcfg':['{863DCB46-9E99-4516-9C8C-FD0613255181}'],
-        'CMP_Win10x64_qxldod':['{6B0B39CC-125E-42E0-BA15-9BF05D6A9BDC}'],
-        'CMP_spice_agent':['{A8AF8AD8-3048-4DA3-9C95-9CDC3350A8DC}'],
-        'CMP_spice_service':['{74338128-7B20-4BCB-9660-627904BEF473}'],
-        'CMP_rhev_agent_default_logger.ini':['{46B3C9A2-1FE5-4639-9109-9B6FF697C229}'],
-        'CMP_rhev_agent_default.ini':['{E0FA66FC-609B-4FEE-9F3C-5CB48FD35592}'],
-        'CMP_rhev_agent_Microsoft.VC90.CRT.manifest':['{BB5C4595-CC2A-48E4-9AAE-093492ACE9FF}'],
-        'CMP_rhev_agent_msvcr90.dll':['{91BF21EE-955B-4512-95E0-A99897DFC9AC}'],
-        'CMP_OvirtGuestService.exe':['{F5FEBAC2-6022-4ECA-9E73-D1ECF6B46C38}'],
-        'CMP_hook_dirs_BEFORE_MIGRATION':['{8B4FE6C7-5C59-4856-A426-09775FF49197}'],
-        'CMP_hook_dirs_AFTER_MIGRATION':['{7C5FC881-A5B7-4E94-A6CF-42C080B60DC5}'],
-        'CMP_hook_dirs_BEFORE_HIBERNATION':['{54DDAB50-5F24-493F-9A0B-AB737B4F2005}'],
-        'CMP_hook_dirs_AFTER_HIBERNATION':['{75F939D2-A9FF-4FAB-BE62-7D607F5ABE86}'],
         'CMP_WinServer2012_viorng':['{93C2AE75-81D3-437C-A445-9FFF42D1F340}'],
         'CMP_viorng_viorngum_2k12_amd64':['{56C0396B-DDD1-46BB-AEEE-83DD436BE882}'],
         'CMP_viorng_viorngci_2k12_amd64':['{3573D8FB-E339-41A6-A964-D121F5990814}'],
@@ -126,18 +114,6 @@ def get_expected_componentids():
         'CMP_netkvm_netkvmco_w10_x86':['{06224827-B12C-451D-A0E7-1023747302E9}'],
         'CMP_netkvm_readme_w10_x86':['{D9A889B2-6D9A-45FF-AC88-7E0FFA4C44FA}'],
         'CMP_Win10x86_qemufwcfg':['{DE108D2F-19E0-4F69-A67A-240D000D7DFC}'],
-        'CMP_Win10x86_qxldod':['{270551A2-BE74-4F62-BE2A-73A1939ACB91}'],
-        'CMP_spice_agent':['{E88B8D40-7884-40E2-A303-C3E3CCCD799B}'],
-        'CMP_spice_service':['{4FC2D433-55CA-4F5C-A9E0-8220BCF61BFD}'],
-        'CMP_rhev_agent_default_logger.ini':['{BA5D95BB-D2F0-4191-932F-E0F744E045C2}'],
-        'CMP_rhev_agent_default.ini':['{879B7213-2049-43DF-996C-EC711765E3A7}'],
-        'CMP_rhev_agent_Microsoft.VC90.CRT.manifest':['{99145D00-6FF5-43CF-A967-939883F2A76A}'],
-        'CMP_rhev_agent_msvcr90.dll':['{FFC41F71-E2D7-4C58-A73A-0D843B9C7F93}'],
-        'CMP_OvirtGuestService.exe':['{812D719C-CC0E-4797-BEF0-9902C4B8BFC5}'],
-        'CMP_hook_dirs_BEFORE_MIGRATION':['{319EE250-550C-496F-B08F-1F2085FEFF92}'],
-        'CMP_hook_dirs_AFTER_MIGRATION':['{C52210B7-6E33-447F-88B0-7EA230B2AA16}'],
-        'CMP_hook_dirs_BEFORE_HIBERNATION':['{041F013B-201D-4F96-9822-EBB9AA5ADB70}'],
-        'CMP_hook_dirs_AFTER_HIBERNATION':['{6F9FA3FB-8AED-4253-A021-365FEAFEFCC7}'],
         'CMP_Win8x86_viorng':['{99B5101C-9EDD-40FF-9528-9B2C630FCECA}'],
         'CMP_viorng_viorngum_w8_x86':['{D13FBFD8-D38C-467F-9939-BF5D2E75382D}'],
         'CMP_viorng_viorngci_w8_x86':['{8206EDBC-38DA-4E33-875D-3C61B8FABE68}'],
@@ -195,14 +171,10 @@ def get_expected_allusers_property():
 def get_expected_RegLocator():
     expected_values_x64 = {
         'MyRegistrySearch': [r'SOFTWARE\Microsoft\Windows NT\CurrentVersion', 'ProductName'],
-        'is_TermService_exist': [r'SYSTEM\CurrentControlSet\Services\TermService', 'DisplayName'],
-        'is_spiceusbredirector_exist': [r'SYSTEM\CurrentControlSet\Services\spiceusbredirector', 'DisplayName'],
         'wgt_uninstall_path': [r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\{042CD13C-735D-4140-B146-D3F8263D7E4C}', 'UninstallString']
     }
     expected_values_x86 = {
         'MyRegistrySearch':[r'SOFTWARE\Microsoft\Windows NT\CurrentVersion', 'ProductName'],
-        'is_TermService_exist':[r'SYSTEM\CurrentControlSet\Services\TermService', 'DisplayName'],
-        'is_spiceusbredirector_exist':[r'SYSTEM\CurrentControlSet\Services\spiceusbredirector', 'DisplayName'],
         'wgt_uninstall_path':[r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{042CD13C-735D-4140-B146-D3F8263D7E4C}', 'UninstallString'],
     }
     return (
