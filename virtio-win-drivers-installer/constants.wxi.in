@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
 <?define Version = "@@VERSION@@" ?>
+<?define virtio_path = '@@VIRTIO-WIN-PATH@@' ?>
 <?if $(sys.BUILDARCH) = "x64" ?>
       <?define UpgradeCode = "{05294E2F-7778-4E46-B2A3-CF039D5767C8}" ?>
       <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
@@ -10,10 +11,6 @@
       <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
       <?define LaunchCondition = "x86_Validation" ?>
 <?endif ?>
-<?define spice_agent_path = '@@VDAGENT-WIN-PATH@@' ?>
-<?define ovirt_agent_path = '@@OVIRT-GA-PATH@@' ?>
-<?define virtio_path = '@@VIRTIO-WIN-PATH@@' ?>
-<?define sso_path = '@@SSO-WIN-PATH@@' ?>
 <!-- Win Versions Conditions -->
 <?define condition_2k12 = '(VersionNT64 = 602 AND MsiNTProductType > 1)' ?>
 <?define condition_2k12r2 = '(VersionNT64 = 603 AND REGISTRY_PRODUCT_NAME >< "2012" AND MsiNTProductType > 1)' ?>
