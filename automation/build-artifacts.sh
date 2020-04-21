@@ -8,7 +8,12 @@ export WINEDEBUG=fixme-all
 # It is that the path will be under 260 chars
 # If we get an light.exe error "The system cannot find the file..."
 # This is probably the cause
-VIRTIO_WIN_DRIVERS_PATH=${1:-"$PWD/vwi"}
+VIRTIO_WIN_DRIVERS_PATH=${1:?"Must pass in a directory containing virtio-win iso content."}
+SPICE_VDAGENT_PATH=${2:?"Must pass in a directory containing spice vdagent installers"}
+SPICE_DRIVER_PATH=${3:?"Must pass in a directory containing spice qxldod driver installers"}
+QEMU_GA_64_MSI_PATH=${4:?"Must pass path to qemu guest agent x64 msi"}
+QEMU_GA_86_MSI_PATH=${5:?"Must pass path to qemu guest agent x86 msi"}
+VERSION=${6:?"Must pass in the version of the installer"}
 
 if [ ! -e "${VIRTIO_WIN_DRIVERS_PATH}" -o \
      ! -e "${VIRTIO_WIN_DRIVERS_PATH}/viorng" ] ; then
@@ -17,8 +22,6 @@ if [ ! -e "${VIRTIO_WIN_DRIVERS_PATH}" -o \
     echo "tmp*/make-driver-dir-output-*"
     exit 1
 fi
-
-VERSION=${2:?"Must pass in the version of the installer"}
 
 PACKAGES="$(cat automation/build-artifacts.packages | xargs)"
 if ! rpm -q --quiet $PACKAGES ; then
@@ -52,15 +55,21 @@ mv *.tar.gz exported-artifacts/
 
 # Build the installer
 pushd tmp
-make ARCH=x64 VERSION=${VERSION} VIRTIO_WIN_DRIVERS_PATH=${VIRTIO_WIN_DRIVERS_LINK}
+make ARCH=x64 VERSION=${VERSION} VIRTIO_WIN_DRIVERS_PATH=${VIRTIO_WIN_DRIVERS_LINK} SPICE_VDAGENT_PATH=${SPICE_VDAGENT_PATH} SPICE_DRIVER_PATH=${SPICE_DRIVER_PATH} QEMU_GA_86_MSI_PATH=${QEMU_GA_86_MSI_PATH} QEMU_GA_64_MSI_PATH=${QEMU_GA_64_MSI_PATH}
 make clean
-make ARCH=x86 VERSION=${VERSION} VIRTIO_WIN_DRIVERS_PATH=${VIRTIO_WIN_DRIVERS_LINK}
+make ARCH=x86 VERSION=${VERSION} VIRTIO_WIN_DRIVERS_PATH=${VIRTIO_WIN_DRIVERS_LINK} SPICE_VDAGENT_PATH=${SPICE_VDAGENT_PATH} SPICE_DRIVER_PATH=${SPICE_DRIVER_PATH} QEMU_GA_86_MSI_PATH=${QEMU_GA_86_MSI_PATH} QEMU_GA_64_MSI_PATH=${QEMU_GA_64_MSI_PATH}
+make bundle
 
 unlink ${VIRTIO_WIN_DRIVERS_LINK}
 make test
 popd
 
 find \
-    tmp/ \
+    tmp/virtio-win-drivers-installer/ \
     -iname virtio*msi \
+    -exec mv {} exported-artifacts/ \;
+
+find \
+    tmp/ \
+    -iname virtio-win-guest-tools.exe \
     -exec mv {} exported-artifacts/ \;

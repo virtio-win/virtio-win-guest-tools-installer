@@ -10,4 +10,6 @@ tmp/
 .pki
 .config/
 vwi/
+spice/
+qemu-ga/
 */__pycache__

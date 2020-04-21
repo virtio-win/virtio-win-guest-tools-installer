@@ -53,20 +53,23 @@ You can get it by:
    path/to/jenkins/mock_configs/mock_runner.sh -b fc30
    ```
 
-4. The build artifacts which are 2 msis (x64, x86) will be on the exported artifacts directory, which was created during the build process.
+4. The build artifacts which are 2 msis (x64, x86) and one .exe file will be on the exported artifacts directory, which was created during the build process.
 
 ### Building with make:
 
 1. Make sure all the packages on automation/build-artifacts.packages are installed on the machine, relevant repos can be found on automation/build-artifacts.repos.
 
-2. Run the build script automation/build-artifacts.sh VIRTIO_WIN_DRIVERS_PATH INSTALLER_VERSION
+2. Run the build script ./automation/build-artifacts.sh VIRTIO_WIN_DRIVERS_PATH SPICE_VDAGENT_PATH SPICE_DRIVER_PATH QEMU_GA_64_MSI_PATH QEMU_GA_86_MSI_PATH VERSION
 
-3. The build artifacts which are 2 msis (x64, x86) will be on the exported artifacts directory, which was created during the build process.
+   - VIRTIO_WIN_DRIVERS_PATH - dir containing the virtio-win drivers
+   - SPICE_VDAGENT_PATH - directory containing the spice vdagent MSIs (x64, x86)
+   - SPICE_DRIVER_PATH - directory containing the spice qxldod MSIs (x64, x86)
+   - QEMU_GA_64_MSI_PATH - directory containing the qemu ga x64 MSI
+   - QEMU_GA_86_MSI_PATH - directory containing the qemu ga x86 MSI
+   - VERSION - version on the installer
+
+3. The build artifacts which are 2 msis (x64, x86) and one .exe file will be on the exported artifacts directory, which was created during the build process.
 
 ## Contributions:
 
 Contributions are more than welcome, please fork the repository and create a PR.
-
-
-
-
