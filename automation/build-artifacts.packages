@@ -1,11 +1,8 @@
 wine
 make
-ovirt-guest-agent-windows
-mingw32-spice-vdagent
-mingw64-spice-vdagent
-git
 dnf
 dnf-utils
 msitools
 python3-pytest
+ovirt-guest-agent-windows
 wix-toolset-binaries
