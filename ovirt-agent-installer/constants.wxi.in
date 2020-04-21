@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+<?define Version = "@@VERSION@@" ?>
+<?define ovirt_agent_path = '@@OVIRT-GA-PATH@@' ?>
+<?define sso_path = '@@SSO-WIN-PATH@@' ?>
+<?define condition_w8x64 = '(VersionNT = 602 AND VersionNT = VersionNT64 AND MsiNTProductType = 1)' ?>
+<?define condition_w8x86 = '(VersionNT = 602 AND VersionNT <> VersionNT64 AND MsiNTProductType = 1)' ?>
+<?define condition_w81x64 = '(REGISTRY_PRODUCT_NAME >< "8.1" AND VersionNT = VersionNT64 AND MsiNTProductType = 1)' ?>
+<?define condition_w81x86 = '(REGISTRY_PRODUCT_NAME >< "8.1" AND VersionNT <> VersionNT64 AND MsiNTProductType = 1)' ?>
+<?define condition_w10x64 = '(REGISTRY_PRODUCT_NAME >< "Windows 10" AND VersionNT = VersionNT64 AND MsiNTProductType = 1)' ?>
+<?define condition_w10x86 = '(REGISTRY_PRODUCT_NAME >< "Windows 10" AND VersionNT <> VersionNT64 AND MsiNTProductType = 1)' ?>
+<?if $(sys.BUILDARCH) = "x64" ?>
+        <?define UpgradeCode = "{2E755CD8-6C81-428B-92ED-07417F637FAA}" ?>
+        <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+        <?define LaunchCondition = "x64_Validation" ?>
+<?else ?>
+        <?define UpgradeCode = "{55922C3F-189D-4ADC-B4AA-3F6FF6BC6B98}" ?>
+        <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+        <?define LaunchCondition = "x86_Validation" ?>
+<?endif ?>
+<?define SSO_fileName = "RHEVcredProv.dll" ?>
+<?if $(sys.BUILDARCH) = "x64" ?>
+<?define guid_OvirtGuestService = "F5FEBAC2-6022-4ECA-9E73-D1ECF6B46C38"?>
+<?define guid_msvcr90.dll = "91BF21EE-955B-4512-95E0-A99897DFC9AC"?>
+<?define guid_Microsoft.VC90.CRT.manifest = "BB5C4595-CC2A-48E4-9AAE-093492ACE9FF"?>
+<?define guid_default.ini = "E0FA66FC-609B-4FEE-9F3C-5CB48FD35592"?>
+<?define guid_default_logger = "46B3C9A2-1FE5-4639-9109-9B6FF697C229"?>
+<?define guid_hook_dirs_BEFORE_MIGRATION = "8B4FE6C7-5C59-4856-A426-09775FF49197"?>
+<?define guid_hook_dirs_AFTER_MIGRATION = "7C5FC881-A5B7-4E94-A6CF-42C080B60DC5"?>
+<?define guid_hook_dirs_BEFORE_HIBERNATION = "54DDAB50-5F24-493F-9A0B-AB737B4F2005"?>
+<?define guid_hook_dirs_AFTER_HIBERNATION = "75F939D2-A9FF-4FAB-BE62-7D607F5ABE86"?>
+<?define guid_SSO = "446AE311-B8F2-4146-AC50-503468B4DDAB"?>
+<?define guid_reg = "4B41E951-24EE-4703-91E6-62455968EB19"?>
+<?define condition = "$(var.condition_w8x64) OR $(var.condition_w81x64) OR $(var.condition_w10x64)" ?>
+<?define ISA = "amd64" ?>
+<?define Win64 = "yes" ?>
+<?else ?>
+<?define guid_OvirtGuestService = "812D719C-CC0E-4797-BEF0-9902C4B8BFC5"?>
+<?define guid_msvcr90.dll = "FFC41F71-E2D7-4C58-A73A-0D843B9C7F93"?>
+<?define guid_Microsoft.VC90.CRT.manifest = "99145D00-6FF5-43CF-A967-939883F2A76A"?>
+<?define guid_default.ini = "879B7213-2049-43DF-996C-EC711765E3A7"?>
+<?define guid_default_logger = "BA5D95BB-D2F0-4191-932F-E0F744E045C2"?>
+<?define guid_hook_dirs_BEFORE_MIGRATION = "319EE250-550C-496F-B08F-1F2085FEFF92"?>
+<?define guid_hook_dirs_AFTER_MIGRATION = "C52210B7-6E33-447F-88B0-7EA230B2AA16"?>
+<?define guid_hook_dirs_BEFORE_HIBERNATION = "041F013B-201D-4F96-9822-EBB9AA5ADB70"?>
+<?define guid_hook_dirs_AFTER_HIBERNATION = "6F9FA3FB-8AED-4253-A021-365FEAFEFCC7"?>
+<?define guid_SSO = "101C5A02-3C52-442F-9094-976B1FD635FB"?>
+<?define guid_reg = "218F8854-65AE-4668-9DDF-079504F361C4"?>
+<?define condition = "$(var.condition_w8x86) OR $(var.condition_w81x86) OR $(var.condition_w10x86)" ?>
+<?define ISA = "x86" ?>
+<?define Win64 = "no" ?>
+<?endif ?>
+</Include>

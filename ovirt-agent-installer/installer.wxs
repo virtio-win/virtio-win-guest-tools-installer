@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'
+     xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+
+     <?include constants.wxi ?>
+
+      <Product Id="*"
+            Name="oVirt guest agent"
+            Language="1033"
+            Version="$(var.Version)"
+            Manufacturer="Red Hat, Inc."
+            UpgradeCode="$(var.UpgradeCode)">
+            <Package Id="*"
+                  InstallerVersion="200"
+                  Compressed="yes"
+                  InstallScope="perMachine"
+                  Description="Enables the Red Hat Virtualization Manager to receive internal virtual machine events and information, SSO support, Also enables the Manager to execute specific commands on a virtual machine"/>
+            <Property Id="REGISTRYSEARCH_IS_TERMSERVICE_EXIST">
+                  <RegistrySearch Id="is_TermService_exist"
+                      Root="HKLM"
+                      Key="SYSTEM\CurrentControlSet\Services\TermService"
+                      Type="raw"
+                      Name="DisplayName"
+                      Win64='$(var.Win64)'/>
+            </Property>
+            <Property Id="REGISTRYSEARCH_IS_SPICEUSBREDIRECTOR_EXIST">
+            <RegistrySearch Id="is_spiceusbredirector_exist"
+                  Root="HKLM"
+                  Key="SYSTEM\CurrentControlSet\Services\spiceusbredirector"
+                  Type="raw"
+                  Name="DisplayName"
+                  Win64='$(var.Win64)'/>
+            </Property>
+            <SetProperty Id="TermService"
+                  Value="TermService"
+                  After="InstallInitialize"
+                  Sequence="execute">
+                  NOT REGISTRYSEARCH_IS_TERMSERVICE_EXIST
+            </SetProperty>
+            <SetProperty Id="spiceusbredirector"
+                  Value="spiceusbredirector"
+                  After="InstallInitialize"
+                  Sequence="execute">
+                  NOT REGISTRYSEARCH_IS_SPICEUSBREDIRECTOR_EXIST
+            </SetProperty>      
+            <MajorUpgrade 
+                  DowngradeErrorMessage="A newer version of [ProductName] is already installed."
+                  Schedule="afterInstallInitialize" />
+            <MediaTemplate EmbedCab="yes" />
+            <Directory Id="TARGETDIR" Name="SourceDir">
+                  <Directory Id="$(var.PlatformProgramFilesFolder)">
+                      <Directory Id="INSTALLERDIR" Name="Virtio-Win">
+                          <Directory Id="SSODRIVER" Name="SSO"/>
+                          <Directory Id="RHVAGENT" Name="RHV_Agent">
+                              <Directory Id="BEFORE_MIGRATION" Name="before_migration"/>
+                              <Directory Id="AFTER_MIGRATION" Name="after_migration"/>
+                              <Directory Id="BEFORE_HIBERNATION" Name="before_hibernation"/>
+                              <Directory Id="AFTER_HIBERNATION" Name="after_hibernation"/>
+                          </Directory>
+                      </Directory>
+                  </Directory>
+              </Directory>      
+            <Feature Id='FE_RHEV_Agent' Title='oVirt Agent'
+                  Description='Enables the Red Hat Virtualization Manager to receive internal virtual machine events and information, SSO support, Also enables the Manager to execute specific commands on a virtual machine'>
+                  <ComponentGroupRef Id='CMPG_rhev_agent' />
+                  <ComponentGroupRef Id='CMPG_SSO' />
+            </Feature>
+      </Product>
+      <!-- Launch Condition to disable launch on arch x86-->
+      <Fragment>
+            <Property Id="x86_Validation" Value="1" />
+            <Condition Message= "Detected x64 Windows version, please use a x64 installer">
+                  <![CDATA[VersionNT <> VersionNT64 AND "$(sys.BUILDARCH)" = "x86"]]>
+            </Condition>
+      </Fragment>
+      <!-- Launch Condition to disable launch on arch x64 -->
+      <Fragment>
+            <Property Id="x64_Validation" Value="1" />
+            <Condition Message= "Detected x86 Windows version, please use a x86 installer">
+                  <![CDATA[VersionNT = VersionNT64 AND "$(sys.BUILDARCH)" = "x64"]]>
+            </Condition>
+      </Fragment>
+</Wix>
