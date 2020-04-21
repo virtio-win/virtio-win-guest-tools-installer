@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) .NET Foundation and contributors. All rights reserved. Licensed under the Microsoft Reciprocal License. See LICENSE.TXT file in the project root for full license information. -->
+
+
+<Theme xmlns="http://wixtoolset.org/schemas/thmutil/2010">
+    <Window Width="500" Height="380" HexStyle="100a0000" FontId="0">#(loc.Caption)</Window>
+    <Font Id="0" Height="-12" Weight="500" Foreground="000000" Background="FFFFFF">Segoe UI</Font>
+    <Font Id="1" Height="-24" Weight="500" Foreground="000000">Segoe UI</Font>
+    <Font Id="2" Height="-22" Weight="500" Foreground="666666">Segoe UI</Font>
+    <Font Id="3" Height="-12" Weight="500" Foreground="000000" Background="FFFFFF">Segoe UI</Font>
+    <Font Id="4" Height="-12" Weight="500" Foreground="ff0000" Background="FFFFFF" Underline="yes">Segoe UI</Font>
+    <!-- side bar pic -->
+    <Image X="0" Y="0" Width="150" Height="320" ImageFile="Logo.png" Visible="yes"/>
+    <Page Name="Help">
+        <Text X="175" Y="80" Width="-11" Height="30" FontId="2" DisablePrefix="yes">#(loc.HelpHeader)</Text>
+        <Text X="175" Y="130" Width="-11" Height="-35" FontId="3" DisablePrefix="yes">#(loc.HelpText)</Text>
+        <Button Name="HelpCancelButton" X="-11" Y="-11" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.HelpCloseButton)</Button>
+    </Page>
+    <Page Name="Install">
+        <Text X="175" Y="10" Width="300" Height="80" FontId="1" Visible="yes" DisablePrefix="yes">#(loc.WelcomeTitle)</Text>
+        <Richedit Name="EulaRichedit" X="175" Y="100" Width="300" Height="-100" TabStop="yes" FontId="0" HexStyle="0x800000" />
+        <Checkbox Name="EulaAcceptCheckbox" X="175" Y="-70" Width="300" Height="20" TabStop="yes" FontId="3" HideWhenDisabled="yes">#(loc.InstallAcceptCheckbox)</Checkbox>
+        <Button Name="OptionsButton" X="-190" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes">#(loc.InstallOptionsButton)</Button>
+        <Button Name="InstallButton" X="-100" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.InstallInstallButton)</Button>
+        <Button Name="WelcomeCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.InstallCloseButton)</Button>
+    </Page>
+    <Page Name="Options">
+        <Text X="175" Y="50" Width="300" Height="50" FontId="2" DisablePrefix="yes">Select optional features:</Text>
+        <Checkbox Name="LocalInstallOvirtAgent" X="175" Y="130" Width="300" Height="20" TabStop="yes" FontId="3">Install Ovirt Guest Agent</Checkbox>
+        <Text Name="WarningOvirtAgent" X="175" Y="160" Width="300" Height="100" FontId="3" DisablePrefix="yes">Warning! Ovirt Guest Agent should be installed only on oVirt VMs, installing on regular VMs is unsupported and can cause unexpected behavior</Text>
+        <Button Name="OptionsOkButton" X="-100" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.OptionsOkButton)</Button>
+        <Button Name="OptionsCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.OptionsCancelButton)</Button>
+    </Page>
+    <Page Name="FilesInUse">
+      <Text X="175" Y="80" Width="-11" Height="30" FontId="2" DisablePrefix="yes">#(loc.FilesInUseHeader)</Text>
+      <Text X="175" Y="121" Width="-11" Height="34" FontId="3" DisablePrefix="yes">#(loc.FilesInUseLabel)</Text>
+      <Text Name="FilesInUseText" X="175" Y="150" Width="-11" Height="-86" FontId="3" DisablePrefix="yes" HexStyle="0x0000C000"></Text>
+      <Button Name="FilesInUseCloseRadioButton" X="175" Y="-90" Width="-11" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes" HexStyle="0x000009">#(loc.FilesInUseCloseRadioButton)</Button>
+      <Button Name="FilesInUseDontCloseRadioButton" X="175" Y="-60" Width="-11" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes" HexStyle="0x000009">#(loc.FilesInUseDontCloseRadioButton)</Button>
+      <Button Name="FilesInUseOkButton" X="-100" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes">#(loc.FilesInUseOkButton)</Button>
+      <Button Name="FilesInUseCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.FilesInUseCancelButton)</Button>
+    </Page>
+    <Page Name="Progress">
+        <Text X="175" Y="80" Width="-11" Height="30" FontId="2" DisablePrefix="yes">#(loc.ProgressHeader)</Text>
+        <Text X="175" Y="130" Width="70" Height="17" FontId="3" DisablePrefix="yes">#(loc.ProgressLabel)</Text>
+        <Text Name="OverallProgressPackageText" X="175" Y="130" Width="-11" Height="17" FontId="3" DisablePrefix="yes">#(loc.OverallProgressPackageText)</Text>
+        <Progressbar Name="OverallCalculatedProgressbar" X="175" Y="160" Width="-11" Height="15" />
+        <Button Name="ProgressCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.ProgressCancelButton)</Button>
+    </Page>
+    <Page Name="Modify">
+        <Text X="175" Y="80" Width="-11" Height="30" FontId="2" DisablePrefix="yes">#(loc.ModifyHeader)</Text>
+        <Button Name="RepairButton" X="-190" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes">#(loc.ModifyRepairButton)</Button>
+        <Button Name="UninstallButton" X="-100" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.ModifyUninstallButton)</Button>
+        <Button Name="ModifyCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.ModifyCloseButton)</Button>
+    </Page>
+    <Page Name="Success">
+        <Text Name="SuccessHeader" X="175" Y="80"  Width="-11" Height="30" FontId="2" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.SuccessHeader)</Text>
+        <Text Name="SuccessInstallHeader" X="175" Y="80" Width="-11" Height="30" FontId="2" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.SuccessInstallHeader)</Text>
+        <Text Name="SuccessRepairHeader" X="175" Y="80" Width="-11" Height="30" FontId="2" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.SuccessRepairHeader)</Text> 	
+        <Text Name="SuccessUninstallHeader" X="175" Y="80" Width="-11" Height="30" FontId="2" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.SuccessUninstallHeader)</Text> 		
+        <Text Name="SuccessRestartText" X="175" Y="120" Width="400" Height="34" FontId="3" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.SuccessRestartText)</Text>
+        <Button Name="SuccessRestartButton" X="-100" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes">#(loc.SuccessRestartButton)</Button>
+        <Button Name="SuccessCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.SuccessCloseButton)</Button>
+    </Page>
+    <Page Name="Failure">
+        <Text Name="FailureHeader" X="175" Y="40" Width="-11" Height="30" FontId="2" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.FailureHeader)</Text>
+        <Text Name="FailureInstallHeader" X="175" Y="40" Width="-11" Height="30" FontId="2" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.FailureInstallHeader)</Text>
+        <Text Name="FailureUninstallHeader" X="175" Y="40" Width="-11" Height="30" FontId="2" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.FailureUninstallHeader)</Text>
+        <Text Name="FailureRepairHeader" X="175" Y="40" Width="-11" Height="30" FontId="2" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.FailureRepairHeader)</Text>		
+        <Hypertext Name="FailureLogFileLink" X="175" Y="80" Width="-11" Height="42" FontId="3" TabStop="yes" HideWhenDisabled="yes">#(loc.FailureHyperlinkLogText)</Hypertext>
+        <Hypertext Name="FailureMessageText" X="175" Y="130" Width="-11" Height="130" FontId="3" TabStop="yes" HideWhenDisabled="yes" />
+        <Button Name="FailureCloseButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.FailureCloseButton)</Button>
+    </Page>
+</Theme>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?define UpgradeCode = "{418D4443-48DC-4FCF-BA11-29D5E241B7D1}" ?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+  <Bundle
+    Name="Virtio-win-guest-tools"
+    Version="@@VERSION@@"
+    Manufacturer="Red Hat, Inc."
+    UpgradeCode="$(var.UpgradeCode)"
+    IconSourceFile="Resources/icon.ico">
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense" >
+      <bal:WixStandardBootstrapperApplication
+        LicenseFile="Resources/License.rtf"
+        LogoFile="Resources/Logo.png"
+        ThemeFile="Resources/Theme.xml"
+        LocalizationFile="Resources/Theme.wxl"/>
+    </BootstrapperApplicationRef>
+		<Chain>
+             <MsiPackage 
+                SourceFile="../virtio-win-drivers-installer/virtio-win-gt-x64.msi"
+                InstallCondition="VersionNT64"
+                EnableFeatureSelection="yes"
+                DisplayInternalUI="yes"
+                DisplayName="virtio-win-drivers"
+                Description="MSI to install virtio-win drivers for x64 systems"/>
+             <MsiPackage 
+                SourceFile="../virtio-win-drivers-installer/virtio-win-gt-x86.msi"
+                InstallCondition="NOT VersionNT64"
+                EnableFeatureSelection="yes"
+                DisplayInternalUI="yes"
+                DisplayName="virtio-win-drivers"
+                Description="MSI to install virtio-win drivers for x86 systems"/> 
+             <MsiPackage SourceFile="@@SPICE_DRIVER_PATH@@/QxlWddmDod_0.19.2.0_x64.msi"
+                InstallCondition="VersionNT64"
+                DisplayName="spice-driver"/>
+             <MsiPackage SourceFile="@@SPICE_DRIVER_PATH@@/QxlWddmDod_0.19.2.0_x86.msi"
+                InstallCondition="NOT VersionNT64"
+                DisplayName="spice-driver"/> 
+             <MsiPackage SourceFile="@@SPICE_VDAGENT_PATH@@/spice-vdagent-x64-0.10.0-2.msi"
+                InstallCondition="VersionNT64"
+                DisplayName="spice-guest-agent"/>
+             <MsiPackage SourceFile="@@SPICE_VDAGENT_PATH@@/spice-vdagent-x86-0.10.0-2.msi"
+                InstallCondition="NOT VersionNT64"
+                DisplayName="spice-guest-agent"/> 
+             <MsiPackage SourceFile="../ovirt-agent-installer/ovirt-guest-agent-x64.msi"
+                InstallCondition="VersionNT64 AND LocalInstallOvirtAgent"
+                DisplayName="ovirt-guest-agent"/> 
+             <MsiPackage SourceFile="../ovirt-agent-installer/ovirt-guest-agent-x86.msi"
+                InstallCondition="NOT VersionNT64 AND LocalInstallOvirtAgent"
+                DisplayName="ovirt-guest-agent"/> 
+             <MsiPackage SourceFile="@@QEMU_GA_64_MSI_PATH@@/qemu-ga-x86_64.msi"
+                InstallCondition="VersionNT64"
+                DisplayName="qemu-guest-agent"/> 
+             <MsiPackage SourceFile="@@QEMU_GA_86_MSI_PATH@@/qemu-ga-i386.msi"
+                InstallCondition="NOT VersionNT64"
+                DisplayName="qemu-guest-agent"/> 
+		</Chain>
+	</Bundle>
+</Wix>
