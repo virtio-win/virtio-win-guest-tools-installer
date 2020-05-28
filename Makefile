@@ -4,8 +4,10 @@ SHELL=/bin/bash
 VERSION=$(VERSION)
 ARCH=$(ARCH)
 VIRTIO_WIN_DRIVERS_PATH=$(VIRTIO_WIN_DRIVERS_PATH)
-SPICE_VDAGENT_PATH=$(SPICE_VDAGENT_PATH)
-SPICE_DRIVER_PATH=$(SPICE_DRIVER_PATH)
+SPICE_VDAGENT_64_MSI_PATH=$(SPICE_VDAGENT_64_MSI_PATH)
+SPICE_VDAGENT_86_MSI_PATH=$(SPICE_VDAGENT_86_MSI_PATH)
+SPICE_DRIVER_64_MSI_PATH=$(SPICE_DRIVER_64_MSI_PATH)
+SPICE_DRIVER_86_MSI_PATH=$(SPICE_DRIVER_86_MSI_PATH)
 QEMU_GA_86_MSI_PATH=$(QEMU_GA_86_MSI_PATH)
 QEMU_GA_64_MSI_PATH=$(QEMU_GA_64_MSI_PATH)
 
@@ -15,8 +17,6 @@ ARCHIVE=$(NAME)-$(VERSION).tar.gz
 # ovirt-guest-agent-windows.rpm
 # wix311-binaries
 OVIRTGA_PATH=/usr/share/ovirt-guest-agent-windows
-VDA32BIN=/usr/i686-w64-mingw32/sys-root/mingw/bin/
-VDA64BIN=/usr/x86_64-w64-mingw32/sys-root/mingw/bin/
 WIX_BINARIES_FILES=/usr/share/wix-toolset-binaries
 
 # Project Paths #
@@ -75,7 +75,7 @@ bundle:
 	pushd virtio-win-installers-bundler/ ;\
 	wine cmd.exe /c "$(WIX_BINARIES_LINK)/candle.exe *.wxs -ext $(WIX_BINARIES_WIN_PATH)/WixBalExtension.dll" ;\
 	wine cmd.exe /c "$(WIX_BINARIES_LINK)/light.exe *.wixobj -o ../virtio-win-guest-tools.exe -ext $(WIX_BINARIES_WIN_PATH)/WixBalExtension.dll" ;\
-	popd	
+	popd
 
 clean:
 	rm -rf exported-artifacts tmp
@@ -88,7 +88,7 @@ clean:
 
 
 .SUFFIXES:
-.SUFFIXES: .in 
+.SUFFIXES: .in
 
 
 .in:
@@ -99,8 +99,10 @@ clean:
 	-e "s|@@SSO-WIN-PATH@@|${SSO_WIN_PATH}|g" \
 	-e "s|@@WIX_BIN_PATH@@|${WIX_BINARIES_WIN_PATH}\\\\|g" \
 	-e "s|@@INSTALLER_PATH@@|${INSTALLER_WIN_PATH}|g" \
-	-e "s|@@SPICE_VDAGENT_PATH@@|${SPICE_VDAGENT_PATH}|g" \
-	-e "s|@@SPICE_DRIVER_PATH@@|${SPICE_DRIVER_PATH}|g" \
+	-e "s|@@SPICE_VDAGENT_64_MSI_PATH@@|${SPICE_VDAGENT_64_MSI_PATH}|g" \
+	-e "s|@@SPICE_VDAGENT_86_MSI_PATH@@|${SPICE_VDAGENT_86_MSI_PATH}|g" \
+	-e "s|@@SPICE_DRIVER_64_MSI_PATH@@|${SPICE_DRIVER_64_MSI_PATH}|g" \
+	-e "s|@@SPICE_DRIVER_86_MSI_PATH@@|${SPICE_DRIVER_86_MSI_PATH}|g" \
 	-e "s|@@QEMU_GA_64_MSI_PATH@@|${QEMU_GA_64_MSI_PATH}|g" \
 	-e "s|@@QEMU_GA_86_MSI_PATH@@|${QEMU_GA_86_MSI_PATH}|g" \
 	-e "s|@@VERSION@@|${VERSION}|g" \

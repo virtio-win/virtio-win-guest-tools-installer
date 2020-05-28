@@ -59,13 +59,15 @@ You can get it by:
 
 1. Make sure all the packages on automation/build-artifacts.packages are installed on the machine, relevant repos can be found on automation/build-artifacts.repos.
 
-2. Run the build script ./automation/build-artifacts.sh VIRTIO_WIN_DRIVERS_PATH SPICE_VDAGENT_PATH SPICE_DRIVER_PATH QEMU_GA_64_MSI_PATH QEMU_GA_86_MSI_PATH VERSION
+2. Run the build script ./automation/build-artifacts.sh VIRTIO_WIN_DRIVERS_PATH SPICE_VDAGENT_64_MSI_PATH SPICE_VDAGENT_86_MSI_PATH SPICE_DRIVER_64_MSI_PATH SPICE_DRIVER_86_MSI_PATH QEMU_GA_64_MSI_PATH QEMU_GA_86_MSI_PATH VERSION
 
    - VIRTIO_WIN_DRIVERS_PATH - dir containing the virtio-win drivers
-   - SPICE_VDAGENT_PATH - directory containing the spice vdagent MSIs (x64, x86)
-   - SPICE_DRIVER_PATH - directory containing the spice qxldod MSIs (x64, x86)
-   - QEMU_GA_64_MSI_PATH - directory containing the qemu ga x64 MSI
-   - QEMU_GA_86_MSI_PATH - directory containing the qemu ga x86 MSI
+   - SPICE_VDAGENT_64_MSI_PATH - path to the spice ga x64 MSI
+   - SPICE_VDAGENT_86_MSI_PATH - path to the spice ga x86 MSI
+   - SPICE_DRIVER_64_MSI_PATH - path to the spice driver x64 MSI
+   - SPICE_DRIVER_86_MSI_PATH - path to the spice driver x86 MSI
+   - QEMU_GA_64_MSI_PATH - path to the qemu ga x64 MSI
+   - QEMU_GA_86_MSI_PATH - path to the qemu ga x86 MSI
    - VERSION - version on the installer
 
 3. The build artifacts which are 2 msis (x64, x86) and one .exe file will be on the exported artifacts directory, which was created during the build process.
