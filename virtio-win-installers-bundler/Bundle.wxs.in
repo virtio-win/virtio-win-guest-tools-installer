@@ -31,10 +31,10 @@
                 DisplayInternalUI="yes"
                 DisplayName="virtio-win-drivers"
                 Description="MSI to install virtio-win drivers for x86 systems"/>
-             <MsiPackage SourceFile="@@SPICE_DRIVER_86_MSI_PATH@@"
+             <MsiPackage SourceFile="@@SPICE_DRIVER_64_MSI_PATH@@"
                 InstallCondition="VersionNT64"
                 DisplayName="spice-driver"/>
-             <MsiPackage SourceFile="@@SPICE_DRIVER_64_MSI_PATH@@"
+             <MsiPackage SourceFile="@@SPICE_DRIVER_86_MSI_PATH@@"
                 InstallCondition="NOT VersionNT64"
                 DisplayName="spice-driver"/>
              <MsiPackage SourceFile="@@SPICE_VDAGENT_64_MSI_PATH@@"
