@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<Include xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+        <?if $(var.WdfCoInstaller01011) = "true" ?>
+        <Component Id='CMP_$(var.driverName)_WdfCoInstaller01011_$(var.osShort)_$(var.ISA)'
+            Guid='$(var.viofs_WdfCoInstaller_guid)'
+            Transitive='yes'
+            Win64='$(var.Win64)'>
+            <Condition><![CDATA[$(var.condition)]]></Condition>
+            <File Id='FILE_$(var.driverName)_WdfCoInstaller01011_$(var.osShort)_$(var.ISA)'
+                Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\WdfCoInstaller01011.dll'
+                KeyPath='yes'/>
+        </Component>
+        <?endif?>
+        <Component Id='CMP_virtiofs_$(var.osShort)_$(var.ISA)'
+            Guid='$(var.viofs_virtiofs_guid)'
+            Transitive='yes'
+            Win64='$(var.Win64)'>
+            <Condition><![CDATA[$(var.condition)]]></Condition>
+            <File Id='FILE_virtiofs_$(var.osShort)_$(var.ISA)'
+                Source='$(var.virtio_path)\viofs\$(var.osShort)\$(var.ISA)\virtiofs.exe'
+                KeyPath='yes'/>
+            <ServiceInstall
+                Id="VirtioFSService_$(var.osShort)_$(var.ISA)"
+                Name="VirtIO-FS Service"
+                DisplayName="VirtioFSService"
+                Description="VirtIO-FS Service"
+                Start="demand"
+                ErrorControl="ignore"
+                Type="ownProcess"
+                Vital="no"/>
+            <ServiceControl
+                Id="sc_VirtioFSService_$(var.osShort)_$(var.ISA)"
+                Name="VirtIO-FS Service"
+                Start="install"
+                Stop="both"
+                Remove="uninstall"
+                Wait="yes" />
+        </Component>
+</Include>

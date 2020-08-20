@@ -43,5 +43,9 @@
                 Description='Virtio Block driver'>
                 <ComponentGroupRef Id='CMPG_viostor_driver' />
         </Feature>
+        <Feature Id='FE_viofs_driver' Title='Viofs' Level='1'
+                Description='Virtio File System driver'>
+                <ComponentGroupRef Id='CMPG_viofs_driver' />
+        </Feature>
     </Fragment>
 </Wix>
