@@ -9,6 +9,7 @@
 @@INSTALLER_PATH@@\Drivers\vioscsi\*.wxs
 @@INSTALLER_PATH@@\Drivers\vioserial\*.wxs
 @@INSTALLER_PATH@@\Drivers\viostor\*.wxs
+@@INSTALLER_PATH@@\Drivers\viofs\*.wxs
 -out wixobjx64\
 -nologo
 -pedantic

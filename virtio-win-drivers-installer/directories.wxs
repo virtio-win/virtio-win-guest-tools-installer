@@ -16,6 +16,7 @@
                     <Directory Id="VIOSCSI" Name="Vioscsi"/>
                     <Directory Id="VIOSERIAL" Name="Vioserial"/>
                     <Directory Id="VIOSTOR" Name="Viostor"/>
+                    <Directory Id="VIOFS" Name="VioFS"/>
                 </Directory>
             </Directory>
         </Directory>
