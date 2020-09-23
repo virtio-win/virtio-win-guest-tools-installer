@@ -32,7 +32,6 @@
             <ServiceControl
                 Id="sc_VirtioFSService_$(var.osShort)_$(var.ISA)"
                 Name="VirtIO-FS Service"
-                Start="install"
                 Stop="both"
                 Remove="uninstall"
                 Wait="yes" />
