@@ -17,6 +17,7 @@
                     <Directory Id="VIOSERIAL" Name="Vioserial"/>
                     <Directory Id="VIOSTOR" Name="Viostor"/>
                     <Directory Id="VIOFS" Name="VioFS"/>
+                    <Directory Id="VIOGPUDO" Name="Viogpudo"/>
                 </Directory>
             </Directory>
         </Directory>

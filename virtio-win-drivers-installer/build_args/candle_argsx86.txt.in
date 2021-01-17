@@ -10,6 +10,7 @@
 @@INSTALLER_PATH@@\Drivers\vioserial\*.wxs
 @@INSTALLER_PATH@@\Drivers\viostor\*.wxs
 @@INSTALLER_PATH@@\Drivers\viofs\*.wxs
+@@INSTALLER_PATH@@\Drivers\viogpudo\*.wxs
 -out wixobjx86\
 -nologo
 -pedantic

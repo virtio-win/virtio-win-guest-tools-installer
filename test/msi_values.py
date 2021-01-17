@@ -111,6 +111,13 @@ def get_expected_componentids():
         'CMP_virtiofs_w8.1_amd64':['{275DDF53-AE23-40B4-9BA0-850BE7F8C528}'],
         'CMP_Win10x64_viofs':['{E4F42A9F-D576-4606-B2BF-96D24E53E365}'],
         'CMP_virtiofs_w10_amd64':['{3D0B70D1-C98E-4986-A0D1-6CF4B1E06CC9}'],
+        'CMP_WinServer2012_viogpudo':['{04300AD8-1B36-4BCC-B0B3-B63A2E503F77}'],
+        'CMP_WinServer2012R2_viogpudo':['{4F2BE310-5CC4-4BB0-B241-870724119DAC}'],
+        'CMP_WinServer2016_viogpudo':['{2749BFA1-F330-408C-9FB3-872D173DA3AE}'],
+        'CMP_WinServer2019_viogpudo':['{F76D4E1B-9FF2-4B82-A5E3-17F64E6253FC}'],
+        'CMP_Win8x64_viogpudo':['{72D2DEA4-31C6-4C05-B352-19E103278EC1}'],
+        'CMP_Win81x64_viogpudo':['{ED43C5C5-C68E-44A5-B798-BFB859933734}'],
+        'CMP_Win10x64_viogpudo':['{0FEEC31F-F6E7-4865-AFD3-3E02451C46AD}'],
     }
 
     expected_values_x86 = {
@@ -161,6 +168,9 @@ def get_expected_componentids():
         'CMP_virtiofs_w8.1_x86':['{25676CB3-D9A7-4E34-8DF7-5C33891EABEA}'],
         'CMP_Win10x86_viofs':['{19BCC8D3-F4E9-41C1-AF79-196C9F2B16B8}'],
         'CMP_virtiofs_w10_x86':['{CDC4821F-E00B-48BB-9A4A-5C1A420333F9}'],
+        'CMP_Win8x86_viogpudo':['{B7583BDC-6079-45F5-8F75-D990547AC7C7}'],
+        'CMP_Win81x86_viogpudo':['{1D3226C6-6446-4E81-8162-0B1E33823F99}'],
+        'CMP_Win10x86_viogpudo':['{D5AB2386-95A5-4ECD-A0CF-8F0DF40ABDD3}'],
         }
     return (
         ("Component", "ComponentId"),

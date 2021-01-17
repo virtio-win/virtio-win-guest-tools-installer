@@ -30,6 +30,8 @@ Before buidling the installer you must have the virtio-win drivers localy on the
 |-vioscsi['2k12', '2k12R2', '2k16', '2k19', '2k8', '2k8R2', 'w10', 'w7', 'w8', 'w8.1']
 |-vioserial['2k12', '2k12R2', '2k16', '2k19', '2k3', '2k8', '2k8R2', 'w10', 'w7', 'w8', 'w8.1', 'xp']
 |-viostor['2k12', '2k12R2', '2k16', '2k19', '2k3', '2k8', '2k8R2', 'w10', 'w7', 'w8', 'w8.1', 'xp']
+|-viofs['2k12', '2k12R2', '2k16', '2k19', 'w10', 'w8', 'w8.1']
+|-viogpu['2k12', '2k12R2', '2k16', '2k19', 'w10', 'w8', 'w8.1']
 ```
 You can get it by:
 
