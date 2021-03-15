@@ -47,5 +47,9 @@
                 Description='Virtio File System driver'>
                 <ComponentGroupRef Id='CMPG_viofs_driver' />
         </Feature>
+        <Feature Id='FE_viogpudo_driver' Title='Viogpudo' Level='1'
+                Description='Virtio GPU DOD driver'>
+                <ComponentGroupRef Id='CMPG_viogpudo_driver' />
+        </Feature>
     </Fragment>
 </Wix>

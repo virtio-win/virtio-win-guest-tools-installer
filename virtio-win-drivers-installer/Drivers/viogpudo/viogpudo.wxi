@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+<?define driverName = "viogpudo" ?>
+<?define srcDirName = "viogpudo" ?>
+<?define destDirName = "VIOGPUDO" ?>
+<?define with_sys = "true"?>
+<?define extra_components = "false"?>
+<?define permanent = "yes"?>
+<?if $(sys.BUILDARCH) = "x64" ?>
+<!-- 2k12 -->
+<?define guid = "04300AD8-1B36-4BCC-B0B3-B63A2E503F77"?>
+<?include ../GenericWindowsComponets/2k12.wxi ?>
+<?undef guid?>
+<!-- 2k12R2 -->
+<?define guid = "4F2BE310-5CC4-4BB0-B241-870724119DAC"?>
+<?include ../GenericWindowsComponets/2k12R2.wxi ?>
+<?undef guid?>
+<!-- 2k16 -->
+<?define guid = "2749BFA1-F330-408C-9FB3-872D173DA3AE"?>
+<?include ../GenericWindowsComponets/2k16.wxi ?>
+<?undef guid?>
+<!-- 2k19 -->
+<?define guid = "F76D4E1B-9FF2-4B82-A5E3-17F64E6253FC"?>
+<?include ../GenericWindowsComponets/2k19.wxi ?>
+<?undef guid?>
+<!-- w8x64 -->
+<?define guid = "72D2DEA4-31C6-4C05-B352-19E103278EC1"?>
+<?include ../GenericWindowsComponets/w8x64.wxi ?>
+<?undef guid?>
+<!-- w81x64 -->
+<?define guid = "ED43C5C5-C68E-44A5-B798-BFB859933734"?>
+<?include ../GenericWindowsComponets/w81x64.wxi ?>
+<?undef guid?>
+<!-- w10x64 -->
+<?define guid = "0FEEC31F-F6E7-4865-AFD3-3E02451C46AD"?>
+<?include ../GenericWindowsComponets/w10x64.wxi ?>
+<?undef guid?>
+<?else ?>
+<!-- w8x86 -->
+<?define guid = "B7583BDC-6079-45F5-8F75-D990547AC7C7"?>
+<?include ../GenericWindowsComponets/w8x86.wxi ?>
+<?undef guid?>
+<!-- w81x86 -->
+<?define guid = "1D3226C6-6446-4E81-8162-0B1E33823F99"?>
+<?include ../GenericWindowsComponets/w81x86.wxi ?>
+<?undef guid?>
+<!-- w10x86 -->
+<?define guid = "D5AB2386-95A5-4ECD-A0CF-8F0DF40ABDD3"?>
+<?include ../GenericWindowsComponets/w10x86.wxi ?>
+<?undef guid?>
+<?endif ?>
+</Include>
