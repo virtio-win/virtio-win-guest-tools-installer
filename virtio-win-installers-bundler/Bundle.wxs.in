@@ -43,12 +43,6 @@
              <MsiPackage SourceFile="@@SPICE_VDAGENT_86_MSI_PATH@@"
                 InstallCondition="NOT VersionNT64"
                 DisplayName="spice-guest-agent"/>
-             <MsiPackage SourceFile="../ovirt-agent-installer/ovirt-guest-agent-x64.msi"
-                InstallCondition="VersionNT64 AND LocalInstallOvirtAgent"
-                DisplayName="ovirt-guest-agent"/>
-             <MsiPackage SourceFile="../ovirt-agent-installer/ovirt-guest-agent-x86.msi"
-                InstallCondition="NOT VersionNT64 AND LocalInstallOvirtAgent"
-                DisplayName="ovirt-guest-agent"/>
              <MsiPackage SourceFile="@@QEMU_GA_64_MSI_PATH@@"
                 InstallCondition="VersionNT64"
                 DisplayName="qemu-guest-agent"/>

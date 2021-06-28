@@ -19,14 +19,8 @@
 /log log.txt - logs to a specific file. By default a log file is created in %TEMP%.</String>
   <String Id="HelpCloseButton">&amp;Close</String>
   <String Id="InstallAcceptCheckbox">I &amp;agree to the license terms and conditions</String>
-  <String Id="InstallOptionsButton">&amp;Options</String>
   <String Id="InstallInstallButton">&amp;Install</String>
   <String Id="InstallCloseButton">&amp;Close</String>
-  <String Id="OptionsHeader">Setup Options</String>
-  <String Id="OptionsLocationLabel">Install location:</String>
-  <String Id="OptionsBrowseButton">&amp;Browse</String>
-  <String Id="OptionsOkButton">&amp;OK</String>
-  <String Id="OptionsCancelButton">&amp;Cancel</String>
   <String Id="ProgressHeader">Setup Progress</String>
   <String Id="ProgressLabel">Processing:</String>
   <String Id="OverallProgressPackageText">Initializing...</String>

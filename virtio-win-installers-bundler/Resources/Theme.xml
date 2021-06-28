@@ -20,16 +20,8 @@
         <Text X="175" Y="10" Width="300" Height="80" FontId="1" Visible="yes" DisablePrefix="yes">#(loc.WelcomeTitle)</Text>
         <Richedit Name="EulaRichedit" X="175" Y="100" Width="300" Height="-100" TabStop="yes" FontId="0" HexStyle="0x800000" />
         <Checkbox Name="EulaAcceptCheckbox" X="175" Y="-70" Width="300" Height="20" TabStop="yes" FontId="3" HideWhenDisabled="yes">#(loc.InstallAcceptCheckbox)</Checkbox>
-        <Button Name="OptionsButton" X="-190" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes">#(loc.InstallOptionsButton)</Button>
         <Button Name="InstallButton" X="-100" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.InstallInstallButton)</Button>
         <Button Name="WelcomeCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.InstallCloseButton)</Button>
-    </Page>
-    <Page Name="Options">
-        <Text X="175" Y="50" Width="300" Height="50" FontId="2" DisablePrefix="yes">Select optional features:</Text>
-        <Checkbox Name="LocalInstallOvirtAgent" X="175" Y="130" Width="300" Height="20" TabStop="yes" FontId="3">Install Ovirt Guest Agent</Checkbox>
-        <Text Name="WarningOvirtAgent" X="175" Y="160" Width="300" Height="100" FontId="3" DisablePrefix="yes">Warning! Ovirt Guest Agent should be installed only on oVirt VMs, installing on regular VMs is unsupported and can cause unexpected behavior</Text>
-        <Button Name="OptionsOkButton" X="-100" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.OptionsOkButton)</Button>
-        <Button Name="OptionsCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.OptionsCancelButton)</Button>
     </Page>
     <Page Name="FilesInUse">
       <Text X="175" Y="80" Width="-11" Height="30" FontId="2" DisablePrefix="yes">#(loc.FilesInUseHeader)</Text>

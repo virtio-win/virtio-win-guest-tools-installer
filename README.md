@@ -8,7 +8,6 @@ Virtio-win guest tools installer is a msi (Microsoft installer) created with [Wi
 
 <u>Spice guest agent and driver</u> - Spice is an open remote computing solution, providing client access to remote machine display and devices, more info on the [Offical website](www.spice-space.org).
 
-<u>Ovirt guest agent(optional)</u> - Enables the ovirt engine to receive internal machine events and information, SSO support, and enables the engine to execute specific commands on the Windows virtual machine, More on [Ovirt Docs](https://www.ovirt.org/develop/internal/guest-agent/guest-agent.html) and [Github Repo](https://github.com/oVirt/ovirt-guest-agent).
 
 The installer is distributed as part of virtio-win package on [Fedora](https://fedorapeople.org/groups/virt/virtio-win/repo/rpms/).
 
