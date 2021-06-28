@@ -28,6 +28,7 @@ fi
 PACKAGES="$(cat automation/build-artifacts.packages | xargs)"
 if ! rpm -q --quiet $PACKAGES ; then
     echo "ERROR: Not all of the required packages are installed: $PACKAGES"
+    rpm -q $PACKAGES
     exit 1
 fi
 
