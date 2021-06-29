@@ -4,5 +4,4 @@ dnf
 dnf-utils
 msitools
 python3-pytest
-ovirt-guest-agent-windows
 wix-toolset-binaries
