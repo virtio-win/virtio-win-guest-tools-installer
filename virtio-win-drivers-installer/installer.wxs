@@ -23,7 +23,7 @@
             <MajorUpgrade 
                   DowngradeErrorMessage="A newer version of [ProductName] is already installed."
                   Schedule="afterInstallInitialize" />
-            <UIRef Id="WixUI_FeatureTree" />
+            <UIRef Id="WixUI_WarnFeatureTree" />
             <WixVariable Id="WixUIBannerBmp" Value="graphics/horizontal_banner.bmp" />
             <WixVariable Id="WixUIDialogBmp" Value="graphics/background.bmp" />
             <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
