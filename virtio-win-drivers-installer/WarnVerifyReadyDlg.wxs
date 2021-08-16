@@ -38,7 +38,7 @@
                 <Control Id="RemoveText" Type="Text" X="25" Y="70" Width="320" Height="80" Hidden="yes" NoPrefix="yes" Text="!(loc.VerifyReadyDlgRemoveText)">
                     <Condition Action="show">WixUI_InstallMode = "Remove"</Condition>
                 </Control>
-                <Control Id="RemoveWarnText" Type="Text" X="25" Y="165" Width="320" Height="18" Hidden="yes" NoPrefix="yes" Text="Warning! All customized settings will be lost!">
+                <Control Id="RemoveWarnText" Type="Text" X="25" Y="150" Width="320" Height="30" Hidden="yes" NoPrefix="yes" Text="Warning: all customized settings will be removed (e.g. manually configured static IP address will be removed).">
                     <Condition Action="show">WixUI_InstallMode = "Remove"</Condition>
                 </Control>
 		<Control Id="UpdateTitle" Type="Text" X="15" Y="15" Width="300" Height="15" Transparent="yes" NoPrefix="yes" Hidden="yes" Text="!(loc.VerifyReadyDlgUpdateTitle)">
