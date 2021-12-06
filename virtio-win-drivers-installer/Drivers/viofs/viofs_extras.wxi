@@ -21,17 +21,17 @@
                 Source='$(var.virtio_path)\viofs\$(var.osShort)\$(var.ISA)\virtiofs.exe'
                 KeyPath='yes'/>
             <ServiceInstall
-                Id="VirtioFSService_$(var.osShort)_$(var.ISA)"
-                Name="VirtIO-FS Service"
-                DisplayName="VirtioFSService"
-                Description="VirtIO-FS Service"
+                Id="VirtioFsSvc_$(var.osShort)_$(var.ISA)"
+                Name="VirtioFsSvc"
+                DisplayName="VirtIO-FS Service"
+                Description="Enables Windows virtual machines to access directories on the host that have been shared with them using virtiofs."
                 Start="demand"
                 ErrorControl="ignore"
                 Type="ownProcess"
                 Vital="no"/>
             <ServiceControl
-                Id="sc_VirtioFSService_$(var.osShort)_$(var.ISA)"
-                Name="VirtIO-FS Service"
+                Id="sc_VirtioFsSvc_$(var.osShort)_$(var.ISA)"
+                Name="VirtioFsSvc"
                 Stop="both"
                 Remove="uninstall"
                 Wait="yes" />
