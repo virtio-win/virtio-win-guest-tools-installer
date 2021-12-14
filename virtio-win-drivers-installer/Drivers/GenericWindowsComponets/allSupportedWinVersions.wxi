@@ -5,7 +5,9 @@
     <?include ./2k12R2.wxi ?>
     <?include ./2k16.wxi ?>
     <?include ./2k19.wxi ?>
+    <?include ./2k22.wxi ?>
     <?include ./w10x64.wxi ?>
+    <?include ./w11x64.wxi ?>
     <?include ./w81x64.wxi?>
     <?include ./w8x64.wxi ?>
     <?else ?>

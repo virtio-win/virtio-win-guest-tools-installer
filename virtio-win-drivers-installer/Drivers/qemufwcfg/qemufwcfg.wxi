@@ -15,9 +15,17 @@
 <?define guid = "DEEF577E-EA8D-4E8E-9D91-44DA8AB8EA63"?>
 <?include ../GenericWindowsComponets/2k19.wxi ?>
 <?undef guid?>
+<!-- 2k22 -->
+<?define guid = "AC5A2658-391B-4547-88E5-DA33CCC1F2B5"?>
+<?include ../GenericWindowsComponets/2k22.wxi ?>
+<?undef guid?>
 <!-- w10x64 -->
 <?define guid = "863DCB46-9E99-4516-9C8C-FD0613255181"?>
 <?include ../GenericWindowsComponets/w10x64.wxi ?>
+<?undef guid?>
+<!-- w11x64 -->
+<?define guid = "43C4B260-4E3B-4AC9-8441-F9A2E693EE1E"?>
+<?include ../GenericWindowsComponets/w11x64.wxi ?>
 <?undef guid?>
 <?else ?>
 <!-- w10x86 -->

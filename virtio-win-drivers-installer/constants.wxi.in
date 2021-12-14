@@ -16,10 +16,12 @@
 <?define condition_2k12r2 = '(VersionNT64 = 603 AND REGISTRY_PRODUCT_NAME >< "2012" AND MsiNTProductType > 1)' ?>
 <?define condition_2k16 = '(REGISTRY_PRODUCT_NAME >< "2016" AND MsiNTProductType > 1)' ?>
 <?define condition_2k19 = '(REGISTRY_PRODUCT_NAME >< "2019" AND MsiNTProductType > 1)' ?>
+<?define condition_2k22 = '(REGISTRY_PRODUCT_NAME >< "2022" AND MsiNTProductType > 1)' ?>
 <?define condition_w8x64 = '(VersionNT = 602 AND VersionNT = VersionNT64 AND MsiNTProductType = 1)' ?>
 <?define condition_w8x86 = '(VersionNT = 602 AND VersionNT <> VersionNT64 AND MsiNTProductType = 1)' ?>
 <?define condition_w81x64 = '(REGISTRY_PRODUCT_NAME >< "8.1" AND VersionNT = VersionNT64 AND MsiNTProductType = 1)' ?>
 <?define condition_w81x86 = '(REGISTRY_PRODUCT_NAME >< "8.1" AND VersionNT <> VersionNT64 AND MsiNTProductType = 1)' ?>
 <?define condition_w10x64 = '(REGISTRY_PRODUCT_NAME >< "Windows 10" AND VersionNT = VersionNT64 AND MsiNTProductType = 1)' ?>
 <?define condition_w10x86 = '(REGISTRY_PRODUCT_NAME >< "Windows 10" AND VersionNT <> VersionNT64 AND MsiNTProductType = 1)' ?>
+<?define condition_w11x64 = '(REGISTRY_PRODUCT_NAME >< "Windows 11" AND VersionNT = VersionNT64 AND MsiNTProductType = 1)' ?>
 </Include>

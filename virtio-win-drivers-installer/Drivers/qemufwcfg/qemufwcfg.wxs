@@ -9,7 +9,9 @@
         <?if $(sys.BUILDARCH) = "x64" ?>
             <ComponentGroupRef Id='CMPG_WinServer2016_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_WinServer2019_$(var.driverName)' />
+            <ComponentGroupRef Id='CMPG_WinServer2022_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_Win10x64_$(var.driverName)' />
+            <ComponentGroupRef Id='CMPG_Win11x64_$(var.driverName)' />
         <?else ?>
             <ComponentGroupRef Id='CMPG_Win10x86_$(var.driverName)' />
         <?endif ?>

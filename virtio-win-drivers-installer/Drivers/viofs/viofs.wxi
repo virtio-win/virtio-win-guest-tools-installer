@@ -35,6 +35,12 @@
 <?include ../GenericWindowsComponets/2k19.wxi ?>
 <?undef viofs_virtiofs_guid?>
 <?undef guid?>
+<!-- 2k22 -->
+<?define guid = "0EE9BBA1-9168-4D30-83BC-9DCD408BEB19"?>
+<?define viofs_virtiofs_guid = "E355531E-4609-4CD3-8F9C-361795825A02"?>
+<?include ../GenericWindowsComponets/2k22.wxi ?>
+<?undef viofs_virtiofs_guid?>
+<?undef guid?>
 <!-- w8x64 -->
 <?define guid = "5DA3AF56-C49F-47AC-83D7-70AB4AF45292"?>
 <?define viofs_WdfCoInstaller_guid = "1E6ED880-FC13-4912-8F92-B572FF739330"?>
@@ -55,6 +61,12 @@
 <?define guid = "E4F42A9F-D576-4606-B2BF-96D24E53E365"?>
 <?define viofs_virtiofs_guid = "3D0B70D1-C98E-4986-A0D1-6CF4B1E06CC9"?>
 <?include ../GenericWindowsComponets/w10x64.wxi ?>
+<?undef viofs_virtiofs_guid?>
+<?undef guid?>
+<!-- w11x64 -->
+<?define guid = "78836E98-4BD5-4D03-82CC-3AC21542545D"?>
+<?define viofs_virtiofs_guid = "643AE04C-905E-478D-A955-387DB8F65425"?>
+<?include ../GenericWindowsComponets/w11x64.wxi ?>
 <?undef viofs_virtiofs_guid?>
 <?undef guid?>
 <?else ?>

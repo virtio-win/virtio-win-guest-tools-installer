@@ -47,6 +47,16 @@
 <?undef viorng_viorngum_guid?>
 <?undef viorng_viorngci_guid?>
 <?undef guid?>
+<!-- 2k22 -->
+<?define guid = "8B71783C-4721-4203-BA5B-69664BEECCCD"?>
+<?define viorng_viorngum_guid = "6A477A10-5405-4EDE-B0BB-F5831DE6D644"?>
+<?define viorng_viorngci_guid = "439CF7FD-1B3D-4178-8517-48ADBD64A907"?>
+<?define viorng_WdfCoInstaller_guid = "7075E60E-01E9-4553-A4E0-39E5F38527B1"?>
+<?include ../GenericWindowsComponets/2k22.wxi ?>
+<?undef viorng_WdfCoInstaller_guid?>
+<?undef viorng_viorngum_guid?>
+<?undef viorng_viorngci_guid?>
+<?undef guid?>
 <!-- w8x64 -->
 <?define guid = "6C430409-AFFA-4239-991F-FE03EA84B11E"?>
 <?define viorng_viorngum_guid = "A8B4F308-C944-4BC6-898A-0190F041F038"?>
@@ -73,6 +83,16 @@
 <?define viorng_viorngci_guid = "4CABF4CC-DDE8-4238-AB70-41693070408B"?>
 <?define viorng_WdfCoInstaller_guid = "86F20A0E-C722-480E-A22C-F9000481144C"?>
 <?include ../GenericWindowsComponets/w10x64.wxi ?>
+<?undef viorng_WdfCoInstaller_guid?>
+<?undef viorng_viorngum_guid?>
+<?undef viorng_viorngci_guid?>
+<?undef guid?>
+<!-- w11x64 -->
+<?define guid = "09A012A4-0DA0-426E-95B8-5E91CC1AA174"?>
+<?define viorng_viorngum_guid = "04DFD7AE-0E1D-4FC5-8F79-EC991DAF03E2"?>
+<?define viorng_viorngci_guid = "808F4CD3-85F9-4CBD-BAD2-361DA0D947C6"?>
+<?define viorng_WdfCoInstaller_guid = "1B6C1E45-A648-4C72-96AD-0AEB61189CCA"?>
+<?include ../GenericWindowsComponets/w11x64.wxi ?>
 <?undef viorng_WdfCoInstaller_guid?>
 <?undef viorng_viorngum_guid?>
 <?undef viorng_viorngci_guid?>

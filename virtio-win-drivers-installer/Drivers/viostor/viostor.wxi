@@ -23,6 +23,10 @@
 <?define guid = "57F26A76-3048-43AD-8852-412BF36D017B"?>
 <?include ../GenericWindowsComponets/2k19.wxi ?>
 <?undef guid?>
+<!-- 2k22 -->
+<?define guid = "83B88AE8-CE82-423F-9ED2-5403381105FE"?>
+<?include ../GenericWindowsComponets/2k22.wxi ?>
+<?undef guid?>
 <!-- w8x64 -->
 <?define guid = "616B7CA7-4D72-474E-8FA4-CF7DBF76B294"?>
 <?include ../GenericWindowsComponets/w8x64.wxi ?>
@@ -34,6 +38,10 @@
 <!-- w10x64 -->
 <?define guid = "884ADCD2-0334-45AB-9806-F21ED4D16D48"?>
 <?include ../GenericWindowsComponets/w10x64.wxi ?>
+<?undef guid?>
+<!-- w11x64 -->
+<?define guid = "70FFAB18-7DAA-47D7-86B4-CEA358DEFB0C"?>
+<?include ../GenericWindowsComponets/w11x64.wxi ?>
 <?undef guid?>
 <?else ?>
 <!-- w8x86 -->
