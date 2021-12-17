@@ -5,7 +5,7 @@
 <?define osShort = "w11" ?>
 <?define ISA = "amd64" ?>
 <?define Win64 = "yes" ?>
-<?define condition = "$(var.condition_w10x64)" ?>
+<?define condition = "$(var.condition_w11x64)" ?>
 <?include ./template.wxi ?>
 <?undef WdfCoInstaller01011?>
 <?undef osFullName?>
