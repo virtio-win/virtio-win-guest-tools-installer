@@ -243,11 +243,12 @@ def get_expected_allusers_property():
 
 def get_expected_RegLocator():
     expected_values_x64 = {
-        'MyRegistrySearch': [r'SOFTWARE\Microsoft\Windows NT\CurrentVersion', 'ProductName'],
+        'ProductNameSearch': [r'SOFTWARE\Microsoft\Windows NT\CurrentVersion', 'ProductName'],
+        'CurrentBuildNumberSearch': [r'SOFTWARE\Microsoft\Windows NT\CurrentVersion', 'CurrentBuildNumber'],
         'wgt_uninstall_path': [r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\{042CD13C-735D-4140-B146-D3F8263D7E4C}', 'UninstallString']
     }
     expected_values_x86 = {
-        'MyRegistrySearch':[r'SOFTWARE\Microsoft\Windows NT\CurrentVersion', 'ProductName'],
+        'ProductNameSearch':[r'SOFTWARE\Microsoft\Windows NT\CurrentVersion', 'ProductName'],
         'wgt_uninstall_path':[r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{042CD13C-735D-4140-B146-D3F8263D7E4C}', 'UninstallString'],
     }
     return (
