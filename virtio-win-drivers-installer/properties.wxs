@@ -44,10 +44,21 @@
     <Fragment>
         <Property Id="Set_ProductName" Value="1" />
         <Property Id="REGISTRY_PRODUCT_NAME">
-            <RegistrySearch Id="MyRegistrySearch"
+            <RegistrySearch Id="ProductNameSearch"
                 Root="HKLM"
                 Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion"
                 Name="ProductName"
+                Type="raw" />
+        </Property>
+    </Fragment>
+    <!-- Query the ProductName registry value to detect os version -->
+    <Fragment>
+        <Property Id="Set_CurrentBuildNumber" Value="1" />
+        <Property Id="REGISTRY_CURRENT_BUILD_NUMBER">
+            <RegistrySearch Id="CurrentBuildNumberSearch"
+                Root="HKLM"
+                Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+                Name="CurrentBuildNumber"
                 Type="raw" />
         </Property>
     </Fragment>

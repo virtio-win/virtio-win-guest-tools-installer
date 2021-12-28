@@ -19,6 +19,7 @@
             <PropertyRef Id="Disable_repair_and_modify" />
             <PropertyRef Id="LaunchConditionsSupportedOS" />
             <PropertyRef Id="Set_ProductName" />
+            <PropertyRef Id="Set_CurrentBuildNumber" />
             <PropertyRef Id="Set_Old_WGT_props" />
             <MajorUpgrade 
                   DowngradeErrorMessage="A newer version of [ProductName] is already installed."
