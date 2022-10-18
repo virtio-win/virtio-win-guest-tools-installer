@@ -7,6 +7,8 @@
     <Fragment>
         <ComponentGroup Id="CMPG_$(var.driverName)_driver" Directory="$(var.destDirName)">
         <?if $(sys.BUILDARCH) = "x64" ?>
+            <ComponentGroupRef Id='CMPG_WinServer2012_$(var.driverName)' />
+            <ComponentGroupRef Id='CMPG_WinServer2012R2_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_WinServer2016_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_WinServer2019_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_WinServer2022_$(var.driverName)' />

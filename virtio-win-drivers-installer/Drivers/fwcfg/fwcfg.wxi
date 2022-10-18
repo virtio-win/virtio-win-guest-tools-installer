@@ -15,9 +15,7 @@
 <?undef guid?>
 <!-- 2k12R2 -->
 <?define guid = "935496ED-7356-47C7-895F-7656D9B31F94"?>
-<?define fwcfg_WdfCoInstaller_guid = "2FC4C5CB-60F8-4EEA-8EF5-2789F47C1C39"?>
-<?include ../GenericWindowsComponets/2k12R2.wxi ?>
-<?undef fwcfg_WdfCoInstaller_guid?>
+<?include ../GenericWindowsComponets/2k12R2_ext.wxi ?>
 <?undef guid?>
 <!-- 2k16 -->
 <?define guid = "7D32ABFB-E9A0-42D9-89F5-72E11B088989"?>
@@ -39,9 +37,7 @@
 <?undef guid?>
 <!-- w81x64 -->
 <?define guid = "979D702D-82B2-42C3-BF5D-4E1DA7404D2F"?>
-<?define fwcfg_WdfCoInstaller_guid = "530BA6EF-23BB-432C-8795-D97E0FBFB90D"?>
-<?include ../GenericWindowsComponets/w81x64.wxi ?>
-<?undef fwcfg_WdfCoInstaller_guid?>
+<?include ../GenericWindowsComponets/w81x64_ext.wxi ?>
 <?undef guid?>
 <!-- w10x64 -->
 <?define guid = "73F380D6-BA74-44D3-82A3-40679FA73522"?>
@@ -60,9 +56,7 @@
 <?undef guid?>
 <!-- w81x86 -->
 <?define guid = "B66970A5-3AD3-4454-97DE-5E5D88D93FFF"?>
-<?define fwcfg_WdfCoInstaller_guid = "30642F14-A0DD-4F35-84C0-2137FE0BA8A6"?>
-<?include ../GenericWindowsComponets/w81x86.wxi ?>
-<?undef fwcfg_WdfCoInstaller_guid?>
+<?include ../GenericWindowsComponets/w81x86_ext.wxi ?>
 <?undef guid?>
 <!-- w10x86 -->
 <?define guid = "576398C6-231E-4FE0-8AF6-E62BF5015F70"?>

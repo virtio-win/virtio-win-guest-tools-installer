@@ -154,14 +154,12 @@ def get_expected_componentids():
         'CMP_WinServer2012_fwcfg':['{11691408-18A5-43E1-AA4E-2E0217A76993}'],
         'CMP_fwcfg_WdfCoInstaller01011_2k12_amd64':['{0562B734-7F4A-431A-A4CC-CE3211345C46}'],
         'CMP_WinServer2012R2_fwcfg':['{935496ED-7356-47C7-895F-7656D9B31F94}'],
-        'CMP_fwcfg_WdfCoInstaller01011_2k12R2_amd64':['{2FC4C5CB-60F8-4EEA-8EF5-2789F47C1C39}'],
         'CMP_WinServer2016_fwcfg':['{7D32ABFB-E9A0-42D9-89F5-72E11B088989}'],
         'CMP_WinServer2019_fwcfg':['{B1C91741-7C0E-4041-A651-E6887B197A15}'],
         'CMP_WinServer2022_fwcfg':['{F20E93BC-E083-4E56-9AFD-4147369880AD}'],
         'CMP_Win8x64_fwcfg':['{04B0AB4E-2415-41CB-A025-074F1E4537CD}'],
         'CMP_fwcfg_WdfCoInstaller01011_w8_amd64':['{B50E490D-F987-439F-9035-54111ED73576}'],
         'CMP_Win81x64_fwcfg':['{979D702D-82B2-42C3-BF5D-4E1DA7404D2F}'],
-        'CMP_fwcfg_WdfCoInstaller01011_w8.1_amd64':['{530BA6EF-23BB-432C-8795-D97E0FBFB90D}'],
         'CMP_Win10x64_fwcfg':['{73F380D6-BA74-44D3-82A3-40679FA73522}'],
         'CMP_Win11x64_fwcfg':['{7CD5A9FE-D145-4F82-BD09-EB4599C8558B}'],
     }
@@ -219,7 +217,6 @@ def get_expected_componentids():
         'CMP_Win8x86_fwcfg':['{C2EC93F7-F85A-498B-AF47-83556C006D75}'],
         'CMP_fwcfg_WdfCoInstaller01011_w8_x86':['{53EB7169-2583-4F39-92FE-21E3CA57434A}'],
         'CMP_Win81x86_fwcfg':['{B66970A5-3AD3-4454-97DE-5E5D88D93FFF}'],
-        'CMP_fwcfg_WdfCoInstaller01011_w8.1_x86':['{30642F14-A0DD-4F35-84C0-2137FE0BA8A6}'],
         'CMP_Win10x86_fwcfg':['{576398C6-231E-4FE0-8AF6-E62BF5015F70}'],
         }
     return (
