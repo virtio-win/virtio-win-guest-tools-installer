@@ -15,9 +15,9 @@
                 Description='QEMU pvpanic device driver'>
                 <ComponentGroupRef Id='CMPG_pvpanic_driver' />
         </Feature>
-        <Feature Id='FE_qemufwcfg_driver' Title='Qemufwcfg' Level='1'
-                Description='QEMU FWCfg device driver'>
-                <ComponentGroupRef Id='CMPG_qemufwcfg_driver' />
+        <Feature Id='FE_fwcfg_driver' Title='Fwcfg' Level='1'
+                Description='FWCfg device driver'>
+                <ComponentGroupRef Id='CMPG_fwcfg_driver' />
         </Feature>
         <Feature Id='FE_qemupciserial_driver' Title='Qemupciserial' Level='1'
                 Description='QEMU PCI serial device driver'>

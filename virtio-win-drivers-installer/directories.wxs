@@ -9,7 +9,7 @@
                     <Directory Id="BALLOON" Name="Balloon"/>
                     <Directory Id="NETWORK" Name="Network"/>
                     <Directory Id="PVPANIC" Name="Pvpanic"/>
-                    <Directory Id="QEMUFWCFG" Name="Qemufwcfg"/>
+                    <Directory Id="FWCFG" Name="Fwcfg"/>
                     <Directory Id="QEMUPCISERIAL" Name="Qemupciserial"/>
                     <Directory Id="VIOINPUT" Name="Vioinput"/>
                     <Directory Id="VIORNG" Name="Viorng"/>
