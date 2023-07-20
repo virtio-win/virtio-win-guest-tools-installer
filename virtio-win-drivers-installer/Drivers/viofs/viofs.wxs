@@ -21,6 +21,17 @@
             <ComponentGroupRef Id='CMPG_Win81x86_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_Win10x86_$(var.driverName)' />
         <?endif ?>
+            <Component Id="CMP_viofs_driver_Registry"
+                Guid='*'>
+                <RegistryValue Id="Registry_FileSystemName"
+                    KeyPath="yes"
+                    Action="write"
+                    Root="HKLM"
+                    Key="Software\VirtIO-FS"
+                    Name="FileSystemName"
+                    Value="NTFS"
+                    Type="string" />
+            </Component>
         </ComponentGroup>
     </Fragment>
 </Wix>
