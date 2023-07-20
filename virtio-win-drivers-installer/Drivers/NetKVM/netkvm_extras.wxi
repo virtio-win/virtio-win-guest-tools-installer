@@ -16,7 +16,7 @@
             Win64='$(var.Win64)'>
             <Condition><![CDATA[$(var.condition)]]></Condition>
             <File Id='FILE_$(var.driverName)_readme_$(var.osShort)_$(var.ISA)'
-                Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\readme.doc'
+                Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\Readme.md'
                 KeyPath='yes'/>
         </Component>
 </Include>
