@@ -24,25 +24,19 @@
 <!-- 2k16 -->
 <?define guid = "106DD383-EA41-4CED-A1DE-BAD4B1421B42"?>
 <?define viorng_viorngum_guid = "903768B1-286A-4B00-B3B7-B3704394D5D7"?>
-<?define viorng_WdfCoInstaller_guid = "81AE81B6-BB9E-459C-89AB-4169439E58C7"?>
 <?include ../GenericWindowsComponets/2k16.wxi ?>
-<?undef viorng_WdfCoInstaller_guid?>
 <?undef viorng_viorngum_guid?>
 <?undef guid?>
 <!-- 2k19 -->
 <?define guid = "EB4404C4-34A2-4378-9D66-A4D8841BAE56"?>
 <?define viorng_viorngum_guid = "8D85AA97-4238-4A28-9A79-B009FBEA7961"?>
-<?define viorng_WdfCoInstaller_guid = "B4800BB4-6311-4DC3-AC25-C41C7ABA18C9"?>
 <?include ../GenericWindowsComponets/2k19.wxi ?>
-<?undef viorng_WdfCoInstaller_guid?>
 <?undef viorng_viorngum_guid?>
 <?undef guid?>
 <!-- 2k22 -->
 <?define guid = "8B71783C-4721-4203-BA5B-69664BEECCCD"?>
 <?define viorng_viorngum_guid = "6A477A10-5405-4EDE-B0BB-F5831DE6D644"?>
-<?define viorng_WdfCoInstaller_guid = "7075E60E-01E9-4553-A4E0-39E5F38527B1"?>
 <?include ../GenericWindowsComponets/2k22.wxi ?>
-<?undef viorng_WdfCoInstaller_guid?>
 <?undef viorng_viorngum_guid?>
 <?undef guid?>
 <!-- w8x64 -->
@@ -62,17 +56,13 @@
 <!-- w10x64 -->
 <?define guid = "8600A950-7C8B-4EAE-84A4-8FFEA8BE906F"?>
 <?define viorng_viorngum_guid = "32659F53-B2EB-4D72-A3D9-CBA7C6401D08"?>
-<?define viorng_WdfCoInstaller_guid = "86F20A0E-C722-480E-A22C-F9000481144C"?>
 <?include ../GenericWindowsComponets/w10x64.wxi ?>
-<?undef viorng_WdfCoInstaller_guid?>
 <?undef viorng_viorngum_guid?>
 <?undef guid?>
 <!-- w11x64 -->
 <?define guid = "09A012A4-0DA0-426E-95B8-5E91CC1AA174"?>
 <?define viorng_viorngum_guid = "04DFD7AE-0E1D-4FC5-8F79-EC991DAF03E2"?>
-<?define viorng_WdfCoInstaller_guid = "1B6C1E45-A648-4C72-96AD-0AEB61189CCA"?>
 <?include ../GenericWindowsComponets/w11x64.wxi ?>
-<?undef viorng_WdfCoInstaller_guid?>
 <?undef viorng_viorngum_guid?>
 <?undef guid?>
 <?else ?>
@@ -93,9 +83,7 @@
 <!-- w10x86 -->
 <?define guid = "8702F843-FC88-4810-9BB4-E28560187290"?>
 <?define viorng_viorngum_guid = "675D7446-E963-4AF3-A4DB-FF3D749FDAF9"?>
-<?define viorng_WdfCoInstaller_guid = "1443B655-35AB-4F40-B466-6638FEA7F89A"?>
 <?include ../GenericWindowsComponets/w10x86.wxi ?>
-<?undef viorng_WdfCoInstaller_guid?>
 <?undef viorng_viorngum_guid?>
 <?undef guid?>
 <?endif ?>
