@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <Include xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
-<?define WdfCoInstaller01011 = "true" ?>
+<?define WdfCoInstaller01011 = "false" ?>
 <?define osFullName = "Win81x64" ?>
 <?define osShort = "w8.1" ?>
 <?define ISA = "amd64" ?>
