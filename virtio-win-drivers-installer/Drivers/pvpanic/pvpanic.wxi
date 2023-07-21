@@ -15,27 +15,19 @@
 <?undef guid?>
 <!-- 2k12R2 -->
 <?define guid = "0B7ECD56-9401-4E1E-B435-A33B4C837685"?>
-<?define pvpanic_WdfCoInstaller_guid = "966AB168-C780-4687-ACF8-0ADCF1920EB0"?>
 <?include ../GenericWindowsComponets/2k12R2.wxi ?>
-<?undef pvpanic_WdfCoInstaller_guid?>
 <?undef guid?>
 <!-- 2k16 -->
 <?define guid = "9CB8ECDD-A783-498B-9899-9A9CAED76C38"?>
-<?define pvpanic_WdfCoInstaller_guid = "15CE13D6-AB7D-4391-BE78-2F955D75A0F4"?>
 <?include ../GenericWindowsComponets/2k16.wxi ?>
-<?undef pvpanic_WdfCoInstaller_guid?>
 <?undef guid?>
 <!-- 2k19 -->
 <?define guid = "3E56710F-73D5-4B15-80B1-2E23850E328D"?>
-<?define pvpanic_WdfCoInstaller_guid = "0383C6CE-6F57-4E36-9034-BA81BBF5A943"?>
 <?include ../GenericWindowsComponets/2k19.wxi ?>
-<?undef pvpanic_WdfCoInstaller_guid?>
 <?undef guid?>
 <!-- 2k22 -->
 <?define guid = "6623B93F-8C4A-4FD3-8A02-767B04682A42"?>
-<?define pvpanic_WdfCoInstaller_guid = "D5C5F30B-3A15-4402-9871-8DBA1AE4769A"?>
 <?include ../GenericWindowsComponets/2k22.wxi ?>
-<?undef pvpanic_WdfCoInstaller_guid?>
 <?undef guid?>
 <!-- w8x64 -->
 <?define guid = "2D389C8A-E472-4D61-86E7-CF0BBDD56FC5"?>
@@ -45,21 +37,15 @@
 <?undef guid?>
 <!-- w81x64 -->
 <?define guid = "AFB60077-9B12-4558-B7E9-BE13ABC046BD"?>
-<?define pvpanic_WdfCoInstaller_guid = "39264E30-DE61-4DD9-A8D7-F7F9A030CBA5"?>
 <?include ../GenericWindowsComponets/w81x64.wxi ?>
-<?undef pvpanic_WdfCoInstaller_guid?>
 <?undef guid?>
 <!-- w10x64 -->
 <?define guid = "544B33DA-A7E0-44D2-9DB0-CACA3B842DA3"?>
-<?define pvpanic_WdfCoInstaller_guid = "AF295118-E85D-4280-BD3B-3CC4F884EB46"?>
 <?include ../GenericWindowsComponets/w10x64.wxi ?>
-<?undef pvpanic_WdfCoInstaller_guid?>
 <?undef guid?>
 <!-- w11x64 -->
 <?define guid = "B465A5A3-25A9-4924-9F6F-79BFE5066DC3"?>
-<?define pvpanic_WdfCoInstaller_guid = "85EB5BFC-CE15-46A4-B995-DFC3269C27AE"?>
 <?include ../GenericWindowsComponets/w11x64.wxi ?>
-<?undef pvpanic_WdfCoInstaller_guid?>
 <?undef guid?>
 <?else ?>
 <!-- w8x86 -->
@@ -70,15 +56,11 @@
 <?undef guid?>
 <!-- w81x86 -->
 <?define guid = "FF5BF212-EBA1-4B0A-B665-F1316BC19B16"?>
-<?define pvpanic_WdfCoInstaller_guid = "7418159A-3E92-4BAC-93CA-ADE27F7FB2A5"?>
 <?include ../GenericWindowsComponets/w81x86.wxi ?>
-<?undef pvpanic_WdfCoInstaller_guid?>
 <?undef guid?>
 <!-- w10x86 -->
 <?define guid = "EFC3F660-58A8-44EE-AACD-4C04FD4B4C7D"?>
-<?define pvpanic_WdfCoInstaller_guid = "7AE0EB50-0D1C-450A-B9B3-25471150C420"?>
 <?include ../GenericWindowsComponets/w10x86.wxi ?>
-<?undef pvpanic_WdfCoInstaller_guid?>
 <?undef guid?>
 <?endif ?>
 </Include>

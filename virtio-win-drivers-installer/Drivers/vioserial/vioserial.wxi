@@ -19,21 +19,15 @@
 <?undef guid?>
 <!-- 2k16 -->
 <?define guid = "3DCC592D-542C-49E1-90EA-45177C01BC26"?>
-<?define vioser_WdfCoInstaller_guid = "CFC85C8F-8974-4D54-827F-279F1DFB4D41"?>
 <?include ../GenericWindowsComponets/2k16.wxi ?>
-<?undef vioser_WdfCoInstaller_guid?>
 <?undef guid?>
 <!-- 2k19 -->
 <?define guid = "AA85E501-4E99-42A1-A519-9769D8C6ACAC"?>
-<?define vioser_WdfCoInstaller_guid = "C43AFCBE-D441-452D-81E0-2BAA509A8829"?>
 <?include ../GenericWindowsComponets/2k19.wxi ?>
-<?undef vioser_WdfCoInstaller_guid?>
 <?undef guid?>
 <!-- 2k22 -->
 <?define guid = "6AEBEAD8-7BE9-4981-A72F-14DC6E076D18"?>
-<?define vioser_WdfCoInstaller_guid = "A6B45CA9-5972-423A-A454-9C78E63CE506"?>
 <?include ../GenericWindowsComponets/2k22.wxi ?>
-<?undef vioser_WdfCoInstaller_guid?>
 <?undef guid?>
 <!-- w8x64 -->
 <?define guid = "69DC0B9B-F2F8-40C1-9E3D-3CC711696BDF"?>
@@ -47,15 +41,11 @@
 <?undef guid?>
 <!-- w10x64 -->
 <?define guid = "98A0368C-E2D6-49A8-9B8C-1E3DFBCFFD19"?>
-<?define vioser_WdfCoInstaller_guid = "13CC4269-F28E-41B4-A33F-0F8DFABAD371"?>
 <?include ../GenericWindowsComponets/w10x64.wxi ?>
-<?undef vioser_WdfCoInstaller_guid?>
 <?undef guid?>
 <!-- w11x64 -->
 <?define guid = "91CBFAC6-D648-4330-A205-C44B571954CE"?>
-<?define vioser_WdfCoInstaller_guid = "E292213D-B93C-4029-87F5-C12CCFF3F1B4"?>
 <?include ../GenericWindowsComponets/w11x64.wxi ?>
-<?undef vioser_WdfCoInstaller_guid?>
 <?undef guid?>
 <?else ?>
 <!-- w8x86 -->
@@ -70,9 +60,7 @@
 <?undef guid?>
 <!-- w10x86 -->
 <?define guid = "DF2A920C-E408-4479-8156-E86EC9DCA9D4"?>
-<?define vioser_WdfCoInstaller_guid = "FA64ED4C-13A9-4F14-9200-497F5EAC885C"?>
 <?include ../GenericWindowsComponets/w10x86.wxi ?>
-<?undef vioser_WdfCoInstaller_guid?>
 <?undef guid?>
 <?endif ?>
 </Include>
