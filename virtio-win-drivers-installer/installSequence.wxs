@@ -13,6 +13,10 @@
         </InstallUISequence>
         <InstallExecuteSequence>
             <AllocateRegistrySpace>NOT Installed</AllocateRegistrySpace>
+	    <Custom Action='CA_RestoreIPConfig' Before='InstallFinalize'>NOT Installed</Custom>
+	    <Custom Action='CA_RestoreIPConfigProperty' Before='CA_RestoreIPConfig'></Custom>
+	    <Custom Action='CA_SaveIPConfig' After='InstallInitialize'>Installed AND REMOVE="ALL"</Custom>
+	    <Custom Action='CA_SaveIPConfigProperty' Before='CA_SaveIPConfig'></Custom>
         </InstallExecuteSequence>
     </Fragment>
 </Wix>
