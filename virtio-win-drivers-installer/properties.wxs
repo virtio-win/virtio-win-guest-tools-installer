@@ -81,5 +81,61 @@
             Id="CA_OldInstallerError" 
             Error="An old version of WGT has been detected please uninstall it and try again"/>
     </Fragment>
+    <!-- This Properties are for back up and update static IP logic -->
+    <Fragment>
+	<Property Id="IPCONFFILENAME" Value="vionet.cfg" />
+        <CustomAction
+            Id="CA_RestoreIPConfig" Script="vbscript"
+            Impersonate="no" Execute="deferred">
+            <![CDATA[
+                Dim wsShell
+                Set wsShell = CreateObject("WScript.shell")
+                Dim nmFile
+                nmFile = Session.Property("CustomActionData")
+                Dim fsObj
+                Set fsObj = CreateObject("Scripting.FileSystemObject")
+                If fsObj.FileExists(nmFile) Then
+                    wsShell.run "cmd /c netsh exec " & Chr(34) & nmFile & Chr(34), 1, TRUE
+                End If
+            ]]>
+        </CustomAction>
+	<CustomAction
+            Id="CA_RestoreIPConfigProperty"
+            Property = "CA_RestoreIPConfig"
+            Value = "[INSTALLERDIR][IPCONFFILENAME]" />
+        <CustomAction
+            Id="CA_SaveIPConfig" Script="vbscript"
+            Impersonate="no" Execute="deferred">
+            <![CDATA[
+                Dim strComputer
+                strComputer = "."
+                Dim objWMIService
+                Set objWMIService = GetObject("winmgmts:" _
+                    & "{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
+                Dim colNetAdapters
+                Set colNetAdapters = objWMIService.ExecQuery _
+                    ("Select * from Win32_NetworkAdapterConfiguration where IPEnabled=TRUE")
+                Dim wsShell
+                Set wsShell = CreateObject("WScript.shell")
+                Dim nmFile
+                nmFile = Session.Property("CustomActionData")
+                Dim fsObj
+                Set fsObj = CreateObject("Scripting.FileSystemObject")
+                If fsObj.FileExists(nmFile) Then
+                    fsObj.DeleteFile(nmFile)
+                End If
+                For Each objNetAdapter In colNetAdapters
+                    If objNetAdapter.DHCPEnabled = 0 Then
+                        wsShell.run "cmd /c netsh interface dump >" & Chr(34) & nmFile & Chr(34), 1, TRUE
+                        Exit For
+                    End If
+                Next
+            ]]>
+        </CustomAction>
+        <CustomAction
+            Id="CA_SaveIPConfigProperty"
+            Property = "CA_SaveIPConfig"
+            Value = "[INSTALLERDIR][IPCONFFILENAME]" />
+    </Fragment>
 <?undef Win64?>
 </Wix>
