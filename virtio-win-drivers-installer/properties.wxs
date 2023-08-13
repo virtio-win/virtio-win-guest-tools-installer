@@ -7,13 +7,6 @@
     <?define Win64 = "no" ?>
     <?define WinUninstallRegLocation = '' ?>
 <?endif ?>
-    <!-- Disable repair and upgrade buttens in the UI -->
-    <!-- TODO fix repair and upgrade flows -->
-    <Fragment>
-        <Property Id="Disable_repair_and_modify" Value="1" />
-        <Property Id='ARPNOREPAIR'>1</Property>
-        <Property Id='ARPNOMODIFY'>1</Property>
-    </Fragment>
     <!-- Set Cited Properties -->
     <Fragment>
         <Property Id="Set_Cited_properties" Value="1" />

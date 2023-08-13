@@ -4,7 +4,7 @@
         <?if $(var.WdfCoInstaller01011) = "true" ?>
         <Component Id='CMP_$(var.driverName)_WdfCoInstaller01011_$(var.osShort)_$(var.ISA)'
             Guid='$(var.balloon_WdfCoInstaller_guid)'
-            Transitive='yes'
+            Transitive='no'
             Win64='$(var.Win64)'>
             <Condition><![CDATA[$(var.condition)]]></Condition>
             <File Id='FILE_$(var.driverName)_WdfCoInstaller01011_$(var.osShort)_$(var.ISA)'
@@ -14,7 +14,7 @@
         <?endif?>
         <Component Id='CMP_blnsvr_$(var.osShort)_$(var.ISA)'
             Guid='$(var.balloon_blnsvr_guid)'
-            Transitive='yes'
+            Transitive='no'
             Win64='$(var.Win64)'>
             <Condition><![CDATA[$(var.condition)]]></Condition>
             <File Id='FILE_blnsvr_$(var.osShort)_$(var.ISA)'
