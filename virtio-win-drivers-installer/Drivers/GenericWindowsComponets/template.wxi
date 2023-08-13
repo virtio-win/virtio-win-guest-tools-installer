@@ -7,7 +7,7 @@
             Directory="$(var.destDirName)">
             <Component Id='CMP_$(var.osFullName)_$(var.driverName)'
                 Guid='$(var.guid)'
-                Transitive='yes'
+                Transitive='no'
                 Permanent='$(var.permanent)'
                 Win64='$(var.Win64)'>
                 <Condition><![CDATA[$(var.condition)]]></Condition>
