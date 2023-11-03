@@ -1,7 +1,0 @@
-
-LIBRARY RHEVCredProv.DLL
-
-EXPORTS
-
-    DllCanUnloadNow                                 PRIVATE
-    DllGetClassObject                               PRIVATE
