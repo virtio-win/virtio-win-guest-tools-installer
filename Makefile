@@ -18,11 +18,9 @@ WIX_BINARIES_FILES=/usr/share/wix-toolset-binaries
 
 # Project Paths #
 WIX_BINARIES_LINK=$(CURDIR)/wix311-binaries
-SSO_PATH=$(CURDIR)/3rdParty/SSO
 
 # Windows Paths 
 VIRTIO_WIN_PATH=$(shell winepath -w $(VIRTIO_WIN_DRIVERS_PATH)|sed 's|\\|\\\\\\\\|g')
-SSO_WIN_PATH=$(shell winepath -w $(SSO_PATH)|sed 's|\\|\\\\\\\\|g')
 WIX_BINARIES_WIN_PATH=$(shell winepath -w $(WIX_BINARIES_LINK)|sed 's|\\|\\\\\\\\|g')
 INSTALLER_WIN_PATH=$(shell winepath -w $(CURDIR)/virtio-win-drivers-installer|sed 's|\\|\\\\\\\\|g')
 
@@ -80,7 +78,6 @@ clean:
 	@echo $<
 	sed \
 	-e "s|@@VIRTIO-WIN-PATH@@|${VIRTIO_WIN_PATH}|g" \
-	-e "s|@@SSO-WIN-PATH@@|${SSO_WIN_PATH}|g" \
 	-e "s|@@WIX_BIN_PATH@@|${WIX_BINARIES_WIN_PATH}\\\\|g" \
 	-e "s|@@INSTALLER_PATH@@|${INSTALLER_WIN_PATH}|g" \
 	-e "s|@@SPICE_VDAGENT_64_MSI_PATH@@|${SPICE_VDAGENT_64_MSI_PATH}|g" \
