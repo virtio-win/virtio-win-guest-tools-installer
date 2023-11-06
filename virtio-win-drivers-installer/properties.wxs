@@ -76,7 +76,13 @@
     </Fragment>
     <!-- This Properties are for back up and update static IP logic -->
     <Fragment>
+<?if $(sys.BUILDARCH) = "x64" ?>
+        <Binary Id="ConfManagementDll" SourceFile="../Libraries/x64/VioCfg.dll" />
+<?else ?>
+        <Binary Id="ConfManagementDll" SourceFile="../Libraries/x86/VioCfg.dll" />
+<?endif ?>
 	<Property Id="IPCONFFILENAME" Value="vionet.cfg" />
+        <Property Id="VIOCONFFILENAME" Value="viocfg.cfg" />
         <CustomAction
             Id="CA_RestoreIPConfig" Script="vbscript"
             Impersonate="no" Execute="deferred">
@@ -92,43 +98,32 @@
                 End If
             ]]>
         </CustomAction>
-	<CustomAction
+        <CustomAction
             Id="CA_RestoreIPConfigProperty"
             Property = "CA_RestoreIPConfig"
             Value = "[INSTALLERDIR][IPCONFFILENAME]" />
         <CustomAction
-            Id="CA_SaveIPConfig" Script="vbscript"
-            Impersonate="no" Execute="deferred">
-            <![CDATA[
-                Dim strComputer
-                strComputer = "."
-                Dim objWMIService
-                Set objWMIService = GetObject("winmgmts:" _
-                    & "{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
-                Dim colNetAdapters
-                Set colNetAdapters = objWMIService.ExecQuery _
-                    ("Select * from Win32_NetworkAdapterConfiguration where IPEnabled=TRUE")
-                Dim wsShell
-                Set wsShell = CreateObject("WScript.shell")
-                Dim nmFile
-                nmFile = Session.Property("CustomActionData")
-                Dim fsObj
-                Set fsObj = CreateObject("Scripting.FileSystemObject")
-                If fsObj.FileExists(nmFile) Then
-                    fsObj.DeleteFile(nmFile)
-                End If
-                For Each objNetAdapter In colNetAdapters
-                    If objNetAdapter.DHCPEnabled = 0 Then
-                        wsShell.run "cmd /c netsh interface dump >" & Chr(34) & nmFile & Chr(34), 1, TRUE
-                        Exit For
-                    End If
-                Next
-            ]]>
+            Id="CA_RestoreVIOConfig"
+            BinaryKey="ConfManagementDll"
+            DllEntry="RestoreSettings"
+            Impersonate="no"
+            Execute="deferred">
+        </CustomAction>
+	<CustomAction
+            Id="CA_RestoreVIOConfigProperty"
+            Property = "CA_RestoreVIOConfig"
+            Value = "[INSTALLERDIR][VIOCONFFILENAME]" />
+        <CustomAction
+            Id="CA_SaveVIOConfig"
+            BinaryKey="ConfManagementDll"
+            DllEntry="SaveSettings"
+            Impersonate="no"
+            Execute="deferred">
         </CustomAction>
         <CustomAction
-            Id="CA_SaveIPConfigProperty"
-            Property = "CA_SaveIPConfig"
-            Value = "[INSTALLERDIR][IPCONFFILENAME]" />
+            Id="CA_SaveVIOConfigProperty"
+            Property = "CA_SaveVIOConfig"
+            Value = "[INSTALLERDIR][VIOCONFFILENAME]" />
     </Fragment>
 <?undef Win64?>
 </Wix>
