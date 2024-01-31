@@ -7,20 +7,6 @@
 <?define extra_components = "true"?>
 <?define permanent = "no"?>
 <?if $(sys.BUILDARCH) = "x64" ?>
-<!-- 2k12 -->
-<?define guid = "0B1F3B06-EB7C-422E-A347-58BE0D1C5E8B"?>
-<?define viofs_WdfCoInstaller_guid = "0CED08C2-7C43-40AA-8453-1D72F4455C19"?>
-<?define viofs_virtiofs_guid = "E27A24F9-EDDA-4F34-ADB6-0E9E8A40AE6A"?>
-<?include ../GenericWindowsComponets/2k12.wxi ?>
-<?undef viofs_WdfCoInstaller_guid?>
-<?undef viofs_virtiofs_guid?>
-<?undef guid?>
-<!-- 2k12R2 -->
-<?define guid = "E790AD8E-A7F8-4182-AC87-4FCA639D125E"?>
-<?define viofs_virtiofs_guid = "90139462-F500-4411-A1D2-CCC4093B6A8E"?>
-<?include ../GenericWindowsComponets/2k12R2.wxi ?>
-<?undef viofs_virtiofs_guid?>
-<?undef guid?>
 <!-- 2k16 -->
 <?define guid = "3D1814BB-CDF2-4918-BD34-EA697A14D63B"?>
 <?define viofs_virtiofs_guid = "7F51A186-28F4-4C7C-986B-279AC73F6C9C"?>
@@ -39,20 +25,6 @@
 <?include ../GenericWindowsComponets/2k22.wxi ?>
 <?undef viofs_virtiofs_guid?>
 <?undef guid?>
-<!-- w8x64 -->
-<?define guid = "5DA3AF56-C49F-47AC-83D7-70AB4AF45292"?>
-<?define viofs_WdfCoInstaller_guid = "1E6ED880-FC13-4912-8F92-B572FF739330"?>
-<?define viofs_virtiofs_guid = "4F231DC2-A646-4463-A55E-F81F19AE2701"?>
-<?include ../GenericWindowsComponets/w8x64.wxi ?>
-<?undef viofs_WdfCoInstaller_guid?>
-<?undef viofs_virtiofs_guid?>
-<?undef guid?>
-<!-- w81x64 -->
-<?define guid = "F2F51EE8-09F2-4E05-9720-D4F0120CBC16"?>
-<?define viofs_virtiofs_guid = "275DDF53-AE23-40B4-9BA0-850BE7F8C528"?>
-<?include ../GenericWindowsComponets/w81x64.wxi ?>
-<?undef viofs_virtiofs_guid?>
-<?undef guid?>
 <!-- w10x64 -->
 <?define guid = "E4F42A9F-D576-4606-B2BF-96D24E53E365"?>
 <?define viofs_virtiofs_guid = "3D0B70D1-C98E-4986-A0D1-6CF4B1E06CC9"?>
@@ -66,20 +38,6 @@
 <?undef viofs_virtiofs_guid?>
 <?undef guid?>
 <?else ?>
-<!-- w8x86 -->
-<?define guid = "968E6D29-2F81-40EB-8318-4C7849228EFD"?>
-<?define viofs_WdfCoInstaller_guid = "3711996F-2AE9-4363-AB70-CD6A6B66140B"?>
-<?define viofs_virtiofs_guid = "B72B9865-9D86-41FB-936B-18FD4B9DC34A"?>
-<?include ../GenericWindowsComponets/w8x86.wxi ?>
-<?undef viofs_WdfCoInstaller_guid?>
-<?undef viofs_virtiofs_guid?>
-<?undef guid?>
-<!-- w81x86 -->
-<?define guid = "CD229D7D-9052-4F3A-8D30-11C92C42AE38"?>
-<?define viofs_virtiofs_guid = "25676CB3-D9A7-4E34-8DF7-5C33891EABEA"?>
-<?include ../GenericWindowsComponets/w81x86.wxi ?>
-<?undef viofs_virtiofs_guid?>
-<?undef guid?>
 <!-- w10x86 -->
 <?define guid = "19BCC8D3-F4E9-41C1-AF79-196C9F2B16B8"?>
 <?define viofs_virtiofs_guid = "CDC4821F-E00B-48BB-9A4A-5C1A420333F9"?>

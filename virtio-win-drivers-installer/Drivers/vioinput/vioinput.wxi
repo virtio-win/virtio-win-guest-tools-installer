@@ -7,20 +7,6 @@
 <?define extra_components = "true"?>
 <?define permanent = "no"?>
 <?if $(sys.BUILDARCH) = "x64" ?>
-<!-- 2k12 -->
-<?define guid = "A6F6D72A-2DE6-4D95-BBE5-67E98999E6DD"?>
-<?define vioinput_viohidkmdf_guid = "41A2E8DC-D3CA-420D-ACD3-C24033966FA6"?>
-<?define vioinput_WdfCoInstaller_guid = "AAE8C79A-7F96-422F-9575-01C43852CF91"?>
-<?include ../GenericWindowsComponets/2k12.wxi ?>
-<?undef vioinput_WdfCoInstaller_guid?>
-<?undef vioinput_viohidkmdf_guid?>
-<?undef guid?>
-<!-- 2k12R2 -->
-<?define guid = "51337132-A046-4519-825F-69A5BC303B4C"?>
-<?define vioinput_viohidkmdf_guid = "A874B0F1-ED28-4911-8EA4-11185035CA99"?>
-<?include ../GenericWindowsComponets/2k12R2.wxi ?>
-<?undef vioinput_viohidkmdf_guid?>
-<?undef guid?>
 <!-- 2k16 -->
 <?define guid = "9C1C516E-57B9-4B8E-ADAB-84C9EFB86E89"?>
 <?define vioinput_viohidkmdf_guid = "65F81134-D0CC-4881-87BE-02C7DD0D798E"?>
@@ -39,20 +25,6 @@
 <?include ../GenericWindowsComponets/2k22.wxi ?>
 <?undef vioinput_viohidkmdf_guid?>
 <?undef guid?>
-<!-- w8x64 -->
-<?define guid = "F4B3C864-E684-419D-8494-410F5088DF6F"?>
-<?define vioinput_viohidkmdf_guid = "EA76EA45-D3DC-4CF6-8DCA-A74132A62DF1"?>
-<?define vioinput_WdfCoInstaller_guid = "572540EA-7AFE-4E60-842C-2A319DA3EB14"?>
-<?include ../GenericWindowsComponets/w8x64.wxi ?>
-<?undef vioinput_WdfCoInstaller_guid?>
-<?undef vioinput_viohidkmdf_guid?>
-<?undef guid?>
-<!-- w81x64 -->
-<?define guid = "E77162F5-8897-4024-9D4A-DB0183F31030"?>
-<?define vioinput_viohidkmdf_guid = "F6A57840-27F2-4A26-BFC5-A6CFFFAC5B3F"?>
-<?include ../GenericWindowsComponets/w81x64.wxi ?>
-<?undef vioinput_viohidkmdf_guid?>
-<?undef guid?>
 <!-- w10x64 -->
 <?define guid = "54B8CF60-EA08-4167-8329-6E3CB02FABEC"?>
 <?define vioinput_viohidkmdf_guid = "561E44DF-180F-4BBB-9201-2D806AAE12A2"?>
@@ -66,20 +38,6 @@
 <?undef vioinput_viohidkmdf_guid?>
 <?undef guid?>
 <?else ?>
-<!-- w8x86 -->
-<?define guid = "024EEE9E-EF74-4E9E-BAC5-B284F899C1BD"?>
-<?define vioinput_viohidkmdf_guid = "52C05E14-55B6-40A7-8CA2-2CDCE2E28CD1"?>
-<?define vioinput_WdfCoInstaller_guid = "FB99DA3E-AB07-402C-96AE-D2A45FA43A0E"?>
-<?include ../GenericWindowsComponets/w8x86.wxi ?>
-<?undef vioinput_WdfCoInstaller_guid?>
-<?undef vioinput_viohidkmdf_guid?>
-<?undef guid?>
-<!-- w81x86 -->
-<?define guid = "8948023E-E633-4450-B32D-688ACA9C6414"?>
-<?define vioinput_viohidkmdf_guid = "7683AE29-B308-4FE8-8003-4B3C3F6D08BF"?>
-<?include ../GenericWindowsComponets/w81x86.wxi ?>
-<?undef vioinput_viohidkmdf_guid?>
-<?undef guid?>
 <!-- w10x86 -->
 <?define guid = "6B54D870-E342-40F9-8CEE-42FA2C2EDEEA"?>
 <?define vioinput_viohidkmdf_guid = "6EDCAF7A-3996-4A0C-9C44-0CA5DC63A9C2"?>
