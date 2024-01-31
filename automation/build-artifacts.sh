@@ -9,13 +9,9 @@ export WINEDEBUG=fixme-all
 # If we get an light.exe error "The system cannot find the file..."
 # This is probably the cause
 VIRTIO_WIN_DRIVERS_PATH=${1:?"Must pass in a directory containing virtio-win iso content."}
-SPICE_VDAGENT_64_MSI_PATH=${2:?"Must pass path to spice agent x64 msi"}
-SPICE_VDAGENT_86_MSI_PATH=${3:?"Must pass path to spice agent x86 msi"}
-SPICE_DRIVER_64_MSI_PATH=${4:?"Must pass path to spice driver x64 msi"}
-SPICE_DRIVER_86_MSI_PATH=${5:?"Must pass path to spice driver x86 msi"}
-QEMU_GA_64_MSI_PATH=${6:?"Must pass path to qemu guest agent x64 msi"}
-QEMU_GA_86_MSI_PATH=${7:?"Must pass path to qemu guest agent x86 msi"}
-VERSION=${8:?"Must pass in the version of the installer"}
+QEMU_GA_64_MSI_PATH=${2:?"Must pass path to qemu guest agent x64 msi"}
+QEMU_GA_86_MSI_PATH=${3:?"Must pass path to qemu guest agent x86 msi"}
+VERSION=${4:?"Must pass in the version of the installer"}
 
 if [ ! -e "${VIRTIO_WIN_DRIVERS_PATH}" -o \
      ! -e "${VIRTIO_WIN_DRIVERS_PATH}/viorng" ] ; then
@@ -33,18 +29,10 @@ fi
 
 # Add a /tmp link to the drivers directory, to try and avoid length limitations
 VIRTIO_WIN_DRIVERS_LINK=$(mktemp -t vwi.XXXX)
-SPICE_VDAGENT_64_MSI_LINK=$(mktemp -t vwi.XXXX)
-SPICE_VDAGENT_86_MSI_LINK=$(mktemp -t vwi.XXXX)
-SPICE_DRIVER_64_MSI_LINK=$(mktemp -t vwi.XXXX)
-SPICE_DRIVER_86_MSI_LINK=$(mktemp -t vwi.XXXX)
 QEMU_GA_64_MSI_LINK=$(mktemp -t vwi.XXXX)
 QEMU_GA_86_MSI_LINK=$(mktemp -t vwi.XXXX)
 
 ln -sf ${VIRTIO_WIN_DRIVERS_PATH} ${VIRTIO_WIN_DRIVERS_LINK}
-ln -sf ${SPICE_VDAGENT_64_MSI_PATH} ${SPICE_VDAGENT_64_MSI_LINK}
-ln -sf ${SPICE_VDAGENT_86_MSI_PATH} ${SPICE_VDAGENT_86_MSI_LINK}
-ln -sf ${SPICE_DRIVER_64_MSI_PATH} ${SPICE_DRIVER_64_MSI_LINK}
-ln -sf ${SPICE_DRIVER_86_MSI_PATH} ${SPICE_DRIVER_86_MSI_LINK}
 ln -sf ${QEMU_GA_64_MSI_PATH} ${QEMU_GA_64_MSI_LINK}
 ln -sf ${QEMU_GA_86_MSI_PATH} ${QEMU_GA_86_MSI_LINK}
 
@@ -74,10 +62,6 @@ make \
     ARCH=x64\
     VERSION=${VERSION}\
     VIRTIO_WIN_DRIVERS_PATH=${VIRTIO_WIN_DRIVERS_LINK}\
-    SPICE_VDAGENT_64_MSI_PATH=${SPICE_VDAGENT_64_MSI_LINK}\
-    SPICE_VDAGENT_86_MSI_PATH=${SPICE_VDAGENT_86_MSI_LINK}\
-    SPICE_DRIVER_64_MSI_PATH=${SPICE_DRIVER_64_MSI_LINK}\
-    SPICE_DRIVER_86_MSI_PATH=${SPICE_DRIVER_86_MSI_LINK}\
     QEMU_GA_86_MSI_PATH=${QEMU_GA_86_MSI_LINK}\
     QEMU_GA_64_MSI_PATH=${QEMU_GA_64_MSI_LINK}
 
@@ -87,20 +71,12 @@ make \
     ARCH=x86\
     VERSION=${VERSION}\
     VIRTIO_WIN_DRIVERS_PATH=${VIRTIO_WIN_DRIVERS_LINK}\
-    SPICE_VDAGENT_64_MSI_PATH=${SPICE_VDAGENT_64_MSI_LINK}\
-    SPICE_VDAGENT_86_MSI_PATH=${SPICE_VDAGENT_86_MSI_LINK}\
-    SPICE_DRIVER_64_MSI_PATH=${SPICE_DRIVER_64_MSI_LINK}\
-    SPICE_DRIVER_86_MSI_PATH=${SPICE_DRIVER_86_MSI_LINK}\
     QEMU_GA_86_MSI_PATH=${QEMU_GA_86_MSI_LINK}\
     QEMU_GA_64_MSI_PATH=${QEMU_GA_64_MSI_LINK}
 
 make bundle
 
 unlink ${VIRTIO_WIN_DRIVERS_LINK}
-unlink ${SPICE_VDAGENT_64_MSI_LINK}
-unlink ${SPICE_VDAGENT_86_MSI_LINK}
-unlink ${SPICE_DRIVER_64_MSI_LINK}
-unlink ${SPICE_DRIVER_86_MSI_LINK}
 unlink ${QEMU_GA_64_MSI_LINK}
 unlink ${QEMU_GA_86_MSI_LINK}
 
