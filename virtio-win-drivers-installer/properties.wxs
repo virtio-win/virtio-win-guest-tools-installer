@@ -16,7 +16,7 @@
     <Fragment>
         <Property Id="LaunchConditionsSupportedOS" Value="1" />
         <Condition Message="OS must be Windows 10 or higher.">
-            <![CDATA[Installed OR VersionNT >= 603]]>
+            <![CDATA[Installed OR ((VersionNT >= 603) AND (REGISTRY_CURRENT_BUILD_NUMBER > 10240))]]>		
         </Condition>
     </Fragment>
     <!-- Launch Condition to disable launch on arch x86-->
