@@ -57,6 +57,7 @@ def get_expected_componentids():
         'CMP_virtiofs_2k19_amd64':['{1D146EAB-CC13-45E8-A0BC-FA70A2F913AF}'],
         'CMP_WinServer2022_viofs':['{0EE9BBA1-9168-4D30-83BC-9DCD408BEB19}'],
         'CMP_virtiofs_2k22_amd64':['{E355531E-4609-4CD3-8F9C-361795825A02}'],
+        'CMP_Win10x64_viofs':['{E4F42A9F-D576-4606-B2BF-96D24E53E365}'],
         'CMP_virtiofs_w10_amd64':['{3D0B70D1-C98E-4986-A0D1-6CF4B1E06CC9}'],
         'CMP_Win11x64_viofs':['{78836E98-4BD5-4D03-82CC-3AC21542545D}'],
         'CMP_virtiofs_w11_amd64':['{643AE04C-905E-478D-A955-387DB8F65425}'],
