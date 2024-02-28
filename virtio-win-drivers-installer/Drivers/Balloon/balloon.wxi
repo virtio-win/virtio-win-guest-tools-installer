@@ -7,20 +7,6 @@
 <?define extra_components = "true"?>
 <?define permanent = "no"?>
 <?if $(sys.BUILDARCH) = "x64" ?>
-<!-- 2k12 -->
-<?define guid = "96F961AC-18DC-4C70-A996-72B5BDD7D276"?>
-<?define balloon_WdfCoInstaller_guid = "F9C31B15-8B2B-40BE-98C7-21EC7C35D4B5"?>
-<?define balloon_blnsvr_guid = "17BD7E51-C4E5-4B4D-B316-1836BDFC6F94"?>
-<?include ../GenericWindowsComponets/2k12.wxi ?>
-<?undef balloon_WdfCoInstaller_guid?>
-<?undef balloon_blnsvr_guid?>
-<?undef guid?>
-<!-- 2k12R2 -->
-<?define guid = "49BC041E-20A7-4245-BBBC-0BADD40D38D7"?>
-<?define balloon_blnsvr_guid = "9E677EFA-B180-48D7-ACF8-28B99625FC84"?>
-<?include ../GenericWindowsComponets/2k12R2.wxi ?>
-<?undef balloon_blnsvr_guid?>
-<?undef guid?>
 <!-- 2k16 -->
 <?define guid = "D604612F-EFD0-44CE-956C-5AD25518A742"?>
 <?define balloon_blnsvr_guid = "AC3A4978-2B0A-4E5C-9DAA-327C503E98C6"?>
@@ -39,20 +25,6 @@
 <?include ../GenericWindowsComponets/2k22.wxi ?>
 <?undef balloon_blnsvr_guid?>
 <?undef guid?>
-<!-- w8x64 -->
-<?define guid = "08FCD606-81D7-4AA0-9768-B2927F997BB1"?>
-<?define balloon_WdfCoInstaller_guid = "B8755C52-FD83-41F3-8150-1C9B4FAFEDB7"?>
-<?define balloon_blnsvr_guid = "B2A7BDF8-CCF4-4EFD-8B87-D61381D6B9DD"?>
-<?include ../GenericWindowsComponets/w8x64.wxi ?>
-<?undef balloon_WdfCoInstaller_guid?>
-<?undef balloon_blnsvr_guid?>
-<?undef guid?>
-<!-- w81x64 -->
-<?define guid = "81FB4292-A246-4DD5-B0A6-CCB52306FC05"?>
-<?define balloon_blnsvr_guid = "23E41A8A-9759-49BF-B459-80B421B29055"?>
-<?include ../GenericWindowsComponets/w81x64.wxi ?>
-<?undef balloon_blnsvr_guid?>
-<?undef guid?>
 <!-- w10x64 -->
 <?define guid = "75F1C56D-21E9-4A46-AF12-912C9ECD29D2"?>
 <?define balloon_blnsvr_guid = "66B082AC-9CF4-44D1-9CE1-63F7235F6C1C"?>
@@ -66,20 +38,6 @@
 <?undef balloon_blnsvr_guid?>
 <?undef guid?>
 <?else ?>
-<!-- w8x86 -->
-<?define guid = "8A0794B3-D4C5-4D2A-A9D2-DD052656839C"?>
-<?define balloon_WdfCoInstaller_guid = "BD468265-3A74-4E40-9E41-B8B5E4F4F391"?>
-<?define balloon_blnsvr_guid = "95C93A87-8CC7-4577-B651-0B3886CD8022"?>
-<?include ../GenericWindowsComponets/w8x86.wxi ?>
-<?undef balloon_WdfCoInstaller_guid?>
-<?undef balloon_blnsvr_guid?>
-<?undef guid?>
-<!-- w81x86 -->
-<?define guid = "C5990116-89B9-4EE6-89BB-B41AD5F7A892"?>
-<?define balloon_blnsvr_guid = "3E282EDE-EB0E-4103-87A5-73A134E1BC6F"?>
-<?include ../GenericWindowsComponets/w81x86.wxi ?>
-<?undef balloon_blnsvr_guid?>
-<?undef guid?>
 <!-- w10x86 -->
 <?define guid = "DF5DA075-CFCF-425A-A555-548E60B2835E"?>
 <?define balloon_blnsvr_guid = "908D56E1-A780-46CB-BAFC-8775E7BC2B7F"?>

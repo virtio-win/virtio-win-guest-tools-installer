@@ -7,16 +7,6 @@
 <?define extra_components = "true"?>
 <?define permanent = "no"?>
 <?if $(sys.BUILDARCH) = "x64" ?>
-<!-- 2k12 -->
-<?define guid = "11691408-18A5-43E1-AA4E-2E0217A76993"?>
-<?define fwcfg_WdfCoInstaller_guid = "0562B734-7F4A-431A-A4CC-CE3211345C46"?>
-<?include ../GenericWindowsComponets/2k12.wxi ?>
-<?undef fwcfg_WdfCoInstaller_guid?>
-<?undef guid?>
-<!-- 2k12R2 -->
-<?define guid = "935496ED-7356-47C7-895F-7656D9B31F94"?>
-<?include ../GenericWindowsComponets/2k12R2_ext.wxi ?>
-<?undef guid?>
 <!-- 2k16 -->
 <?define guid = "7D32ABFB-E9A0-42D9-89F5-72E11B088989"?>
 <?include ../GenericWindowsComponets/2k16.wxi ?>
@@ -29,16 +19,6 @@
 <?define guid = "F20E93BC-E083-4E56-9AFD-4147369880AD"?>
 <?include ../GenericWindowsComponets/2k22.wxi ?>
 <?undef guid?>
-<!-- w8x64 -->
-<?define guid = "04B0AB4E-2415-41CB-A025-074F1E4537CD"?>
-<?define fwcfg_WdfCoInstaller_guid = "B50E490D-F987-439F-9035-54111ED73576"?>
-<?include ../GenericWindowsComponets/w8x64.wxi ?>
-<?undef fwcfg_WdfCoInstaller_guid?>
-<?undef guid?>
-<!-- w81x64 -->
-<?define guid = "979D702D-82B2-42C3-BF5D-4E1DA7404D2F"?>
-<?include ../GenericWindowsComponets/w81x64_ext.wxi ?>
-<?undef guid?>
 <!-- w10x64 -->
 <?define guid = "73F380D6-BA74-44D3-82A3-40679FA73522"?>
 <?include ../GenericWindowsComponets/w10x64.wxi ?>
@@ -48,16 +28,6 @@
 <?include ../GenericWindowsComponets/w11x64.wxi ?>
 <?undef guid?>
 <?else ?>
-<!-- w8x86 -->
-<?define guid = "C2EC93F7-F85A-498B-AF47-83556C006D75"?>
-<?define fwcfg_WdfCoInstaller_guid = "53EB7169-2583-4F39-92FE-21E3CA57434A"?>
-<?include ../GenericWindowsComponets/w8x86.wxi ?>
-<?undef fwcfg_WdfCoInstaller_guid?>
-<?undef guid?>
-<!-- w81x86 -->
-<?define guid = "B66970A5-3AD3-4454-97DE-5E5D88D93FFF"?>
-<?include ../GenericWindowsComponets/w81x86_ext.wxi ?>
-<?undef guid?>
 <!-- w10x86 -->
 <?define guid = "576398C6-231E-4FE0-8AF6-E62BF5015F70"?>
 <?include ../GenericWindowsComponets/w10x86.wxi ?>

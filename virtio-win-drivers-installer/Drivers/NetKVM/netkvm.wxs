@@ -7,18 +7,12 @@
     <Fragment>
         <ComponentGroup Id="CMPG_$(var.driverName)_driver" Directory="$(var.destDirName)">
         <?if $(sys.BUILDARCH) = "x64" ?>
-            <ComponentGroupRef Id='CMPG_WinServer2012_$(var.driverName)' />
-            <ComponentGroupRef Id='CMPG_WinServer2012R2_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_WinServer2016_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_WinServer2019_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_WinServer2022_$(var.driverName)' />
-            <ComponentGroupRef Id='CMPG_Win8x64_$(var.driverName)' />
-            <ComponentGroupRef Id='CMPG_Win81x64_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_Win10x64_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_Win11x64_$(var.driverName)' />
         <?else ?>
-            <ComponentGroupRef Id='CMPG_Win8x86_$(var.driverName)' />
-            <ComponentGroupRef Id='CMPG_Win81x86_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_Win10x86_$(var.driverName)' />
         <?endif ?>
             <Component Id="CMP_Network_driver_Registry"

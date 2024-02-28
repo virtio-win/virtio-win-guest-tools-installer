@@ -7,22 +7,6 @@
 <?define extra_components = "true"?>
 <?define permanent = "no"?>
 <?if $(sys.BUILDARCH) = "x64" ?>
-<!-- 2k12 -->
-<?define guid = "45A3A444-B794-4DEF-B733-78C2FDABFA39"?>
-<?define netkvm_netkvmco_guid = "18B0E0E7-388F-4D6C-B562-9900FB8F2B38"?>
-<?define netkvm_readme_guid = "1D81BACF-85B7-463F-8C4F-3D9E3A541158"?>
-<?include ../GenericWindowsComponets/2k12.wxi ?>
-<?undef netkvm_netkvmco_guid?>
-<?undef netkvm_readme_guid?>
-<?undef guid?>
-<!-- 2k12R2 -->
-<?define guid = "D600A20F-0D4F-4E89-BCD4-A2D2D6E22BD7"?>
-<?define netkvm_netkvmco_guid = "E5F8F3CE-D271-4139-B0B8-CD7934373344"?>
-<?define netkvm_readme_guid = "63602C8B-CDCC-4980-A7CF-688F6047BA09"?>
-<?include ../GenericWindowsComponets/2k12R2.wxi ?>
-<?undef netkvm_netkvmco_guid?>
-<?undef netkvm_readme_guid?>
-<?undef guid?>
 <!-- 2k16 -->
 <?define guid = "F76DFEFF-FC33-45E8-876B-0013852A0BC4"?>
 <?define netkvm_netkvmco_guid = "6A71DDEB-0CF4-4A64-94F4-CE3F5F396CEF"?>
@@ -47,22 +31,6 @@
 <?undef netkvm_netkvmco_guid?>
 <?undef netkvm_readme_guid?>
 <?undef guid?>
-<!-- w8x64 -->
-<?define guid = "161E7681-9AE9-4F31-8D90-02F119DD7555"?>
-<?define netkvm_netkvmco_guid = "EFC2103D-BED3-4FD6-AC43-93F9B53BFDFE"?>
-<?define netkvm_readme_guid = "3DAED9C8-8F64-41F2-913D-26D19DD61CBE"?>
-<?include ../GenericWindowsComponets/w8x64.wxi ?>
-<?undef netkvm_netkvmco_guid?>
-<?undef netkvm_readme_guid?>
-<?undef guid?>
-<!-- w81x64 -->
-<?define guid = "631BC21C-27E3-4C36-9789-7D2B22C6E5F3"?>
-<?define netkvm_netkvmco_guid = "F5D6C74A-7D16-4B5D-8208-8E97C4654CAD"?>
-<?define netkvm_readme_guid = "D51D70D8-E2BE-43E1-8D0C-042E145C89F1"?>
-<?include ../GenericWindowsComponets/w81x64.wxi ?>
-<?undef netkvm_netkvmco_guid?>
-<?undef netkvm_readme_guid?>
-<?undef guid?>
 <!-- w10x64 -->
 <?define guid = "DC8B83A8-6501-4494-81A7-454F43EB07E0"?>
 <?define netkvm_netkvmco_guid = "2EC241D0-DFB0-4F2D-9E1F-F98475940BA4"?>
@@ -80,22 +48,6 @@
 <?undef netkvm_readme_guid?>
 <?undef guid?>
 <?else ?>
-<!-- w8x86 -->
-<?define guid = "9370CEF5-6103-4BDB-AD70-C90CCDC036F4"?>
-<?define netkvm_netkvmco_guid = "80056865-091E-4DCE-ADF5-DCCD5F29A6AC"?>
-<?define netkvm_readme_guid = "012C7189-BD1A-4A4B-BFBB-9F9D33C92734"?>
-<?include ../GenericWindowsComponets/w8x86.wxi ?>
-<?undef netkvm_netkvmco_guid?>
-<?undef netkvm_readme_guid?>
-<?undef guid?>
-<!-- w81x86 -->
-<?define guid = "F003BBF6-F97D-4E78-9301-ABD4AC13D528"?>
-<?define netkvm_netkvmco_guid = "10565F6E-4CEC-4781-BBA8-69090B6F48D6"?>
-<?define netkvm_readme_guid = "54B9CBFA-9589-4BF0-8C2F-6BC69621861B"?>
-<?include ../GenericWindowsComponets/w81x86.wxi ?>
-<?undef netkvm_netkvmco_guid?>
-<?undef netkvm_readme_guid?>
-<?undef guid?>
 <!-- w10x86 -->
 <?define guid = "51E576FD-C649-4D6C-B30D-8FD5807318C1"?>
 <?define netkvm_netkvmco_guid = "06224827-B12C-451D-A0E7-1023747302E9"?>
