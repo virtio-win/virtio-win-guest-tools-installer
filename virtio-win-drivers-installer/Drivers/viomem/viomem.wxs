@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'
+     xmlns:dins='http://www.redhat.com/DrvInstExt'>
+<?include ../../constants.wxi ?>
+<?include ./viomem.wxi ?>
+
+    <Fragment>
+        <ComponentGroup Id="CMPG_$(var.driverName)_driver" Directory="$(var.destDirName)">
+        <?if $(sys.BUILDARCH) = "x64" ?>
+            <ComponentGroupRef Id='CMPG_WinServer2016_$(var.driverName)' />
+            <ComponentGroupRef Id='CMPG_WinServer2019_$(var.driverName)' />
+            <ComponentGroupRef Id='CMPG_WinServer2022_$(var.driverName)' />
+            <ComponentGroupRef Id='CMPG_Win10x64_$(var.driverName)' />
+            <ComponentGroupRef Id='CMPG_Win11x64_$(var.driverName)' />
+        <?else ?>
+            <ComponentGroupRef Id='CMPG_Win10x86_$(var.driverName)' />
+        <?endif ?>
+        </ComponentGroup>
+    </Fragment>
+</Wix>

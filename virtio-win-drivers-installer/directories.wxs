@@ -18,6 +18,7 @@
                     <Directory Id="VIOSTOR" Name="Viostor"/>
                     <Directory Id="VIOFS" Name="VioFS"/>
                     <Directory Id="VIOGPUDO" Name="Viogpudo"/>
+                    <Directory Id="VIOMEM" Name="Viomem"/>
                 </Directory>
             </Directory>
         </Directory>
