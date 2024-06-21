@@ -4,7 +4,7 @@
 <?define srcDirName = "fwcfg" ?>
 <?define destDirName = "FWCFG" ?>
 <?define with_sys = "true"?>
-<?define extra_components = "true"?>
+<?define extra_components = "false"?>
 <?define permanent = "no"?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k16 -->
