@@ -18,4 +18,5 @@
 <?define condition_w10x64 = '(REGISTRY_PRODUCT_NAME >< "Windows 10" AND REGISTRY_CURRENT_BUILD_NUMBER < "22000" AND VersionNT = VersionNT64 AND MsiNTProductType = 1)' ?>
 <?define condition_w10x86 = '(REGISTRY_PRODUCT_NAME >< "Windows 10" AND VersionNT <> VersionNT64 AND MsiNTProductType = 1)' ?>
 <?define condition_w11x64 = '(REGISTRY_PRODUCT_NAME >< "Windows 10" AND REGISTRY_CURRENT_BUILD_NUMBER >= "22000" AND VersionNT = VersionNT64 AND MsiNTProductType = 1 )' ?>
+<?define condition_2k25 = '(REGISTRY_PRODUCT_NAME >< "2025" AND MsiNTProductType > 1 )' ?>
 </Include>

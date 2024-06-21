@@ -25,6 +25,12 @@
 <?include ../GenericWindowsComponets/2k22.wxi ?>
 <?undef balloon_blnsvr_guid?>
 <?undef guid?>
+<!-- 2k25 -->
+<?define guid = "9F8840A9-C234-40B4-BD08-3EC555C11A46"?>
+<?define balloon_blnsvr_guid = "9981155B-32C7-4BE0-80C0-C532C0F5045E"?>
+<?include ../GenericWindowsComponets/2k25.wxi ?>
+<?undef balloon_blnsvr_guid?>
+<?undef guid?>
 <!-- w10x64 -->
 <?define guid = "75F1C56D-21E9-4A46-AF12-912C9ECD29D2"?>
 <?define balloon_blnsvr_guid = "66B082AC-9CF4-44D1-9CE1-63F7235F6C1C"?>

@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Include xmlns:dins='http://www.redhat.com/DrvInstExt'>
+<?define osFullName = "WinServer2025" ?>
+<?define osShort = "2k25" ?>
+<?define ISA = "amd64" ?>
+<?define Win64 = "yes" ?>
+<?define condition = "$(var.condition_2k25)" ?>
+<?include ./template.wxi ?>
+<?undef osFullName?>
+<?undef osShort?>
+<?undef ISA?>
+<?undef Win64?>
+<?undef condition?>
+</Include>

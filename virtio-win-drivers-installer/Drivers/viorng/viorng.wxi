@@ -25,6 +25,12 @@
 <?include ../GenericWindowsComponets/2k22.wxi ?>
 <?undef viorng_viorngum_guid?>
 <?undef guid?>
+<!-- 2k25 -->
+<?define guid = "8CAA9201-E14E-4E7D-A5A7-8F7CF51DB7AC"?>
+<?define viorng_viorngum_guid = "85BB4D3E-638A-4C04-A055-8A67EDEB43B0"?>
+<?include ../GenericWindowsComponets/2k25.wxi ?>
+<?undef viorng_viorngum_guid?>
+<?undef guid?>
 <!-- w10x64 -->
 <?define guid = "8600A950-7C8B-4EAE-84A4-8FFEA8BE906F"?>
 <?define viorng_viorngum_guid = "32659F53-B2EB-4D72-A3D9-CBA7C6401D08"?>

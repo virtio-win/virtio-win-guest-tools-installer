@@ -19,6 +19,10 @@
 <?define guid = "B541D990-26F9-4141-AC56-A39A804C3F4D"?>
 <?include ../GenericWindowsComponets/2k22.wxi ?>
 <?undef guid?>
+<!-- 2k25 -->
+<?define guid = "D135F903-7022-49E2-ABCE-497DF392381D"?>
+<?include ../GenericWindowsComponets/2k25.wxi ?>
+<?undef guid?>
 <!-- w10x64 -->
 <?define guid = "0FEEC31F-F6E7-4865-AFD3-3E02451C46AD"?>
 <?include ../GenericWindowsComponets/w10x64.wxi ?>

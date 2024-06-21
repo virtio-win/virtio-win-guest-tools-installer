@@ -25,6 +25,12 @@
 <?include ../GenericWindowsComponets/2k22.wxi ?>
 <?undef viofs_virtiofs_guid?>
 <?undef guid?>
+<!-- 2k25 -->
+<?define guid = "A9C434B6-1D37-4DCE-B3D7-42C9299388A0"?>
+<?define viofs_virtiofs_guid = "0F21C2AA-95EE-49CA-9736-AAC12D9D4928"?>
+<?include ../GenericWindowsComponets/2k25.wxi ?>
+<?undef viofs_virtiofs_guid?>
+<?undef guid?>
 <!-- w10x64 -->
 <?define guid = "E4F42A9F-D576-4606-B2BF-96D24E53E365"?>
 <?define viofs_virtiofs_guid = "3D0B70D1-C98E-4986-A0D1-6CF4B1E06CC9"?>

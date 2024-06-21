@@ -19,19 +19,19 @@ The installer can be built in two ways, using [oVirt CI mock runner tool](https:
 
 Before buidling the installer you must have the virtio-win drivers localy on the format which they are distributed on the iso:
 ```
-|-Balloon['2k16', '2k19', '2k22', 'w10', 'w11']
-|-NetKVM['2k16', '2k19', '2k22', 'w10', 'w11']
-|-pvpanic['2k16', '2k19', '2k22', 'w10', 'w11']
-|-fwcfg['2k16', '2k19', '2k22', 'w10', 'w11]
-|-qemupciserial['2k16', '2k19', '2k22', 'w10', 'w11']
-|-vioinput['2k16', '2k19', '2k22', 'w10', 'w11']
-|-viorng['2k16', '2k19', '2k22', 'w10', 'w11']
-|-vioscsi['2k16', '2k19', '2k22', 'w10', 'w11']
-|-vioserial['2k16', '2k19', '2k22', 'w10', 'w11']
-|-viostor['2k16', '2k19', '2k22', 'w10', 'w11']
-|-viofs['2k16', '2k19', '2k22', 'w10', 'w11']
-|-viogpu['2k16', '2k19', '2k22', 'w10', 'w11']
-|-viomem['2k16', '2k19', '2k22', 'w10', 'w11']
+|-Balloon['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-NetKVM['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-pvpanic['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-fwcfg['2k16', '2k19', '2k22', '2k25', 'w10', 'w11]
+|-qemupciserial['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-vioinput['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-viorng['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-vioscsi['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-vioserial['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-viostor['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-viofs['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-viogpu['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-viomem['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
 ```
 You can get it by:
 

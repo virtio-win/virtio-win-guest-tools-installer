@@ -6,6 +6,7 @@
     <?include ./2k22.wxi ?>
     <?include ./w10x64.wxi ?>
     <?include ./w11x64.wxi ?>
+    <?include ./2k25.wxi ?>
     <?else ?>
     <?include ./w10x86.wxi ?>
     <?endif ?>

@@ -31,6 +31,14 @@
 <?undef netkvm_netkvmco_guid?>
 <?undef netkvm_readme_guid?>
 <?undef guid?>
+<!-- 2k25 -->
+<?define guid = "84DCAC14-A463-4C15-9D7A-C30AE2B85419"?>
+<?define netkvm_netkvmco_guid = "E2BE4AFF-65D5-4211-9C5A-415B253B071A"?>
+<?define netkvm_readme_guid = "E49C31D3-07D8-4EAC-9621-79461827BBF0"?>
+<?include ../GenericWindowsComponets/2k25.wxi ?>
+<?undef netkvm_netkvmco_guid?>
+<?undef netkvm_readme_guid?>
+<?undef guid?>
 <!-- w10x64 -->
 <?define guid = "DC8B83A8-6501-4494-81A7-454F43EB07E0"?>
 <?define netkvm_netkvmco_guid = "2EC241D0-DFB0-4F2D-9E1F-F98475940BA4"?>

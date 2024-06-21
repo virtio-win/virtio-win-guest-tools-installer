@@ -25,6 +25,12 @@
 <?include ../GenericWindowsComponets/2k22.wxi ?>
 <?undef vioinput_viohidkmdf_guid?>
 <?undef guid?>
+<!-- 2k25 -->
+<?define guid = "ED2076F5-2462-4B9D-A796-008818C8DB38"?>
+<?define vioinput_viohidkmdf_guid = "AC486C71-64CF-4DC4-8D34-DD4BF602DC59"?>
+<?include ../GenericWindowsComponets/2k25.wxi ?>
+<?undef vioinput_viohidkmdf_guid?>
+<?undef guid?>
 <!-- w10x64 -->
 <?define guid = "54B8CF60-EA08-4167-8329-6E3CB02FABEC"?>
 <?define vioinput_viohidkmdf_guid = "561E44DF-180F-4BBB-9201-2D806AAE12A2"?>
