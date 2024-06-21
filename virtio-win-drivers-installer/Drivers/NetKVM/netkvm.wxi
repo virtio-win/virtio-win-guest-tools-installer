@@ -6,6 +6,7 @@
 <?define with_sys = "true"?>
 <?define extra_components = "true"?>
 <?define permanent = "no"?>
+<?define sequence = 2 ?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k16 -->
 <?define guid = "F76DFEFF-FC33-45E8-876B-0013852A0BC4"?>

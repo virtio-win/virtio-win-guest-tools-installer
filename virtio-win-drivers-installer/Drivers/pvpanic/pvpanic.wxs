@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'
-     xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+     xmlns:dins='http://www.redhat.com/DrvInstExt'>
 <?include ../../constants.wxi ?>
 <?include ./pvpanic.wxi ?>
 

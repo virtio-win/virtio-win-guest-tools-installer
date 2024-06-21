@@ -14,10 +14,12 @@ WIX_BINARIES_FILES=/usr/share/wix-toolset-binaries
 
 # Project Paths #
 WIX_BINARIES_LINK=$(CURDIR)/wix311-binaries
+WIX_LIBRARIES_LINK=$(CURDIR)/Libraries
 
 # Windows Paths 
 VIRTIO_WIN_PATH=$(shell winepath -w $(VIRTIO_WIN_DRIVERS_PATH)|sed 's|\\|\\\\\\\\|g')
 WIX_BINARIES_WIN_PATH=$(shell winepath -w $(WIX_BINARIES_LINK)|sed 's|\\|\\\\\\\\|g')
+WIX_LIBRARIES_WIN_PATH=$(shell winepath -w $(WIX_LIBRARIES_LINK)|sed 's|\\|\\\\\\\\|g')
 INSTALLER_WIN_PATH=$(shell winepath -w $(CURDIR)/virtio-win-drivers-installer|sed 's|\\|\\\\\\\\|g')
 
 GENERATED = \
@@ -75,6 +77,7 @@ clean:
 	sed \
 	-e "s|@@VIRTIO-WIN-PATH@@|${VIRTIO_WIN_PATH}|g" \
 	-e "s|@@WIX_BIN_PATH@@|${WIX_BINARIES_WIN_PATH}\\\\|g" \
+	-e "s|@@WIX_LIB_PATH@@|${WIX_LIBRARIES_WIN_PATH}\\\\|g" \
 	-e "s|@@INSTALLER_PATH@@|${INSTALLER_WIN_PATH}|g" \
 	-e "s|@@QEMU_GA_64_MSI_PATH@@|${QEMU_GA_64_MSI_PATH}|g" \
 	-e "s|@@QEMU_GA_86_MSI_PATH@@|${QEMU_GA_86_MSI_PATH}|g" \

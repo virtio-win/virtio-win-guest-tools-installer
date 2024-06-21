@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<Include xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+<Include xmlns:dins='http://www.redhat.com/DrvInstExt'>
 <?define osFullName = "Win10x86" ?>
 <?define osShort = "w10" ?>
 <?define ISA = "x86" ?>
