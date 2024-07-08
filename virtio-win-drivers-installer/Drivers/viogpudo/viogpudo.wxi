@@ -5,7 +5,7 @@
 <?define destDirName = "VIOGPUDO" ?>
 <?define with_sys = "true"?>
 <?define extra_components = "false"?>
-<?define permanent = "yes"?>
+<?define permanent = "no"?>
 <?define sequence = 6 ?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k16 -->
