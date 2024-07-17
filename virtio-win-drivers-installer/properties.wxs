@@ -77,9 +77,9 @@
     <!-- This Properties are for back up and update static IP logic -->
     <Fragment>
 <?if $(sys.BUILDARCH) = "x64" ?>
-        <Binary Id="ConfManagementDll" SourceFile="../Libraries/x64/VioCfg.dll" />
+        <Binary Id="ConfManagementDll" SourceFile="../Libraries/x64/DrvInstCA.dll" />
 <?else ?>
-        <Binary Id="ConfManagementDll" SourceFile="../Libraries/x86/VioCfg.dll" />
+        <Binary Id="ConfManagementDll" SourceFile="../Libraries/x86/DrvInstCA.dll" />
 <?endif ?>
 	<Property Id="IPCONFFILENAME" Value="vionet.cfg" />
         <Property Id="VIOCONFFILENAME" Value="viocfg.cfg" />
