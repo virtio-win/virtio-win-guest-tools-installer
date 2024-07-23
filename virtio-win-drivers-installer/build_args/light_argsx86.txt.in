@@ -6,4 +6,4 @@
 -ext "@@WIX_BIN_PATH@@WixUtilExtension.dll"
 -ext "@@WIX_BIN_PATH@@WixUIExtension.dll"
 -ext "@@WIX_LIB_PATH@@x86\DrvInstExt.dll"
-
+-cultures:en-us
