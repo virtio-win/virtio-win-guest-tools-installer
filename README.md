@@ -61,9 +61,13 @@ You can get it by:
 
 1. Make sure all the packages on automation/build-artifacts.packages are installed on the machine, relevant repos can be found on automation/build-artifacts.repos.
 
-2. Run the build script ./automation/build-artifacts.sh VIRTIO_WIN_DRIVERS_PATH QEMU_GA_64_MSI_PATH QEMU_GA_86_MSI_PATH VERSION
+2. Run the build script ./automation/build-artifacts.sh VIRTIO_WIN_DRIVERS_PATH SPICE_VDAGENT_64_MSI_PATH SPICE_VDAGENT_86_MSI_PATH SPICE_DRIVER_64_MSI_PATH SPICE_DRIVER_86_MSI_PATH QEMU_GA_64_MSI_PATH QEMU_GA_86_MSI_PATH VERSION
 
    - VIRTIO_WIN_DRIVERS_PATH - dir containing the virtio-win drivers
+   - SPICE_VDAGENT_64_MSI_PATH - path to the spice ga x64 MSI
+   - SPICE_VDAGENT_86_MSI_PATH - path to the spice ga x86 MSI
+   - SPICE_DRIVER_64_MSI_PATH - path to the spice driver x64 MSI
+   - SPICE_DRIVER_86_MSI_PATH - path to the spice driver x86 MSI
    - QEMU_GA_64_MSI_PATH - path to the qemu ga x64 MSI
    - QEMU_GA_86_MSI_PATH - path to the qemu ga x86 MSI
    - VERSION - version on the installer
