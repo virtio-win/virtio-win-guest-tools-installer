@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
-<Include xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+<Include xmlns:dins='http://www.redhat.com/DrvInstExt'>
     <Fragment>
         <ComponentGroup
             Id="CMPG_$(var.osFullName)_$(var.driverName)"
@@ -22,7 +22,7 @@
                     Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\$(var.driverName).sys'
                     CompanionFile='FILE_$(var.driverName)_$(var.osShort)_$(var.ISA).inf'/>
                 <?endif?>
-                <difx:Driver PlugAndPlayPrompt='no' AddRemovePrograms='no' />
+                <dins:DriverInstall FileName = '$(var.driverName).inf' Directory = '$(var.destDirName)' Sequence = '$(var.sequence)'/>
             </Component>
             <?if $(var.extra_components) = "true" ?>
             <?include ../$(var.srcDirName)/$(var.driverName)_extras.wxi ?>

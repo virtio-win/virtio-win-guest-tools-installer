@@ -4,8 +4,9 @@
 <?define srcDirName = "vioserial" ?>
 <?define destDirName = "VIOSERIAL" ?>
 <?define with_sys = "true"?>
-<?define extra_components = "true"?>
+<?define extra_components = "false"?>
 <?define permanent = "no"?>
+<?define sequence = 11 ?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k16 -->
 <?define guid = "3DCC592D-542C-49E1-90EA-45177C01BC26"?>
@@ -18,6 +19,10 @@
 <!-- 2k22 -->
 <?define guid = "6AEBEAD8-7BE9-4981-A72F-14DC6E076D18"?>
 <?include ../GenericWindowsComponets/2k22.wxi ?>
+<?undef guid?>
+<!-- 2k25 -->
+<?define guid = "56F59B71-4B86-490F-BD6E-E7923FA59C33"?>
+<?include ../GenericWindowsComponets/2k25.wxi ?>
 <?undef guid?>
 <!-- w10x64 -->
 <?define guid = "98A0368C-E2D6-49A8-9B8C-1E3DFBCFFD19"?>

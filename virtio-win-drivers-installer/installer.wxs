@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'
-     xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+     xmlns:dinst='http://www.redhat.com/DrvInstExt'>
 
      <?include constants.wxi ?>
 
@@ -23,7 +23,7 @@
             <MajorUpgrade 
                   DowngradeErrorMessage="A newer version of [ProductName] is already installed."
                   Schedule="afterInstallInitialize" />
-            <UIRef Id="WixUI_WarnFeatureTree" />
+            <UIRef Id="WixUI_FeatureTree" />
             <WixVariable Id="WixUIBannerBmp" Value="graphics/horizontal_banner.bmp" />
             <WixVariable Id="WixUIDialogBmp" Value="graphics/background.bmp" />
             <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />

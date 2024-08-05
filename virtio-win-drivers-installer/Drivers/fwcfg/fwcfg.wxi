@@ -4,8 +4,9 @@
 <?define srcDirName = "fwcfg" ?>
 <?define destDirName = "FWCFG" ?>
 <?define with_sys = "true"?>
-<?define extra_components = "true"?>
+<?define extra_components = "false"?>
 <?define permanent = "no"?>
+<?define sequence = 1 ?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k16 -->
 <?define guid = "7D32ABFB-E9A0-42D9-89F5-72E11B088989"?>
@@ -18,6 +19,10 @@
 <!-- 2k22 -->
 <?define guid = "F20E93BC-E083-4E56-9AFD-4147369880AD"?>
 <?include ../GenericWindowsComponets/2k22.wxi ?>
+<?undef guid?>
+<!-- 2k25 -->
+<?define guid = "0A0FC2B9-A212-43A5-8E4B-5504104EC485"?>
+<?include ../GenericWindowsComponets/2k25.wxi ?>
 <?undef guid?>
 <!-- w10x64 -->
 <?define guid = "73F380D6-BA74-44D3-82A3-40679FA73522"?>

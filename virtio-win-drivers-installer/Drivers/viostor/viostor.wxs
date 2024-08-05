@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'
-     xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+     xmlns:dins='http://www.redhat.com/DrvInstExt'>
 <?include ../../constants.wxi ?>
 <?include ./viostor.wxi ?>
 
@@ -10,6 +10,7 @@
             <ComponentGroupRef Id='CMPG_WinServer2016_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_WinServer2019_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_WinServer2022_$(var.driverName)' />
+            <ComponentGroupRef Id='CMPG_WinServer2025_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_Win10x64_$(var.driverName)' />
             <ComponentGroupRef Id='CMPG_Win11x64_$(var.driverName)' />
         <?else ?>

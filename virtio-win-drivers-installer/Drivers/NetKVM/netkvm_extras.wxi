@@ -1,6 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
-<Include xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+<Include xmlns:dins='http://www.redhat.com/DrvInstExt'>
+        <Component Id='CMP_$(var.driverName)_netkvmp_$(var.osShort)_$(var.ISA)'
+            Guid='$(var.netkvm_netkvmp_guid)'
+            Transitive='no'
+            Win64='$(var.Win64)'>
+            <Condition><![CDATA[$(var.condition)]]></Condition>
+            <File Id='FILE_$(var.driverName)_netkvmp_$(var.osShort)_$(var.ISA)'
+                Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\netkvmp.exe'
+                KeyPath='yes'/>
+        </Component>
         <Component Id='CMP_$(var.driverName)_netkvmco_$(var.osShort)_$(var.ISA)'
             Guid='$(var.netkvm_netkvmco_guid)'
             Transitive='no'

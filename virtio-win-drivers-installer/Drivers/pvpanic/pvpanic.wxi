@@ -4,8 +4,9 @@
 <?define srcDirName = "pvpanic" ?>
 <?define destDirName = "PVPANIC" ?>
 <?define with_sys = "true"?>
-<?define extra_components = "true"?>
+<?define extra_components = "false"?>
 <?define permanent = "no"?>
+<?define sequence = 3 ?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k16 -->
 <?define guid = "9CB8ECDD-A783-498B-9899-9A9CAED76C38"?>
@@ -18,6 +19,10 @@
 <!-- 2k22 -->
 <?define guid = "6623B93F-8C4A-4FD3-8A02-767B04682A42"?>
 <?include ../GenericWindowsComponets/2k22.wxi ?>
+<?undef guid?>
+<!-- 2k25 -->
+<?define guid = "EDAAE7D2-1E01-4870-B502-00BD679069C1"?>
+<?include ../GenericWindowsComponets/2k25.wxi ?>
 <?undef guid?>
 <!-- w10x64 -->
 <?define guid = "544B33DA-A7E0-44D2-9DB0-CACA3B842DA3"?>

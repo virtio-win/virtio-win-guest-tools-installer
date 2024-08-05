@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+<?define driverName = "viomem" ?>
+<?define srcDirName = "viomem" ?>
+<?define destDirName = "VIOMEM" ?>
+<?define with_sys = "true"?>
+<?define extra_components = "false"?>
+<?define permanent = "no"?>
+<?define sequence = 8 ?>
+<?if $(sys.BUILDARCH) = "x64" ?>
+<!-- 2k16 -->
+<?define guid = "A3A319CF-70FF-4541-85D6-A2E5F64B29E4"?>
+<?include ../GenericWindowsComponets/2k16.wxi ?>
+<?undef guid?>
+<!-- 2k19 -->
+<?define guid = "BA2E41DE-297E-429B-A370-773CD61D0ECC"?>
+<?include ../GenericWindowsComponets/2k19.wxi ?>
+<?undef guid?>
+<!-- 2k22 -->
+<?define guid = "6B48367F-8EB2-4FB4-9CD6-1005C0049DF6"?>
+<?include ../GenericWindowsComponets/2k22.wxi ?>
+<?undef guid?>
+<!-- 2k25 -->
+<?define guid = "1C5C43F2-262C-4743-A515-8F9E2DED4DE4"?>
+<?include ../GenericWindowsComponets/2k25.wxi ?>
+<?undef guid?>
+<!-- w10x64 -->
+<?define guid = "3F6F9752-C38E-4986-ACA6-2711FC6518D4"?>
+<?include ../GenericWindowsComponets/w10x64.wxi ?>
+<?undef guid?>
+<!-- w11x64 -->
+<?define guid = "F2D3A4F6-2ECA-4CC1-9260-7707B3A6034C"?>
+<?include ../GenericWindowsComponets/w11x64.wxi ?>
+<?undef guid?>
+<?else ?>
+<!-- w10x86 -->
+<?define guid = "75FD716F-634C-43EF-887E-D6DE11344290"?>
+<?include ../GenericWindowsComponets/w10x86.wxi ?>
+<?undef guid?>
+<?endif ?>
+</Include>

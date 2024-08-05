@@ -19,18 +19,19 @@ The installer can be built in two ways, using [oVirt CI mock runner tool](https:
 
 Before buidling the installer you must have the virtio-win drivers localy on the format which they are distributed on the iso:
 ```
-|-Balloon['2k12', '2k12R2', '2k16', '2k19', '2k22', '2k3', '2k8', '2k8R2', 'w10', 'w11', 'w7', 'w8', 'w8.1', 'xp']
-|-NetKVM['2k12', '2k12R2', '2k16', '2k19', '2k22', '2k3', '2k8', '2k8R2', 'w10', 'w11', 'w7', 'w8', 'w8.1', 'xp']
-|-pvpanic['2k12', '2k12R2', '2k16', '2k19', '2k22', '2k8', '2k8R2', 'w10', 'w11', 'w7', 'w8', 'w8.1']
-|-fwcfg['2k12', '2k12R2', '2k16', '2k19', '2k22', 'w10', 'w11', 'w8', 'w8.1']
-|-qemupciserial['2k12', '2k12R2', '2k16', '2k19', '2k22', '2k8', '2k8R2', 'w10', 'w11', 'w7', 'w8', 'w8.1']
-|-vioinput['2k12', '2k12R2', '2k16', '2k19', '2k22', '2k8R2', 'w10', 'w11', 'w7', 'w8', 'w8.1']
-|-viorng['2k12', '2k12R2', '2k16', '2k19', '2k22', '2k8', '2k8R2', 'w10', 'w11', 'w7', 'w8', 'w8.1']
-|-vioscsi['2k12', '2k12R2', '2k16', '2k19', '2k22', '2k8', '2k8R2', 'w10', 'w11', 'w7', 'w8', 'w8.1']
-|-vioserial['2k12', '2k12R2', '2k16', '2k19', '2k22', '2k3', '2k8', '2k8R2', 'w10', 'w11', 'w7', 'w8', 'w8.1', 'xp']
-|-viostor['2k12', '2k12R2', '2k16', '2k19', '2k22', '2k3', '2k8', '2k8R2', 'w10', 'w11', 'w7', 'w8', 'w8.1', 'xp']
-|-viofs['2k12', '2k12R2', '2k16', '2k19', '2k22', 'w10', 'w11', 'w8', 'w8.1']
-|-viogpu['2k12', '2k12R2', '2k16', '2k19', '2k22', 'w10', 'w11', 'w8', 'w8.1']
+|-Balloon['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-NetKVM['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-pvpanic['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-fwcfg['2k16', '2k19', '2k22', '2k25', 'w10', 'w11]
+|-qemupciserial['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-vioinput['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-viorng['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-vioscsi['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-vioserial['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-viostor['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-viofs['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-viogpu['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
+|-viomem['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
 ```
 You can get it by:
 
@@ -60,9 +61,13 @@ You can get it by:
 
 1. Make sure all the packages on automation/build-artifacts.packages are installed on the machine, relevant repos can be found on automation/build-artifacts.repos.
 
-2. Run the build script ./automation/build-artifacts.sh VIRTIO_WIN_DRIVERS_PATH QEMU_GA_64_MSI_PATH QEMU_GA_86_MSI_PATH VERSION
+2. Run the build script ./automation/build-artifacts.sh VIRTIO_WIN_DRIVERS_PATH SPICE_VDAGENT_64_MSI_PATH SPICE_VDAGENT_86_MSI_PATH SPICE_DRIVER_64_MSI_PATH SPICE_DRIVER_86_MSI_PATH QEMU_GA_64_MSI_PATH QEMU_GA_86_MSI_PATH VERSION
 
    - VIRTIO_WIN_DRIVERS_PATH - dir containing the virtio-win drivers
+   - SPICE_VDAGENT_64_MSI_PATH - path to the spice ga x64 MSI
+   - SPICE_VDAGENT_86_MSI_PATH - path to the spice ga x86 MSI
+   - SPICE_DRIVER_64_MSI_PATH - path to the spice driver x64 MSI
+   - SPICE_DRIVER_86_MSI_PATH - path to the spice driver x86 MSI
    - QEMU_GA_64_MSI_PATH - path to the qemu ga x64 MSI
    - QEMU_GA_86_MSI_PATH - path to the qemu ga x86 MSI
    - VERSION - version on the installer

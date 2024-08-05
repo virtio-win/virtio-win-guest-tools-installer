@@ -6,6 +6,7 @@
 <?define with_sys = "true"?>
 <?define extra_components = "true"?>
 <?define permanent = "no"?>
+<?define sequence = 7 ?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k16 -->
 <?define guid = "9C1C516E-57B9-4B8E-ADAB-84C9EFB86E89"?>
@@ -23,6 +24,12 @@
 <?define guid = "753A2041-BE3E-44F9-ABE3-394B7EBD2B46"?>
 <?define vioinput_viohidkmdf_guid = "D80F19F5-B422-4177-A9B9-6233C3A5EEDB"?>
 <?include ../GenericWindowsComponets/2k22.wxi ?>
+<?undef vioinput_viohidkmdf_guid?>
+<?undef guid?>
+<!-- 2k25 -->
+<?define guid = "ED2076F5-2462-4B9D-A796-008818C8DB38"?>
+<?define vioinput_viohidkmdf_guid = "AC486C71-64CF-4DC4-8D34-DD4BF602DC59"?>
+<?include ../GenericWindowsComponets/2k25.wxi ?>
 <?undef vioinput_viohidkmdf_guid?>
 <?undef guid?>
 <!-- w10x64 -->

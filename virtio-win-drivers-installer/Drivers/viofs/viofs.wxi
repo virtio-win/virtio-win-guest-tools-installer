@@ -6,6 +6,7 @@
 <?define with_sys = "true"?>
 <?define extra_components = "true"?>
 <?define permanent = "no"?>
+<?define sequence = 5 ?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k16 -->
 <?define guid = "3D1814BB-CDF2-4918-BD34-EA697A14D63B"?>
@@ -23,6 +24,12 @@
 <?define guid = "0EE9BBA1-9168-4D30-83BC-9DCD408BEB19"?>
 <?define viofs_virtiofs_guid = "E355531E-4609-4CD3-8F9C-361795825A02"?>
 <?include ../GenericWindowsComponets/2k22.wxi ?>
+<?undef viofs_virtiofs_guid?>
+<?undef guid?>
+<!-- 2k25 -->
+<?define guid = "A9C434B6-1D37-4DCE-B3D7-42C9299388A0"?>
+<?define viofs_virtiofs_guid = "0F21C2AA-95EE-49CA-9736-AAC12D9D4928"?>
+<?include ../GenericWindowsComponets/2k25.wxi ?>
 <?undef viofs_virtiofs_guid?>
 <?undef guid?>
 <!-- w10x64 -->
