@@ -64,7 +64,7 @@ bool ManagementClass::GetInstances()
 
         if (FAILED(hr) && (hr != RPC_E_TOO_LATE))
         {
-            LogReport(hr, L"CoInitializeSecurity failed\n");
+            LogReport(hr, L"CoInitializeSecurity failed");
             return false;
         }
 
@@ -79,7 +79,7 @@ bool ManagementClass::GetInstances()
 
     if (FAILED(hr))
     {
-        LogReport(hr, L"CoCreateInstance failed\n");
+        LogReport(hr, L"CoCreateInstance failed");
         return false;
     }
 
@@ -96,7 +96,7 @@ bool ManagementClass::GetInstances()
 
     if (FAILED(hr))
     {
-        LogReport(hr, L"ConnectServer failed\n");
+        LogReport(hr, L"ConnectServer failed");
         return false;
     }
 
@@ -113,7 +113,7 @@ bool ManagementClass::GetInstances()
 
     if (FAILED(hr))
     {
-        LogReport(hr, L"CoSetProxyBlanket failed\n");
+        LogReport(hr, L"CoSetProxyBlanket failed");
         return false;
     }
 
@@ -129,17 +129,17 @@ bool ManagementClass::GetInstances()
 
     if (m_pEnumerator == NULL)
     {
-        LogReport(hr, L"ExecQuery failed\n");
+        LogReport(hr, L"ExecQuery failed");
         return false;
     }
 
     if (FAILED(hr))
     {
-        LogReport(hr, L"%ws failed\n", WFUNCTION);
+        LogReport(hr, L"%ws failed", WFUNCTION);
         return false;
     }
 
-    LogReport(hr, L"CoInitializeSecurity succeedded\n");
+    LogReport(hr, L"CoInitializeSecurity succeedded");
     return true;
 }
 
@@ -159,10 +159,10 @@ bool ManagementClass::MoveNext()
             m_pclsObj = pclsObj;
             return true;
         }
-        LogReport(hr, L"Next failed\n");
+        LogReport(hr, L"Next failed");
         return false;
     }
-    LogReport(S_OK, L"%ws m_pEnumerator = NULL\n", WFUNCTION);
+    LogReport(S_OK, L"%ws m_pEnumerator = NULL", WFUNCTION);
     return false;
 }
 
@@ -177,7 +177,7 @@ std::wstring ManagementClass::GetStringProperty(std::wstring const& propName)
         hr = m_pclsObj->Get(propName.c_str(), 0, &var_val, 0, 0);
         if (FAILED(hr))
         {
-            LogReport(hr, L"GetStringProperty failed\n");
+            LogReport(hr, L"GetStringProperty failed");
         }
         else if (var_val.vt == VT_BSTR)
         {
@@ -186,7 +186,7 @@ std::wstring ManagementClass::GetStringProperty(std::wstring const& propName)
     }
     else
     {
-        LogReport(S_OK, L"%ws m_pclsObj = NULL\n", WFUNCTION);
+        LogReport(S_OK, L"%ws m_pclsObj = NULL", WFUNCTION);
     }
     return data;
 }
@@ -201,7 +201,7 @@ std::wstring ManagementClass::GetSafeArrayProperty(std::wstring const& propName)
         HRESULT hr = m_pclsObj->Get(propName.c_str(), 0, &var_val, 0, 0);
         if (FAILED(hr))
         {
-            LogReport(hr, L"GetSafeArrayProperty failed\n");
+            LogReport(hr, L"GetSafeArrayProperty failed");
         }
         else if (var_val.vt == (VT_ARRAY | VT_BSTR))
         {
@@ -228,7 +228,7 @@ std::wstring ManagementClass::GetSafeArrayProperty(std::wstring const& propName)
     }
     else
     {
-        LogReport(S_OK, L"%ws m_pclsObj = NULL\n", WFUNCTION);
+        LogReport(S_OK, L"%ws m_pclsObj = NULL", WFUNCTION);
     }
     return data;
 }
@@ -247,7 +247,7 @@ bool ManagementClass::GetBoolProperty(std::wstring const& propName)
         }
 
     }
-    LogReport(S_OK, L"%ws m_pclsObj = NULL\n", WFUNCTION);
+    LogReport(S_OK, L"%ws m_pclsObj = NULL", WFUNCTION);
     return false;
 }
 
@@ -264,7 +264,7 @@ int ManagementClass::GetIntProperty(std::wstring const& propName)
             return var_val.iVal;;
         }
     }
-    LogReport(S_OK, L"%ws m_pclsObj = NULL\n", WFUNCTION);
+    LogReport(S_OK, L"%ws m_pclsObj = NULL", WFUNCTION);
     return 0;
 }
 
@@ -281,7 +281,7 @@ long ManagementClass::GetLongProperty(std::wstring const& propName)
             return var_val.lVal;
         }
     }
-    LogReport(S_OK, L"%ws m_pclsObj = NULL\n", WFUNCTION);
+    LogReport(S_OK, L"%ws m_pclsObj = NULL", WFUNCTION);
     return 0;
 }
 
@@ -297,21 +297,21 @@ bool ManagementClass::GetMethod(std::wstring const& methodName, CComPtr<IWbemCla
         hr = m_pSvc->GetObject(bstr_t(m_wmiClass.c_str()), 0, NULL, &pClass, NULL);
         if (FAILED(hr))
         {
-            LogReport(hr, L"GetObject failed\n");
+            LogReport(hr, L"GetObject failed");
             return false;
         }
 
         hr = pClass->GetMethod(methodName.c_str(), 0, &pInClass, NULL);
         if (FAILED(hr))
         {
-            LogReport(hr, L"GetMethod failed\n");
+            LogReport(hr, L"GetMethod failed");
             return false;
         }
 
         hr = pInClass->SpawnInstance(0, &pInInstClass);
         if (FAILED(hr))
         {
-            LogReport(hr, L"SpawnInstance failed\n");
+            LogReport(hr, L"SpawnInstance failed");
             return false;
         }
 
@@ -331,14 +331,13 @@ bool ManagementClass::Put(CComPtr<IWbemClassObject> pInInstClass, std::wstring c
 
         if (FAILED(hr))
         {
-            LogReport(hr, L"Put failed\n");
+            LogReport(hr, L"Put failed");
             return false;
         }
         return true;
     }
     return false;
 }
-
 
 bool ManagementClass::ExecMethod(CComPtr<IWbemClassObject> pInInstClass, std::wstring const& methodName, int* ret, bool adapter)
 {
@@ -353,7 +352,7 @@ bool ManagementClass::ExecMethod(CComPtr<IWbemClassObject> pInInstClass, std::ws
             hr = m_pclsObj->Get(L"__PATH", 0, &var_path, NULL, NULL);
             if (FAILED(hr))
             {
-                LogReport(hr, L"Get failed\n");
+                LogReport(hr, L"Get failed");
                 return false;
             }
             hr = m_pSvc->ExecMethod(var_path.bstrVal, bstr_t(methodName.c_str()), 0,
@@ -367,7 +366,7 @@ bool ManagementClass::ExecMethod(CComPtr<IWbemClassObject> pInInstClass, std::ws
 
         if (FAILED(hr))
         {
-            LogReport(hr, L"ExecMethod failed\n");
+            LogReport(hr, L"ExecMethod failed");
             return false;
         }
 

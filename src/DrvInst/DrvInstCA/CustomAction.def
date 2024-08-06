@@ -1,0 +1,8 @@
+LIBRARY "DrvInstCA"
+
+EXPORTS
+    ProcessPackages
+    InstallPackages
+    UninstallPackages
+    SaveSettings
+    RestoreSettings
