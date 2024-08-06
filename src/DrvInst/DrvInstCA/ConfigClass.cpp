@@ -45,13 +45,12 @@ bool Config::Init(bool read)
 {
     HRESULT hr = S_OK;
 
-    LogReport(S_OK, L"%ws\n", WFUNCTION);
     hr = ::CoInitializeEx(NULL,
         COINIT_MULTITHREADED);
 
     if (FAILED(hr))
     {
-        LogReport(hr, L"Cannot initialize COM\n");
+        LogReport(hr, L"Cannot initialize COM");
         return false;
     }
 
@@ -63,7 +62,6 @@ bool Config::Init(bool read)
 
 void Config::Close()
 {
-    LogReport(S_OK, L"%ws\n", WFUNCTION);
     if (cf)
     {
         delete cf;
@@ -81,19 +79,16 @@ void Config::Close()
 
 bool ConfigWrite::Run()
 {
-    LogReport(S_OK, L"%ws IN 0\n", WFUNCTION);
     if (nac->GetInstances())
     {
-        LogReport(S_OK, L"%ws IN 1\n", WFUNCTION);
         while (nac->MoveNext())
         {
-            LogReport(S_OK, L"%ws IN 2\n", WFUNCTION);
             std::wstring srvname = nac->GetStringProperty(SRVSNAME);
             if (nac->GetBoolProperty(IPEN) &&
                 !nac->GetBoolProperty(DHCPEN) &&
                 (srvname.compare(NETKVM)) == 0)
             {
-                LogReport(S_OK, L"srvmane = %ws\n", srvname.c_str());
+                LogReport(S_OK, L"srvmane = %ws", srvname.c_str());
 
                 cf->WriteLine(STRING_FORMAT, MACADDR, VT_BSTR, nac->GetStringProperty(MACADDR).c_str());
                 cf->WriteLine(STRING_FORMAT, DESCR, VT_BSTR, nac->GetStringProperty(DESCR).c_str());
@@ -114,14 +109,12 @@ bool ConfigWrite::Run()
             }
         }
     }
-    LogReport(S_OK, L"%ws OUT\n", WFUNCTION);
 
     return true;
 }
 
 ConfigRead::ConfigRead(const PCWSTR filename) : Config(filename)
 {
-    LogReport(S_OK, L"%ws\n", WFUNCTION);
     dhcp_en = false;
     ip_en = false;
     ip_filt_sec_en = false;
@@ -133,7 +126,6 @@ ConfigRead::ConfigRead(const PCWSTR filename) : Config(filename)
 
 bool ConfigRead::IsValidIPv4Address(std::wstring const& address)
 {
-    LogReport(S_OK, L"%ws\n", WFUNCTION);
     unsigned char a, b, c, d;
     return (swscanf_s(address.c_str(), IPV4_FORMAT, &a, &b, &c, &d) == 4);
 }
@@ -356,7 +348,7 @@ bool ConfigRead::EnableStatic(bool ipv4)
                 {
                     if (ret > 0)
                     {
-                        LogReport(S_OK, L"%ws method completed with the error code %d\n", ENSTATIC_METHOD, ret);
+                        LogReport(S_OK, L"%ws method completed with the error code %d", ENSTATIC_METHOD, ret);
                     }
                     return true;
                 }
@@ -386,7 +378,7 @@ bool ConfigRead::SetDNSServer(void)
                 {
                     if (ret > 0)
                     {
-                        LogReport(S_OK, L"%ws method completed with the error code %d\n", SETDNSSRCORD_METHOD, ret);
+                        LogReport(S_OK, L"%ws method completed with the error code %d", SETDNSSRCORD_METHOD, ret);
                     }
                     return true;
                 }
@@ -432,7 +424,7 @@ bool ConfigRead::EnableDNS(void)
                 {
                     if (ret > 0)
                     {
-                        LogReport(S_OK, L"%ws method completed with the error code %d\n", ENDNS_METHOD, ret);
+                        LogReport(S_OK, L"%ws method completed with the error code %d", ENDNS_METHOD, ret);
                     }
                     return true;
                 }
@@ -462,7 +454,7 @@ bool ConfigRead::SetGateWays(bool ipv4)
                 {
                     if (ret > 0)
                     {
-                        LogReport(S_OK, L"%ws method completed with the error code %d\n", SETGW_METHOD, ret);
+                        LogReport(S_OK, L"%ws method completed with the error code %d", SETGW_METHOD, ret);
                     }
                     return true;
                 }
@@ -484,27 +476,27 @@ bool ConfigRead::RestoreConfig()
             {
                 if (!EnableStatic(true))
                 {
-                    LogReport(S_OK, L"EnableStatic IPv4 failed\n");
+                    LogReport(S_OK, L"EnableStatic IPv4 failed");
                 }
                 if (!EnableStatic(false))
                 {
-                    LogReport(S_OK, L"EnableStatic IPv6 failed\n");
+                    LogReport(S_OK, L"EnableStatic IPv6 failed");
                 }
                 if (!SetDNSServer())
                 {
-                    LogReport(S_OK, L"SetDNSServer failed\n");
+                    LogReport(S_OK, L"SetDNSServer failed");
                 }
                 if (!SetGateWays(true))
                 {
-                    LogReport(S_OK, L"SetGateWays IPv4 failed\n");
+                    LogReport(S_OK, L"SetGateWays IPv4 failed");
                 }
                 if (!SetGateWays(false))
                 {
-                    LogReport(S_OK, L"SetGateWays IPv6 failed\n");
+                    LogReport(S_OK, L"SetGateWays IPv6 failed");
                 }
                 if (!EnableDNS())
                 {
-                    LogReport(S_OK, L"EnableDNS failed\n");
+                    LogReport(S_OK, L"EnableDNS failed");
                 }
                 return true;
             }

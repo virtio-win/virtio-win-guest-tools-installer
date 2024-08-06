@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema 
+    elementFormDefault="qualified"
+    targetNamespace="http://www.redhat.com/DrvInstExt"
+    xmlns="http://www.redhat.com/DrvInstExt"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xse="http://schemas.microsoft.com/wix/2005/XmlSchemaExtension"
+>
+  <xs:annotation>
+    <xs:documentation>
+      The schema for the virtio-win drivers installer WiX Extension
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:element name="DriverInstall">
+    <xs:annotation>
+      <xs:appinfo>
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Component" />
+      </xs:appinfo>
+      <xs:documentation>
+        Installs a driver.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="FileName" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Specifies the file name.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="Directory" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Specifies the file directory.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="Sequence" type="xs:integer">
+        <xs:annotation>
+          <xs:documentation>
+            Specifies an optional installation sequence number.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

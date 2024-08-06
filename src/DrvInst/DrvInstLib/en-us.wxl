@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<WixLocalization Culture="en-us" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+  <String Id="InstallDriverPackages" Overridable="yes">Installing Windows Virtio-Win Drivers.</String>
+  <String Id="UninstallDriverPackages" Overridable="yes">Uninstalling Windows Virtio-Win Drivers.</String>
+  <String Id="RollbackInstall" Overridable="yes">Rolling back installing Windows Virtio-Win Drivers.</String>
+  <String Id="RollbackUninstall" Overridable="yes">Rolling back uninstalling Windows Virtio-Win Drivers.</String>
+</WixLocalization>

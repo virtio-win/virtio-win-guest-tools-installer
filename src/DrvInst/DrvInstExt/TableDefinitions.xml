@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<tableDefinitions
+  xmlns="http://schemas.microsoft.com/wix/2006/tables">
+
+  <tableDefinition
+    name="DriverInstallTable"
+    createSymbols="yes">
+
+    <columnDefinition
+      name="Component"
+      type="string"
+      length="72"
+      primaryKey="yes"
+      modularize="column"
+      keyTable="Component" keyColumn="1"
+      category="identifier"
+      description="Name of the component that represents the driver package"/>
+
+    <columnDefinition
+      name="FileName"
+      type="string"
+      length="0"
+      modularize="property"
+      nullable="yes"
+      category="formatted"
+      description="Name of the inf file"/>
+
+    <columnDefinition
+      name="Directory"
+      type="string"
+      length="0"
+      modularize="property"
+      nullable="yes"
+      category="formatted"
+      description="Name of the installation directory"/>
+
+    <columnDefinition
+      name="Flags"
+      type="number"
+      length="4"
+      minValue="0"
+      maxValue="31"
+      description="Flags for installing and uninstalling driver packages"/>
+
+    <columnDefinition
+      name="Sequence"
+      type="number"
+      length="4"
+      nullable="yes"
+      minValue="0"
+      description="Order in which the driver packages are processed"/>
+  </tableDefinition>
+</tableDefinitions>
+

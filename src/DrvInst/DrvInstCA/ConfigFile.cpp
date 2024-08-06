@@ -53,7 +53,7 @@ bool ConfigFile::Open(bool read)
     readMode = read;
     if (_wfopen_s(&fileHandle, fileName.c_str(), readMode ? L"r" : L"w") < 0)
     {
-        LogReport(S_OK, L"_wfopen failed err = %d :  %s!\n", errno, GetErrorString());
+        LogReport(S_OK, L"_wfopen failed err = %d :  %s", errno, GetErrorString());
         return false;
     }
     return true;
@@ -65,7 +65,7 @@ bool ConfigFile::Close()
     {
         if(fclose(fileHandle) < 0)
         {
-            LogReport(S_OK, L"fclose failed err = %d :  %s!\n", errno, GetErrorString());
+            LogReport(S_OK, L"fclose failed err = %d :  %s", errno, GetErrorString());
             return false;
         }
         fileHandle = nullptr;
@@ -99,7 +99,7 @@ bool ConfigFile::WriteLine(wchar_t const* const fmt, ...)
 
         if (_ftprintf(fileHandle, wcstr) < 0)
         {
-            LogReport(S_OK, L"_ftprintf failed err = %d :  %s!\n", errno, GetErrorString());
+            LogReport(S_OK, L"_ftprintf failed err = %d :  %s", errno, GetErrorString());
             res = false;
         }
     }

@@ -29,8 +29,6 @@
 #pragma once
 #include "stdafx.h"
 
-const int ERR_BUF_SIZE = 1024;
-
 class ConfigFile
 {
 public:

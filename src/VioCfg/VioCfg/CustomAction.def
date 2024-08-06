@@ -1,5 +1,0 @@
-LIBRARY "VioCfg"
-
-EXPORTS
-    SaveSettings
-    RestoreSettings

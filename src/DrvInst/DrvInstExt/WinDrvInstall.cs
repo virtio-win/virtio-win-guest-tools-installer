@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2023 Red Hat, Inc.
  *
  * Written By: Vadim Rozenfeld <vrozenfe@redhat.com>
@@ -26,34 +26,58 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#pragma once
-#include "stdafx.h"
 
-class ManagementClass
+namespace DrvInstExt
 {
-public:
-    ManagementClass(std::wstring const& adr);
-    ~ManagementClass();
+    using System.Reflection;
+    using Microsoft.Tools.WindowsInstallerXml;
+    public sealed class DrvInstExt : WixExtension
+    {
 
-    bool GetInstances();
-    bool MoveNext();
-    std::wstring GetStringProperty(std::wstring const& propName);
-    bool GetBoolProperty(std::wstring const& propName);
-    int GetIntProperty(std::wstring const& propName);
-    long GetLongProperty(std::wstring const& propName);
-    std::wstring GetSafeArrayProperty(std::wstring const& propName);
+        private DrvInstallerCompiler compilerExtension;
+        public override CompilerExtension CompilerExtension
+        {
+            get
+            {
+                if (null == this.compilerExtension)
+                {
+                    this.compilerExtension = 
+                        new DrvInstallerCompiler();
+                }
 
-    //private:
-    bool GetMethod(std::wstring const& methodName, CComPtr<IWbemClassObject>& pInInstClass);
-    bool Put(CComPtr<IWbemClassObject> pInInstClass, std::wstring const& propName, CComVariant* var);
-    bool ExecMethod(CComPtr<IWbemClassObject> pInInstClass, std::wstring const& methodName, int* ret, bool adapter = true);
+                return this.compilerExtension;
+            }
+        }
 
-protected:
-    std::wstring m_wmiClass;
-    CComPtr<IWbemLocator> m_pLoc;
-    CComPtr<IEnumWbemClassObject> m_pEnumerator;
-    CComPtr<IWbemServices> m_pSvc;
-    CComPtr<IWbemClassObject> m_pclsObj;
-    static bool m_bSecurity;
-};
+        private TableDefinitionCollection tableDefinitions;
+        public override TableDefinitionCollection TableDefinitions
+        {
+            get
+            {
+                if (null == this.tableDefinitions)
+                {
+                    this.tableDefinitions = LoadTableDefinitionHelper(
+                        Assembly.GetExecutingAssembly(),
+                        "DrvInstExt.TableDefinitions.xml");
+                }
 
+                return this.tableDefinitions;
+            }
+        }
+
+        private Library library;
+        public override Library GetLibrary(TableDefinitionCollection tableDefinitions)
+        {
+            if (this.library == null)
+            {
+                this.library =
+                    LoadLibraryHelper(
+                        Assembly.GetExecutingAssembly(),
+                        "DrvInstExt.DrvInstLib.wixlib",
+                        tableDefinitions);
+            }
+
+            return this.library;
+        }
+    }
+}
