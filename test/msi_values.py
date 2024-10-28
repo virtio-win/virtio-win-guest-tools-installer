@@ -127,7 +127,6 @@ def get_expected_componentids():
         'CMP_virtiofs_w10_x86':['{CDC4821F-E00B-48BB-9A4A-5C1A420333F9}'],
         'CMP_Win10x86_viogpudo':['{D5AB2386-95A5-4ECD-A0CF-8F0DF40ABDD3}'],
         'CMP_Win10x86_fwcfg':['{576398C6-231E-4FE0-8AF6-E62BF5015F70}'],
-        'CMP_Win10x86_viomem':['{75FD716F-634C-43EF-887E-D6DE11344290}'],
         }
     return (
         ("Component", "ComponentId"),

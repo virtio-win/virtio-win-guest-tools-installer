@@ -34,8 +34,5 @@
 <?undef guid?>
 <?else ?>
 <!-- w10x86 -->
-<?define guid = "75FD716F-634C-43EF-887E-D6DE11344290"?>
-<?include ../GenericWindowsComponets/w10x86.wxi ?>
-<?undef guid?>
 <?endif ?>
 </Include>
