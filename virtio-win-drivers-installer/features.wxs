@@ -51,9 +51,11 @@
                 Description='Virtio GPU DOD driver'>
                 <ComponentGroupRef Id='CMPG_viogpudo_driver' />
         </Feature>
+<?if $(sys.BUILDARCH) = "x64" ?>
         <Feature Id='FE_viomem_driver' Title='Viomem' Level='1'
                 Description='Virtio Memory driver'>
                 <ComponentGroupRef Id='CMPG_viomem_driver' />
         </Feature>
+<?endif ?>
     </Fragment>
 </Wix>

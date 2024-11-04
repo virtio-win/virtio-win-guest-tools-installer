@@ -18,7 +18,9 @@
                     <Directory Id="VIOSTOR" Name="Viostor"/>
                     <Directory Id="VIOFS" Name="VioFS"/>
                     <Directory Id="VIOGPUDO" Name="Viogpudo"/>
+<?if $(sys.BUILDARCH) = "x64" ?>
                     <Directory Id="VIOMEM" Name="Viomem"/>
+<?endif ?>
                 </Directory>
             </Directory>
         </Directory>
