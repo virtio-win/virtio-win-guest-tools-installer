@@ -16,17 +16,6 @@
         <?else ?>
             <ComponentGroupRef Id='CMPG_Win10x86_$(var.driverName)' />
         <?endif ?>
-            <Component Id="CMP_Network_driver_Registry"
-                Guid='*'>
-                <RegistryValue Id="Registry_Tcp1323Opts"
-                    KeyPath="yes"
-                    Action="write"
-                    Root="HKLM"
-                    Key="SYSTEM\CurrentControlSet\Services\Tcpip\Parameters"
-                    Name="Tcp1323Opts"
-                    Value="0"
-                    Type="integer" />
-            </Component>
             <Component Id="CMP_virtio_licence"
             Guid='*'>
             <File Id='virtio_win_license.txt'
