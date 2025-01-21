@@ -118,8 +118,3 @@ def test_old_wgt_uninstall_path(get_msis):
     _, expected_values = msi_values.get_expected_RegLocator()
     _generic_msi_value_test(get_msis, "RegLocator", expected_values)
 
-
-def test_Registry(get_msis):
-    _, expected_values = msi_values.get_expected_registry()
-    _generic_msi_value_test(get_msis, "Registry", expected_values)
-

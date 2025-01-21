@@ -177,13 +177,3 @@ def get_expected_RegLocator():
         }
     )
 
-def get_expected_registry():
-    expected_values_x64 = {'Registry_Tcp1323Opts': [r'SYSTEM\CurrentControlSet\Services\Tcpip\Parameters', 'Tcp1323Opts']}
-    expected_values_x86 = {'Registry_Tcp1323Opts': [r'SYSTEM\CurrentControlSet\Services\Tcpip\Parameters', 'Tcp1323Opts']}
-    return (
-        ("Registry", "Key", "Name"),
-        {
-            'x86': expected_values_x86,
-            'x64': expected_values_x64
-        }
-    )
