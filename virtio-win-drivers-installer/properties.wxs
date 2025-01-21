@@ -124,6 +124,17 @@
             Id="CA_SaveVIOConfigProperty"
             Property = "CA_SaveVIOConfig"
             Value = "[INSTALLERDIR][VIOCONFFILENAME]" />
+        <CustomAction
+            Id="CA_RollbackRestoreVIOConfig"
+            BinaryKey="ConfManagementDll"
+            DllEntry="RestoreSettings"
+            Impersonate="no"
+            Execute="rollback">
+        </CustomAction>
+	<CustomAction
+            Id="CA_RollbackRestoreVIOConfigProperty"
+            Property = "CA_RollbackRestoreVIOConfig"
+            Value = "[INSTALLERDIR][VIOCONFFILENAME]" />
     </Fragment>
 <?undef Win64?>
 </Wix>
