@@ -1,6 +1,5 @@
 wine
 make
-dnf
 dnf-utils
 msitools
 python3-pytest

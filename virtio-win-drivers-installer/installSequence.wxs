@@ -19,6 +19,8 @@
             <Custom Action='CA_RestoreVIOConfigProperty' Before='CA_RestoreVIOConfig'></Custom>
             <Custom Action='CA_SaveVIOConfig' After='InstallInitialize'>Installed AND REMOVE="ALL"</Custom>
             <Custom Action='CA_SaveVIOConfigProperty' Before='CA_SaveVIOConfig'></Custom>
+            <Custom Action='CA_RollbackRestoreVIOConfig' After="RemoveFiles">NOT Installed</Custom>
+            <Custom Action='CA_RollbackRestoreVIOConfigProperty' Before='CA_RollbackRestoreVIOConfig'></Custom>
         </InstallExecuteSequence>
     </Fragment>
 </Wix>
