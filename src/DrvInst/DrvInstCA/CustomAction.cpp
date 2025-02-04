@@ -159,7 +159,7 @@ UINT __stdcall ProcessPackages(
         {
 //            WcaLog(LOGMSG_STANDARD, "cInstallDriver = '%d'.", cInstallDrivers);
 //            WcaLog(LOGMSG_STANDARD, "FileName '%ls'", pwzFileName);
-//            WcaLog(LOGMSG_STANDARD, "Flag = '%d'.", iFlags);
+            WcaLog(LOGMSG_STANDARD, "Flag = '%d'.", iFlags);
 //            WcaLog(LOGMSG_STANDARD, "Sequence = '%d'.", iSequence);
 //            WcaLog(LOGMSG_STANDARD, "Directory '%ls'", pwzDirectory);
             WcaLog(LOGMSG_STANDARD, "Shortcut Directory '%ls'", pwzShortcutPath);
@@ -167,19 +167,26 @@ UINT __stdcall ProcessPackages(
             hr = WcaWriteStringToCaData(pwzShortcutPath, &pwzInstallCustomActionData);
             ExitOnFailure(hr, "failed to write shortcut path to custom install action data");
 
+
+            hr = WcaWriteIntegerToCaData(iFlags, &pwzInstallCustomActionData);
+            ExitOnFailure(hr, "failed to write flags to custom install action data.");
+
             ++cInstallDrivers;
         }
         else if (WcaIsUninstalling(isInstalled, isAction))
         {
 //            WcaLog(LOGMSG_STANDARD, "cUninstallDriver = '%d'.", cUnInstallDrivers);
 //            WcaLog(LOGMSG_STANDARD, "FileName '%ls'", pwzFileName);
-//            WcaLog(LOGMSG_STANDARD, "Flag = '%d'.", iFlags);
+            WcaLog(LOGMSG_STANDARD, "Flag = '%d'.", iFlags);
 //            WcaLog(LOGMSG_STANDARD, "Sequence = '%d'.", iSequence);
 //            WcaLog(LOGMSG_STANDARD, "Directory '%ls'", pwzDirectory);
             WcaLog(LOGMSG_STANDARD, "Shortcut Directory '%ls'", pwzShortcutPath);
 
             hr = WcaWriteStringToCaData(pwzShortcutPath, &pwzUnInstallCustomActionData);
-            ExitOnFailure(hr, "failed to write shortcut path to custom install action data");
+            ExitOnFailure(hr, "failed to write shortcut path to custom uninstall action data");
+
+            hr = WcaWriteIntegerToCaData(iFlags, &pwzUnInstallCustomActionData);
+            ExitOnFailure(hr, "failed to write flags to custom uninstall action data.");
 
             ++cUnInstallDrivers;
         }
@@ -233,6 +240,7 @@ UINT __stdcall InstallPackages(
     LPWSTR pwzCustomActionData = NULL;
     LPWSTR pwzData = NULL;
     LPWSTR pwz = NULL;
+    int iFlags = 0;
 
     hr = WcaGetProperty(L"CustomActionData", &pwzCustomActionData);
     ExitOnFailure(hr, "Failed to get Custom Action Data.");
@@ -242,17 +250,21 @@ UINT __stdcall InstallPackages(
 
     while (pwz && *pwz)
     {
-        hr = WcaReadStringFromCaData(&pwz, &pwzData);
-        ExitOnFailure(hr, "failed to read command line from custom action data");
         bool bRebootNeeded = false;
+
+        hr = WcaReadStringFromCaData(&pwz, &pwzData);
+        ExitOnFailure(hr, "failed to read package name from install custom action data");
+        hr = WcaReadIntegerFromCaData(&pwz, &iFlags);
+        ExitOnFailure(hr, "Failed to read package flags from install custom action data");
         hr = Install(pwzData, &bRebootNeeded);
+
         if (FAILED(hr))
         {
             LogReport(S_OK, L"failed to execute Install command (with error 0x%x): %ls, continuing anyway", hr, pwzData);
             hr = S_OK;
         }
         hr = WcaProgressMessage(COST_DRIVER_EXCEPTION, FALSE);
-        if (bRebootNeeded)
+        if (bRebootNeeded || (iFlags & REBOOT_AFTER_INSTALL))
         {
             WcaDeferredActionRequiresReboot();
         }
@@ -283,6 +295,7 @@ UINT __stdcall UninstallPackages(
     LPWSTR pwzCustomActionData = NULL;
     LPWSTR pwzData = NULL;
     LPWSTR pwz = NULL;
+    int iFlags = 0;
 
     hr = WcaGetProperty(L"CustomActionData", &pwzCustomActionData);
     ExitOnFailure(hr, "Failed to get Custom Action Data.");
@@ -292,9 +305,12 @@ UINT __stdcall UninstallPackages(
 
     while (pwz && *pwz)
     {
+        bool bRebootNeeded = false;
+
         hr = WcaReadStringFromCaData(&pwz, &pwzData);
         ExitOnFailure(hr, "failed to read command line from custom action data");
-        bool bRebootNeeded = false;
+        hr = WcaReadIntegerFromCaData(&pwz, &iFlags);
+        ExitOnFailure(hr, "Failed to read package flags from install custom action data");
 
         hr = Uninstall(pwzData, &bRebootNeeded);
         if (FAILED(hr))
@@ -302,7 +318,7 @@ UINT __stdcall UninstallPackages(
             WcaLog(LOGMSG_STANDARD, "failed to execute Uninstall command (with error 0x%x): %ls, continuing anyway", hr, pwzData);
             hr = S_OK;
         }
-        if (bRebootNeeded)
+        if (bRebootNeeded || (iFlags & REBOOT_AFTER_UNINSTALL))
         {
             WcaDeferredActionRequiresReboot();
         }

@@ -36,6 +36,13 @@
           </xs:documentation>
         </xs:annotation>
       </xs:attribute>
+      <xs:attribute name="Flags" type="xs:integer">
+        <xs:annotation>
+          <xs:documentation>
+            Specifies an optional driver related attributes.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
       <xs:attribute name="Sequence" type="xs:integer">
         <xs:annotation>
           <xs:documentation>

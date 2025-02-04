@@ -35,6 +35,9 @@
 
 const int ERR_BUF_SIZE = 1024;
 
+const int REBOOT_AFTER_INSTALL = 1;
+const int REBOOT_AFTER_UNINSTALL = 2;
+
 void LogReport(
     __in HRESULT hr,
     __in_z __format_string PCWSTR fmt, ...

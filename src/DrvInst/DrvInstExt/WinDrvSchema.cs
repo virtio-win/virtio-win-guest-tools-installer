@@ -28,8 +28,9 @@ public partial class DriverInstall {
     
     private bool deleteFilesFieldSpecified;
     
-    private string sequenceField;
+    private string flagsField;
     
+    private string sequenceField;
     /// <remarks/>
     [System.Xml.Serialization.XmlAttributeAttribute()]
     public YesNoType DeleteFiles {
@@ -51,7 +52,18 @@ public partial class DriverInstall {
             this.deleteFilesFieldSpecified = value;
         }
     }
-    
+
+    /// <remarks/>
+    [System.Xml.Serialization.XmlAttributeAttribute(DataType="integer")]
+    public string Flags {
+        get {
+            return this.flagsField;
+        }
+        set {
+            this.flagsField = value;
+        }
+    }
+
     /// <remarks/>
     [System.Xml.Serialization.XmlAttributeAttribute(DataType="integer")]
     public string Sequence {
