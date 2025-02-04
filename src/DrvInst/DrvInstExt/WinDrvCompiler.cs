@@ -80,10 +80,10 @@ namespace DrvInstExt
         private void ParseDriverElement(XmlNode node, string componentId)
         {
             SourceLineNumberCollection sourceLineNumbers = Preprocessor.GetSourceLineNumbers(node);
-            int attributes = 0;
             string filename = null;
             string directory = null;
             int sequence = 0;
+            int flags = 0;
 
             if (null != componentId)
             {
@@ -110,6 +110,9 @@ namespace DrvInstExt
                     case "Sequence":
                         sequence = this.Core.GetAttributeIntegerValue(sourceLineNumbers, attrib, 0, int.MaxValue);
                         break;
+                    case "Flags":
+                        flags = this.Core.GetAttributeIntegerValue(sourceLineNumbers, attrib, 0, int.MaxValue);
+                        break;
                     default:
                         this.Core.UnexpectedAttribute(sourceLineNumbers, attrib);
                         break;
@@ -132,7 +135,10 @@ namespace DrvInstExt
                 row[0] = componentId;
                 row[1] = filename;
                 row[2] = directory;
-                row[3] = attributes;
+                if (CompilerCore.IntegerNotSet != flags)
+                {
+                    row[3] = flags;
+                }
                 if (CompilerCore.IntegerNotSet != sequence)
                 {
                     row[4] = sequence;

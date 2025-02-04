@@ -355,7 +355,6 @@ bool ConfigRead::EnableStatic(bool ipv4)
             }
         }
     }
-
     return false;
 }
 
