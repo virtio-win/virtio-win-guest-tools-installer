@@ -22,7 +22,7 @@
                     Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\$(var.driverName).sys'
                     CompanionFile='FILE_$(var.driverName)_$(var.osShort)_$(var.ISA).inf'/>
                 <?endif?>
-                <dins:DriverInstall FileName = '$(var.driverName).inf' Directory = '$(var.destDirName)' Sequence = '$(var.sequence)'/>
+                <dins:DriverInstall FileName = '$(var.driverName).inf' Directory = '$(var.destDirName)' Flags = '$(var.flags)' Sequence = '$(var.sequence)'/>
             </Component>
             <?if $(var.extra_components) = "true" ?>
             <?include ../$(var.srcDirName)/$(var.driverName)_extras.wxi ?>

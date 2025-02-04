@@ -6,6 +6,7 @@
 <?define with_sys = "true"?>
 <?define extra_components = "true"?>
 <?define permanent = "no"?>
+<?define flags = 0 ?>
 <?define sequence = 0 ?>
 <?if $(sys.BUILDARCH) = "x64" ?>
 <!-- 2k16 -->
