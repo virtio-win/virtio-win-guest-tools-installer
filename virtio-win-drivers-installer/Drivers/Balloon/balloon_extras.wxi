@@ -17,7 +17,9 @@
                 Start="auto"
                 ErrorControl="ignore"
                 Type="ownProcess"
-                Vital="no"/>
+                Vital="no">
+                <ServiceDependency Id="Winmgmt" />
+            </ServiceInstall>
             <ServiceControl
                 Id="sc_BalloonService_$(var.osShort)_$(var.ISA)"
                 Name="BalloonService"
