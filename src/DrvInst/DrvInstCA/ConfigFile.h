@@ -40,8 +40,6 @@ public:
     bool Close();
     FILE* GetHandle() { return fileHandle; }
 private:
-    wchar_t* GetErrorString(void);
-private:
     FILE* fileHandle;
     std::wstring fileName;
     wchar_t error_buf[ERR_BUF_SIZE];

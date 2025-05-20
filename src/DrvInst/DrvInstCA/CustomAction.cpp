@@ -48,16 +48,16 @@ UINT __stdcall SaveSettings(
 {
     HRESULT hr = S_OK;
     UINT er = ERROR_SUCCESS;
+    LPWSTR pszCustomActionData = NULL;
 
     hr = WcaInitialize(hInstall, "SaveSettings");
     ExitOnFailure(hr, "Failed to initialize");
 
     WcaLog(LOGMSG_STANDARD, "SaveSettings Initialized.");
 
-    LPWSTR pszCustomActionData = NULL;
     hr = WcaGetProperty(L"CustomActionData", &pszCustomActionData);
     ExitOnFailure(hr, "Failed to get Custom Action Data.");
-    WcaLog(LOGMSG_STANDARD, "Custom Action Data = '%ls'.", pszCustomActionData);
+    WcaLog(LOGMSG_STANDARD, "Custom Action Data = '%ws'.", pszCustomActionData);
 
     hr = Save(pszCustomActionData);
     ExitOnFailure(hr, "Custom action failed");
@@ -74,16 +74,16 @@ UINT __stdcall RestoreSettings(
 {
     HRESULT hr = S_OK;
     UINT er = ERROR_SUCCESS;
+    LPWSTR pszCustomActionData = NULL;
 
     hr = WcaInitialize(hInstall, "RestoreSettings");
     ExitOnFailure(hr, "Failed to initialize");
 
     WcaLog(LOGMSG_STANDARD, "RestoreSettings Initialized.");
 
-    LPWSTR pszCustomActionData = NULL;
     hr = WcaGetProperty(L"CustomActionData", &pszCustomActionData);
     ExitOnFailure(hr, "Failed to get Custom Action Data.");
-    WcaLog(LOGMSG_STANDARD, "Custom Action Data = '%ls'.", pszCustomActionData);
+    WcaLog(LOGMSG_STANDARD, "Custom Action Data = '%ws'.", pszCustomActionData);
 
     hr = Restore(pszCustomActionData);
     ExitOnFailure(hr, "Custom action failed");
@@ -134,7 +134,7 @@ UINT __stdcall ProcessPackages(
         hr = WcaGetRecordFormattedString(hRec, feqComponent, &pwzComponent);
         ExitOnFailure(hr, "failed to get Install Driver Component");
         er = ::MsiGetComponentStateW(hInstall, pwzComponent, &isInstalled, &isAction);
-        ExitOnWin32Error1(er, hr, "failed to get install state for Component: %ls", pwzComponent);
+        ExitOnWin32Error1(er, hr, "failed to get install state for Component: %ws", pwzComponent);
 
         hr = WcaGetRecordFormattedString(hRec, feqFileName, &pwzFileName);
         ExitOnFailure(hr, "failed to get Install Driver file name");
@@ -158,11 +158,11 @@ UINT __stdcall ProcessPackages(
             WcaIsReInstalling(isInstalled, isAction))
         {
 //            WcaLog(LOGMSG_STANDARD, "cInstallDriver = '%d'.", cInstallDrivers);
-//            WcaLog(LOGMSG_STANDARD, "FileName '%ls'", pwzFileName);
+//            WcaLog(LOGMSG_STANDARD, "FileName '%ws'", pwzFileName);
             WcaLog(LOGMSG_STANDARD, "Flag = '%d'.", iFlags);
 //            WcaLog(LOGMSG_STANDARD, "Sequence = '%d'.", iSequence);
-//            WcaLog(LOGMSG_STANDARD, "Directory '%ls'", pwzDirectory);
-            WcaLog(LOGMSG_STANDARD, "Shortcut Directory '%ls'", pwzShortcutPath);
+//            WcaLog(LOGMSG_STANDARD, "Directory '%ws'", pwzDirectory);
+            WcaLog(LOGMSG_STANDARD, "Shortcut Directory '%ws'", pwzShortcutPath);
 
             hr = WcaWriteStringToCaData(pwzShortcutPath, &pwzInstallCustomActionData);
             ExitOnFailure(hr, "failed to write shortcut path to custom install action data");
@@ -176,11 +176,11 @@ UINT __stdcall ProcessPackages(
         else if (WcaIsUninstalling(isInstalled, isAction))
         {
 //            WcaLog(LOGMSG_STANDARD, "cUninstallDriver = '%d'.", cUnInstallDrivers);
-//            WcaLog(LOGMSG_STANDARD, "FileName '%ls'", pwzFileName);
+//            WcaLog(LOGMSG_STANDARD, "FileName '%ws'", pwzFileName);
             WcaLog(LOGMSG_STANDARD, "Flag = '%d'.", iFlags);
 //            WcaLog(LOGMSG_STANDARD, "Sequence = '%d'.", iSequence);
-//            WcaLog(LOGMSG_STANDARD, "Directory '%ls'", pwzDirectory);
-            WcaLog(LOGMSG_STANDARD, "Shortcut Directory '%ls'", pwzShortcutPath);
+//            WcaLog(LOGMSG_STANDARD, "Directory '%ws'", pwzDirectory);
+            WcaLog(LOGMSG_STANDARD, "Shortcut Directory '%ws'", pwzShortcutPath);
 
             hr = WcaWriteStringToCaData(pwzShortcutPath, &pwzUnInstallCustomActionData);
             ExitOnFailure(hr, "failed to write shortcut path to custom uninstall action data");
@@ -231,44 +231,48 @@ UINT __stdcall InstallPackages(
 {
     HRESULT hr = S_OK;
     UINT er = ERROR_SUCCESS;
+    LPWSTR pwzCustomActionData = NULL;
+    LPWSTR pwzData = NULL;
+    LPWSTR pwz = NULL;
+    int iFlags = 0;
+    bool bRebootNeeded = false;
 
     hr = WcaInitialize(hInstall, "InstallPackages");
     ExitOnFailure(hr, "Failed to initialize InstallPackages");
 
     WcaLog(LOGMSG_STANDARD, "Initialized.");
 
-    LPWSTR pwzCustomActionData = NULL;
-    LPWSTR pwzData = NULL;
-    LPWSTR pwz = NULL;
-    int iFlags = 0;
 
     hr = WcaGetProperty(L"CustomActionData", &pwzCustomActionData);
     ExitOnFailure(hr, "Failed to get Custom Action Data.");
-    WcaLog(LOGMSG_STANDARD, "Custom Action Data = '%ls'.", pwzCustomActionData);
+    WcaLog(LOGMSG_STANDARD, "Custom Action Data = '%ws'.", pwzCustomActionData);
 
     pwz = pwzCustomActionData;
 
     while (pwz && *pwz)
     {
-        bool bRebootNeeded = false;
-
         hr = WcaReadStringFromCaData(&pwz, &pwzData);
         ExitOnFailure(hr, "failed to read package name from install custom action data");
         hr = WcaReadIntegerFromCaData(&pwz, &iFlags);
         ExitOnFailure(hr, "Failed to read package flags from install custom action data");
+        WcaLog(LOGMSG_STANDARD, "Install of '%ws' flag %d.", pwzData, iFlags);
         hr = Install(pwzData, &bRebootNeeded);
-
+        WcaLog(LOGMSG_STANDARD, "Completed with status 0x%x.", hr);
         if (FAILED(hr))
         {
-            LogReport(S_OK, L"failed to execute Install command (with error 0x%x): %ls, continuing anyway", hr, pwzData);
+            LogReport(S_OK, L"failed to execute Install command (with error 0x%x): %ws, continuing anyway", hr, pwzData);
             hr = S_OK;
         }
-        hr = WcaProgressMessage(COST_DRIVER_EXCEPTION, FALSE);
-        if (bRebootNeeded || (iFlags & REBOOT_AFTER_INSTALL))
+        if (iFlags & REBOOT_AFTER_INSTALL)
         {
-            WcaDeferredActionRequiresReboot();
+            bRebootNeeded = true;
         }
+        hr = WcaProgressMessage(COST_DRIVER_EXCEPTION, FALSE);
         ExitOnFailure1(hr, "failed to tick progress bar for driver: %ws", pwzData);
+    }
+    if (bRebootNeeded )
+    {
+        WcaDeferredActionRequiresReboot();
     }
     DevDriver::ScanForHardwareChanges();
 
@@ -286,27 +290,25 @@ UINT __stdcall UninstallPackages(
 {
     HRESULT hr = S_OK;
     UINT er = ERROR_SUCCESS;
+    LPWSTR pwzCustomActionData = NULL;
+    LPWSTR pwzData = NULL;
+    LPWSTR pwz = NULL;
+    int iFlags = 0;
+    bool bRebootNeeded = false;
 
     hr = WcaInitialize(hInstall, "UninstallPackages");
     ExitOnFailure(hr, "Failed to initialize UninstallPackages");
 
     WcaLog(LOGMSG_STANDARD, "Initialized.");
 
-    LPWSTR pwzCustomActionData = NULL;
-    LPWSTR pwzData = NULL;
-    LPWSTR pwz = NULL;
-    int iFlags = 0;
-
     hr = WcaGetProperty(L"CustomActionData", &pwzCustomActionData);
     ExitOnFailure(hr, "Failed to get Custom Action Data.");
-    WcaLog(LOGMSG_STANDARD, "Custom Action Data = '%ls'.", pwzCustomActionData);
+    WcaLog(LOGMSG_STANDARD, "Custom Action Data = '%ws'.", pwzCustomActionData);
 
     pwz = pwzCustomActionData;
 
     while (pwz && *pwz)
     {
-        bool bRebootNeeded = false;
-
         hr = WcaReadStringFromCaData(&pwz, &pwzData);
         ExitOnFailure(hr, "failed to read command line from custom action data");
         hr = WcaReadIntegerFromCaData(&pwz, &iFlags);
@@ -315,13 +317,17 @@ UINT __stdcall UninstallPackages(
         hr = Uninstall(pwzData, &bRebootNeeded);
         if (FAILED(hr))
         {
-            WcaLog(LOGMSG_STANDARD, "failed to execute Uninstall command (with error 0x%x): %ls, continuing anyway", hr, pwzData);
+            WcaLog(LOGMSG_STANDARD, "failed to execute Uninstall command (with error 0x%x): %ws, continuing anyway", hr, pwzData);
             hr = S_OK;
         }
-        if (bRebootNeeded || (iFlags & REBOOT_AFTER_UNINSTALL))
+        if (iFlags & REBOOT_AFTER_UNINSTALL)
         {
-            WcaDeferredActionRequiresReboot();
+            bRebootNeeded = true;
         }
+    }
+    if (bRebootNeeded)
+    {
+        WcaDeferredActionRequiresReboot();
     }
 
     DevDriver::ScanForHardwareChanges();
@@ -360,7 +366,7 @@ HRESULT Save(const PCWSTR filename)
     ConfigWrite* cfg = new ConfigWrite(filename);
     if (!cfg->Init(false)) {
         delete cfg;
-        LogReport(S_OK, L"%cfg Init failed");
+        LogReport(S_OK, L"cfg Init failed");
         return E_FAIL;
     }
     cfg->Run();
@@ -382,7 +388,6 @@ HRESULT Restore(const PCWSTR filename)
 
 HRESULT Install(const PCWSTR filename, bool* bReboorNeeded)
 {
-    LogReport(S_OK, L"%ws filename = %ws", WFUNCTION, filename);
     DevDriver* dp = new DevDriver(filename);
     if (dp)
     {
@@ -397,12 +402,12 @@ HRESULT Install(const PCWSTR filename, bool* bReboorNeeded)
         delete dp;
         return S_OK;
     }
+    LogReport(S_OK, L"%ws filename = %ws FAILED", WFUNCTION, filename);
     return E_OUTOFMEMORY;
 }
 
 HRESULT Uninstall(const PCWSTR filename, bool* bReboorNeeded)
 {
-    LogReport(S_OK, L"%ws filename = %ws", WFUNCTION, filename);
     DevDriver* dp = new DevDriver(filename);
     if (dp)
     {

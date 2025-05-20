@@ -470,7 +470,9 @@ bool ConfigRead::RestoreConfig()
     {
         while (nac->MoveNext())
         {
-            if (nac->GetIntProperty(INDX) == index &&
+            std::wstring mac = nac->GetStringProperty(MACADDR);
+            LogReport(S_OK, L"macs %ws <--> %ws.", mac.c_str(), mac_addr.c_str());
+            if (nac->GetStringProperty(MACADDR) == mac_addr &&
                 nac->GetStringProperty(SRVSNAME) == srvc_name)
             {
                 if (!EnableStatic(true))

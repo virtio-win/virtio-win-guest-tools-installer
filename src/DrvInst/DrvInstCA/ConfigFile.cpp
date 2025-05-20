@@ -41,19 +41,13 @@ ConfigFile::~ConfigFile()
     Close();
 }
 
-wchar_t* ConfigFile::GetErrorString(void)
-{
-    wmemset(error_buf, '\0', ERR_BUF_SIZE);
-    _wcserror_s(error_buf, ERR_BUF_SIZE, errno);
-    return error_buf;
-}
-
 bool ConfigFile::Open(bool read)
 {
     readMode = read;
     if (_wfopen_s(&fileHandle, fileName.c_str(), readMode ? L"r" : L"w") < 0)
     {
-        LogReport(S_OK, L"_wfopen failed err = %d :  %s", errno, GetErrorString());
+        DWORD Err = GetLastError();
+        LogReport(S_OK, L"_wfopen failed err = %d :  %s", Err, GetErrorString(Err));
         return false;
     }
     return true;
@@ -65,7 +59,8 @@ bool ConfigFile::Close()
     {
         if(fclose(fileHandle) < 0)
         {
-            LogReport(S_OK, L"fclose failed err = %d :  %s", errno, GetErrorString());
+            DWORD Err = GetLastError();
+            LogReport(S_OK, L"fclose failed err = %d :  %s", Err, GetErrorString(Err));
             return false;
         }
         fileHandle = nullptr;
@@ -99,7 +94,8 @@ bool ConfigFile::WriteLine(wchar_t const* const fmt, ...)
 
         if (_ftprintf(fileHandle, wcstr) < 0)
         {
-            LogReport(S_OK, L"_ftprintf failed err = %d :  %s", errno, GetErrorString());
+            DWORD Err = GetLastError();
+            LogReport(S_OK, L"_ftprintf failed err = %d :  %s", Err, GetErrorString(Err));
             res = false;
         }
     }
