@@ -42,8 +42,6 @@ const PCWSTR SOURCEDISKSFILES = _TEXT("SourceDisksFiles");
 
 const PCWSTR DRIVER_VERSION_FORMAT = _TEXT("%hhu/%hhu/%u:%u.%u.%u.%u"); //07/04/2023,100.94.104.24700
 
-const wchar_t* GetErrorString(DWORD Err);
-
 typedef struct _DRV_VERSION
 {
     UCHAR mm;

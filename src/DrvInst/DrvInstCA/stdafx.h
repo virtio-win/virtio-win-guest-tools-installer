@@ -47,3 +47,5 @@ void LogReport(
 #define WIDE2(x) L##x
 #define WIDE1(x) WIDE2(x)
 #define WFUNCTION WIDE1(__FUNCTION__)
+
+const wchar_t* GetErrorString(DWORD Err);

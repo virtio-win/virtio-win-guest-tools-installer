@@ -31,11 +31,12 @@
 
 DevProps::DevProps(const PCWSTR inf_name) : m_InfName(inf_name)
 {
+    m_ClassGUID = GUID_NULL;
+    ZeroMemory(&m_DriverVersion, sizeof(m_DriverVersion));
 };
 
 bool DevProps::Init(bool bInstall)
 {
-
     if (!bInstall && !FileExists())
     {
         GetComponentRegKey();
@@ -51,7 +52,6 @@ bool DevProps::Init(bool bInstall)
         ObtainDevHWIDs();
         return true;
     }
-
     return false;
 }
 
@@ -69,6 +69,7 @@ bool DevProps::FileExists()
         }
         return true;
     }
+    LogReport(S_OK, L"%ws FAILED", WFUNCTION);
     return false;
 }
 
@@ -372,9 +373,27 @@ void DevProps::ObtainDevHWIDs()
 
 const wchar_t* GetErrorString(DWORD Error)
 {
-    std::string err_msg = std::system_category().message(Error);
-    std::wstring msg (std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(err_msg));
-//    msg = L"Error code 0x%x, %ws", Error, std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(err_msg);
+    std::wstring msg;
+
+    LPWSTR msgbuf = nullptr;
+    FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        nullptr,
+        Error,
+        0,
+        (LPWSTR)msgbuf,
+        0,//MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
+        nullptr);
+    if (msgbuf != nullptr)
+    {
+        msg = msgbuf;
+        LocalFree(msgbuf);
+    }
+    else
+    {
+        msg = L"Unknown error";
+    }
+
     return msg.c_str();
 }
 
@@ -1135,7 +1154,10 @@ DWORD DevDriver::UpdateDriver()
                         return NO_ERROR;
                     }
                     Err = GetLastError();
-                    LogReport(HRESULT_FROM_WIN32(Err), L"UpdateDriverForPlugAndPlayDevices for %ws failed err = 0x%x: %ws", hwid.data(), Err, GetErrorString(Err));
+                    if (Err != ERROR_NO_SUCH_DEVINST)
+                    {
+                        LogReport(HRESULT_FROM_WIN32(Err), L"UpdateDriverForPlugAndPlayDevices for %ws failed err = 0x%x: %ws", hwid.data(), Err, GetErrorString(Err));
+                    }
                 }
             }
         }
