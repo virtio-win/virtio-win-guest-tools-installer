@@ -16,7 +16,7 @@
     <Fragment>
         <Property Id="LaunchConditionsSupportedOS" Value="1" />
         <Condition Message="OS must be Windows 10 or higher.">
-            <![CDATA[Installed OR ((VersionNT >= 603) AND (REGISTRY_CURRENT_BUILD_NUMBER > 10240))]]>		
+                <![CDATA[Installed OR ((VersionNT >= 603) AND (REGISTRY_CURRENT_BUILD_NUMBER > 10240))]]>
         </Condition>
     </Fragment>
     <!-- Launch Condition to disable launch on arch x86-->
@@ -81,27 +81,7 @@
 <?else ?>
         <Binary Id="ConfManagementDll" SourceFile="../Libraries/x86/DrvInstCA.dll" />
 <?endif ?>
-	<Property Id="IPCONFFILENAME" Value="vionet.cfg" />
         <Property Id="VIOCONFFILENAME" Value="viocfg.cfg" />
-        <CustomAction
-            Id="CA_RestoreIPConfig" Script="vbscript"
-            Impersonate="no" Execute="deferred">
-            <![CDATA[
-                Dim wsShell
-                Set wsShell = CreateObject("WScript.shell")
-                Dim nmFile
-                nmFile = Session.Property("CustomActionData")
-                Dim fsObj
-                Set fsObj = CreateObject("Scripting.FileSystemObject")
-                If fsObj.FileExists(nmFile) Then
-                    wsShell.run "cmd /c netsh exec " & Chr(34) & nmFile & Chr(34), 1, TRUE
-                End If
-            ]]>
-        </CustomAction>
-        <CustomAction
-            Id="CA_RestoreIPConfigProperty"
-            Property = "CA_RestoreIPConfig"
-            Value = "[INSTALLERDIR][IPCONFFILENAME]" />
         <CustomAction
             Id="CA_RestoreVIOConfig"
             BinaryKey="ConfManagementDll"
@@ -135,6 +115,11 @@
             Id="CA_RollbackRestoreVIOConfigProperty"
             Property = "CA_RollbackRestoreVIOConfig"
             Value = "[INSTALLERDIR][VIOCONFFILENAME]" />
+	<CustomAction Id="CA_ScheduleReboot"
+            Property="REBOOT"
+            Value="Force"
+            Execute="immediate">
+        </CustomAction>
     </Fragment>
 <?undef Win64?>
 </Wix>
