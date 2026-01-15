@@ -49,3 +49,10 @@ void LogReport(
 #define WFUNCTION WIDE1(__FUNCTION__)
 
 const wchar_t* GetErrorString(DWORD Err);
+
+// DIURFLAG_NO_REMOVE_INF: Do not remove the INF file from the driver store
+// when uninstalling the driver. This allows the driver to be cleaned up
+// after reboot when it's currently in use.
+#ifndef DIURFLAG_NO_REMOVE_INF
+#define DIURFLAG_NO_REMOVE_INF 0x00000001
+#endif

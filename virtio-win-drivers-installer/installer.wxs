@@ -20,9 +20,9 @@
             <PropertyRef Id="Set_ProductName" />
             <PropertyRef Id="Set_CurrentBuildNumber" />
             <PropertyRef Id="Set_Old_WGT_props" />
-            <MajorUpgrade 
+            <MajorUpgrade
                   DowngradeErrorMessage="A newer version of [ProductName] is already installed."
-                  Schedule="afterInstallInitialize" />
+                  Schedule="afterInstallExecute" />
             <UIRef Id="WixUI_FeatureTree" />
             <WixVariable Id="WixUIBannerBmp" Value="graphics/horizontal_banner.bmp" />
             <WixVariable Id="WixUIDialogBmp" Value="graphics/background.bmp" />
