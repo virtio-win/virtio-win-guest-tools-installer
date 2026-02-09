@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+<?include ../../constants.wxi ?>
+<?include ./viogpudo_service.wxi ?>
+
+    <Fragment>
+        <ComponentGroup Id="CMPG_viogpudo_service" Directory="VIOGPUDO">
+        <?if $(sys.BUILDARCH) = "x64" ?>
+            <ComponentGroupRef Id='CMPG_WinServer2016_viogpudo_service' />
+            <ComponentGroupRef Id='CMPG_WinServer2019_viogpudo_service' />
+            <ComponentGroupRef Id='CMPG_WinServer2022_viogpudo_service' />
+            <ComponentGroupRef Id='CMPG_WinServer2025_viogpudo_service' />
+            <ComponentGroupRef Id='CMPG_Win10x64_viogpudo_service' />
+            <ComponentGroupRef Id='CMPG_Win11x64_viogpudo_service' />
+        <?else ?>
+            <ComponentGroupRef Id='CMPG_Win10x86_viogpudo_service' />
+        <?endif ?>
+        </ComponentGroup>
+    </Fragment>
+</Wix>
