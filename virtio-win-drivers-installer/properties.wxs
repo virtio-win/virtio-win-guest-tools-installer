@@ -36,7 +36,7 @@
     <!-- Query the ProductName registry value to detect os version -->
     <Fragment>
         <Property Id="Set_ProductName" Value="1" />
-        <Property Id="REGISTRY_PRODUCT_NAME">
+        <Property Id="REGISTRY_PRODUCT_NAME" Secure="yes">
             <RegistrySearch Id="ProductNameSearch"
                 Root="HKLM"
                 Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion"
@@ -47,7 +47,7 @@
     <!-- Query the ProductName registry value to detect os version -->
     <Fragment>
         <Property Id="Set_CurrentBuildNumber" Value="1" />
-        <Property Id="REGISTRY_CURRENT_BUILD_NUMBER">
+        <Property Id="REGISTRY_CURRENT_BUILD_NUMBER" Secure="yes">
             <RegistrySearch Id="CurrentBuildNumberSearch"
                 Root="HKLM"
                 Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion"
