@@ -50,6 +50,10 @@
         <Feature Id='FE_viogpudo_driver' Title='Viogpudo' Level='1'
                 Description='Virtio GPU DOD driver'>
                 <ComponentGroupRef Id='CMPG_viogpudo_driver' />
+                <Feature Id='FE_viogpudo_service' Title='VioGpu Resolution Service' Level='1001'
+                        Description='Installs VioGpu Resolution Service (vgpusrv) for automatic display resize synchronization with the VM window size. Disabled by default.'>
+                        <ComponentGroupRef Id='CMPG_viogpudo_service' />
+                </Feature>
         </Feature>
 <?if $(sys.BUILDARCH) = "x64" ?>
         <Feature Id='FE_viomem_driver' Title='Viomem' Level='1'

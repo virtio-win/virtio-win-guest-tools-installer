@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+<?if $(sys.BUILDARCH) = "x64" ?>
+<!-- 2k16 -->
+<?define osFullName = "WinServer2016" ?>
+<?define osShort = "2k16" ?>
+<?define ISA = "amd64" ?>
+<?define Win64 = "yes" ?>
+<?define condition = "$(var.condition_2k16)" ?>
+<?define viogpudo_vgpusrv_guid = "614513BD-23B6-49C8-A780-D15F0EB09025"?>
+<?define viogpudo_viogpuap_guid = "173FB9D0-4A21-41BA-A70C-8AAD3D3A0FE1"?>
+<?include viogpudo_service_components.wxi ?>
+<?undef viogpudo_viogpuap_guid?>
+<?undef viogpudo_vgpusrv_guid?>
+<?undef condition?>
+<?undef Win64?>
+<?undef ISA?>
+<?undef osShort?>
+<?undef osFullName?>
+<!-- 2k19 -->
+<?define osFullName = "WinServer2019" ?>
+<?define osShort = "2k19" ?>
+<?define ISA = "amd64" ?>
+<?define Win64 = "yes" ?>
+<?define condition = "$(var.condition_2k19)" ?>
+<?define viogpudo_vgpusrv_guid = "87A3E13F-877D-4963-8AD4-6B9E09A0E47B"?>
+<?define viogpudo_viogpuap_guid = "DDF61C80-B14C-4C0A-9F1C-56E5EAB74705"?>
+<?include viogpudo_service_components.wxi ?>
+<?undef viogpudo_viogpuap_guid?>
+<?undef viogpudo_vgpusrv_guid?>
+<?undef condition?>
+<?undef Win64?>
+<?undef ISA?>
+<?undef osShort?>
+<?undef osFullName?>
+<!-- 2k22 -->
+<?define osFullName = "WinServer2022" ?>
+<?define osShort = "2k22" ?>
+<?define ISA = "amd64" ?>
+<?define Win64 = "yes" ?>
+<?define condition = "$(var.condition_2k22)" ?>
+<?define viogpudo_vgpusrv_guid = "62A74118-E380-4BD3-997B-4F3BDBE0F362"?>
+<?define viogpudo_viogpuap_guid = "B12866DF-4212-4E94-B3EC-57639F99F331"?>
+<?include viogpudo_service_components.wxi ?>
+<?undef viogpudo_viogpuap_guid?>
+<?undef viogpudo_vgpusrv_guid?>
+<?undef condition?>
+<?undef Win64?>
+<?undef ISA?>
+<?undef osShort?>
+<?undef osFullName?>
+<!-- 2k25 -->
+<?define osFullName = "WinServer2025" ?>
+<?define osShort = "2k25" ?>
+<?define ISA = "amd64" ?>
+<?define Win64 = "yes" ?>
+<?define condition = "$(var.condition_2k25)" ?>
+<?define viogpudo_vgpusrv_guid = "0DBC1A5D-F858-4EE2-AF3C-B4BBBAAEB91A"?>
+<?define viogpudo_viogpuap_guid = "148D86EF-A31B-4A27-848F-2BF8D61B113A"?>
+<?include viogpudo_service_components.wxi ?>
+<?undef viogpudo_viogpuap_guid?>
+<?undef viogpudo_vgpusrv_guid?>
+<?undef condition?>
+<?undef Win64?>
+<?undef ISA?>
+<?undef osShort?>
+<?undef osFullName?>
+<!-- w10x64 -->
+<?define osFullName = "Win10x64" ?>
+<?define osShort = "w10" ?>
+<?define ISA = "amd64" ?>
+<?define Win64 = "yes" ?>
+<?define condition = "$(var.condition_w10x64)" ?>
+<?define viogpudo_vgpusrv_guid = "100F48A8-BA46-4179-833F-6947ED755998"?>
+<?define viogpudo_viogpuap_guid = "8951081D-CF31-40AD-B599-D003C1BA5ECB"?>
+<?include viogpudo_service_components.wxi ?>
+<?undef viogpudo_viogpuap_guid?>
+<?undef viogpudo_vgpusrv_guid?>
+<?undef condition?>
+<?undef Win64?>
+<?undef ISA?>
+<?undef osShort?>
+<?undef osFullName?>
+<!-- w11x64 -->
+<?define osFullName = "Win11x64" ?>
+<?define osShort = "w11" ?>
+<?define ISA = "amd64" ?>
+<?define Win64 = "yes" ?>
+<?define condition = "$(var.condition_w11x64)" ?>
+<?define viogpudo_vgpusrv_guid = "10B936E3-BA82-4FC4-B207-314D76B9D2ED"?>
+<?define viogpudo_viogpuap_guid = "C897E664-AC4D-4BAC-BD6C-5BE6B18E9F3D"?>
+<?include viogpudo_service_components.wxi ?>
+<?undef viogpudo_viogpuap_guid?>
+<?undef viogpudo_vgpusrv_guid?>
+<?undef condition?>
+<?undef Win64?>
+<?undef ISA?>
+<?undef osShort?>
+<?undef osFullName?>
+<?else ?>
+<!-- w10x86 -->
+<?define osFullName = "Win10x86" ?>
+<?define osShort = "w10" ?>
+<?define ISA = "x86" ?>
+<?define Win64 = "no" ?>
+<?define condition = "$(var.condition_w10x86)" ?>
+<?define viogpudo_vgpusrv_guid = "6B2A4D0D-68DD-4BD9-B776-D0B13F8E32D4"?>
+<?define viogpudo_viogpuap_guid = "5AD8C91E-1DAF-447A-A6F8-226883D7C233"?>
+<?include viogpudo_service_components.wxi ?>
+<?undef viogpudo_viogpuap_guid?>
+<?undef viogpudo_vgpusrv_guid?>
+<?undef condition?>
+<?undef Win64?>
+<?undef ISA?>
+<?undef osShort?>
+<?undef osFullName?>
+<?endif ?>
+</Include>
