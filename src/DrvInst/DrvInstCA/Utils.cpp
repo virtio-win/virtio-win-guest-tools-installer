@@ -1,0 +1,104 @@
+#include "stdafx.h"
+#include <string>
+#include <vector>
+#include <algorithm>
+
+static std::vector<std::wstring> ReadRegStrings(HKEY rootKey, const std::wstring& subKey, const wchar_t* valueName)
+{
+    std::vector<std::wstring> result;
+    HKEY hKey = NULL;
+    if (RegOpenKeyExW(rootKey, subKey.c_str(), 0, KEY_READ, &hKey) != ERROR_SUCCESS)
+        return result;
+
+    DWORD type = 0;
+    DWORD cbSize = 0;
+    LONG rc = RegQueryValueExW(hKey, valueName, nullptr, &type, nullptr, &cbSize);
+    if (rc != ERROR_SUCCESS || cbSize == 0)
+    {
+        RegCloseKey(hKey);
+        return result;
+    }
+
+    // cbSize is bytes. Allocate wchar buffer with room for extra terminator.
+    size_t wcharCount = (cbSize + sizeof(wchar_t) - 1) / sizeof(wchar_t);
+    std::vector<wchar_t> buf;
+    buf.resize(wcharCount + 1);
+    cbSize = static_cast<DWORD>(buf.size() * sizeof(wchar_t));
+    rc = RegQueryValueExW(hKey, valueName, nullptr, nullptr, reinterpret_cast<LPBYTE>(buf.data()), &cbSize);
+    RegCloseKey(hKey);
+    if (rc != ERROR_SUCCESS)
+        return result;
+
+    // Ensure null termination
+    buf[buf.size() - 1] = L'\0';
+
+    if (type == REG_MULTI_SZ)
+    {
+        const wchar_t* p = buf.data();
+        while (*p)
+        {
+            result.emplace_back(p);
+            p += wcslen(p) + 1;
+        }
+    }
+    else // REG_SZ or REG_EXPAND_SZ
+    {
+        result.emplace_back(buf.data());
+    }
+
+    return result;
+}
+
+// Read primary stored IP/mask for adapter GUID from SYSTEM\ControlSetNN\Services\Tcpip\Parameters\Interfaces\{GUID}
+bool ReadStaticIPOrder(std::wstring& ipaddr, std::wstring& subnet, const std::wstring& guid)
+{
+    ipaddr.clear();
+    subnet.clear();
+
+    if (guid.empty())
+        return false;
+
+    // Determine active ControlSet
+    HKEY hKey = NULL;
+    DWORD current = 0;
+    DWORD size = sizeof(current);
+
+    LONG rc = RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\Select", 0, KEY_READ, &hKey);
+    if (rc != ERROR_SUCCESS || hKey == NULL)
+        return false;
+
+    DWORD type = 0;
+    rc = RegQueryValueExW(hKey, L"Current", nullptr, &type, reinterpret_cast<LPBYTE>(&current), &size);
+    RegCloseKey(hKey);
+    if (rc != ERROR_SUCCESS || type != REG_DWORD)
+        return false;
+
+    wchar_t controlSetBuf[64] = {};
+    if (swprintf_s(controlSetBuf, _countof(controlSetBuf), L"ControlSet%03u", static_cast<unsigned int>(current)) < 0)
+        return false;
+
+    std::wstring controlSet(controlSetBuf);
+
+    // Build registry path using the computed control set
+    std::wstring path = L"SYSTEM\\" + controlSet + L"\\Services\\Tcpip\\Parameters\\Interfaces\\" + guid;
+
+    // Read IPAddress entries
+    std::vector<std::wstring> ips = ReadRegStrings(HKEY_LOCAL_MACHINE, path, L"IPAddress");
+    // Read SubnetMask entries (common name). Fall back to "IPMask" if not present.
+    std::vector<std::wstring> masks = ReadRegStrings(HKEY_LOCAL_MACHINE, path, L"SubnetMask");
+    if (masks.empty())
+        masks = ReadRegStrings(HKEY_LOCAL_MACHINE, path, L"IPMask");
+
+    if (ips.empty())
+        return false;
+
+    // Use the first stored entry as the primary
+    ipaddr = ips[0];
+    if (!masks.empty())
+        subnet = masks[0];
+    else
+        subnet.clear();
+
+    return true;
+}
+

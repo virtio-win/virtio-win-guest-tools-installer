@@ -48,6 +48,8 @@ const PCWSTR DESCR = _TEXT("Description");
 const PCWSTR DHCPEN = _TEXT("DHCPEnabled");
 const PCWSTR IPADDR = _TEXT("IPAddress");
 const PCWSTR IPSUBNET = _TEXT("IPSubnet");
+const PCWSTR IPADDRPRIM = _TEXT("IPAddressPrim");
+const PCWSTR IPSUBNETPRIM = _TEXT("IPSubnetPrim");
 const PCWSTR IPCONMET = _TEXT("IPConnectionMetric");
 const PCWSTR DNSDOM = _TEXT("DNSDomain");
 const PCWSTR IPEN = _TEXT("IPEnabled");
@@ -59,6 +61,7 @@ const PCWSTR DNSWINSRES = _TEXT("DNSEnabledForWINSResolution");
 const PCWSTR DNSSRCHORD = _TEXT("DNSServerSearchOrder");
 const PCWSTR INDX = _TEXT("Index");
 const PCWSTR SRVSNAME = _TEXT("ServiceName");
+const PCWSTR SETTINGID = _TEXT("SettingID");
 
 const PCWSTR NETKVM = _TEXT("netkvm");
 
@@ -108,6 +111,8 @@ struct AdapterConfig
     std::wstring dns_dom;
     std::wstring srvc_name;
     std::wstring dns_host_name;
+    std::wstring ipv4_addr_prim;
+    std::wstring ipv4_subnet_prim;
 
     bool dhcp_en = false;
     bool ip_en = false;

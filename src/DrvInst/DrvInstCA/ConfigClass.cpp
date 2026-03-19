@@ -28,6 +28,7 @@
  */
 #include "stdafx.h"
 #include "ConfigClass.h"
+#include "Utils.h"
 #include <set>
 
 static const int RESTORE_MAX_RETRIES = 5;
@@ -97,8 +98,27 @@ bool ConfigWrite::Run()
                 cf->WriteLine(STRING_FORMAT, MACADDR, VT_BSTR, nac->GetStringProperty(MACADDR).c_str());
                 cf->WriteLine(STRING_FORMAT, DESCR, VT_BSTR, nac->GetStringProperty(DESCR).c_str());
 //                cf->WriteLine(INTEGER_FORMAT, DHCPEN, VT_BOOL, nac->GetBoolProperty(DHCPEN));
-                cf->WriteLine(STRING_FORMAT, IPADDR, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(IPADDR).c_str());
-                cf->WriteLine(STRING_FORMAT, IPSUBNET, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(IPSUBNET).c_str());
+                std::wstring setting_id = nac->GetStringProperty(SETTINGID);
+
+                std::wstring ipaddr = nac->GetSafeArrayProperty(IPADDR).c_str();
+                std::wstring subnet = nac->GetSafeArrayProperty(IPSUBNET).c_str();
+
+                LogReport(S_OK, L"ipaddr = %ws", ipaddr.c_str());
+                LogReport(S_OK, L"subnet = %ws", subnet.c_str());
+                cf->WriteLine(STRING_FORMAT, IPADDR, VT_ARRAY | VT_BSTR, ipaddr.c_str());
+                cf->WriteLine(STRING_FORMAT, IPSUBNET, VT_ARRAY | VT_BSTR, subnet.c_str());
+
+                std::wstring ipaddr_reg;
+                std::wstring subnet_reg;
+
+                if (ReadStaticIPOrder(ipaddr_reg, subnet_reg, setting_id))
+                {
+                    LogReport(S_OK, L"ipaddr_reg = %ws", ipaddr_reg.c_str());
+                    LogReport(S_OK, L"subnet_reg = %ws", subnet_reg.c_str());
+                    cf->WriteLine(STRING_FORMAT, IPADDRPRIM, VT_BSTR, ipaddr_reg.c_str());
+                    cf->WriteLine(STRING_FORMAT, IPSUBNETPRIM, VT_BSTR, subnet_reg.c_str());
+                }
+
                 cf->WriteLine(INTEGER_FORMAT, IPCONMET, VT_I4, nac->GetIntProperty(IPCONMET));
                 cf->WriteLine(STRING_FORMAT, DNSDOM, VT_BSTR, nac->GetStringProperty(DNSDOM).c_str());
 //                cf->WriteLine(INTEGER_FORMAT, IPEN, VT_BOOL, nac->GetBoolProperty(IPEN));
@@ -111,6 +131,7 @@ bool ConfigWrite::Run()
                 cf->WriteLine(INTEGER_FORMAT, INDX, VT_I4, nac->GetIntProperty(INDX));
                 // ServiceName must be last: ConfigRead::Run() uses it as the adapter block boundary
                 cf->WriteLine(STRING_FORMAT, SRVSNAME, VT_BSTR, srvname.c_str());
+                cf->WriteLine(STRING_FORMAT, SETTINGID, VT_BSTR, setting_id.c_str());
             }
         }
     }
@@ -197,6 +218,14 @@ bool ConfigRead::ProcessString(std::vector<std::wstring>& vector)
     else if (method == DNSHOSTNAME)
     {
         cur.dns_host_name = vector[2].c_str();
+    }
+    else if (method == IPADDRPRIM)
+    {
+        cur.ipv4_addr_prim = vector[2].c_str();
+    }
+    else if (method == IPSUBNETPRIM)
+    {
+        cur.ipv4_subnet_prim = vector[2].c_str();
     }
     else
     {
@@ -337,8 +366,29 @@ bool ConfigRead::EnableStatic(AdapterConfig const& cfg, bool ipv4)
     {
         SAFEARRAY* sa1 = nullptr;
         SAFEARRAY* sa2 = nullptr;
-        if (BuildSafeArrayFromVector(&sa1, ipv4 ? cfg.ipv4_addr : cfg.ipv6_addr) &&
-            BuildSafeArrayFromVector(&sa2, ipv4 ? cfg.ipv4_subnet : cfg.ipv6_subnet))
+
+        std::vector<std::wstring> addr = ipv4 ? cfg.ipv4_addr : cfg.ipv6_addr;
+        std::vector<std::wstring> subnet = ipv4 ? cfg.ipv4_subnet : cfg.ipv6_subnet;
+
+        if (ipv4 && !cfg.ipv4_addr_prim.empty() && !cfg.ipv4_subnet_prim.empty())
+        {
+            for (size_t i = 0; i < addr.size(); ++i)
+            {
+                if (addr[i] == cfg.ipv4_addr_prim &&
+                    subnet[i] == cfg.ipv4_subnet_prim)
+                {
+                    if (i != 0)
+                    {
+                        std::swap(addr[0], addr[i]);
+                        std::swap(subnet[0], subnet[i]);
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (BuildSafeArrayFromVector(&sa1, addr) &&
+            BuildSafeArrayFromVector(&sa2, subnet))
         {
             CComVariant var1;
             var1.vt = VT_ARRAY | VT_BSTR;
