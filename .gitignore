@@ -13,3 +13,16 @@ vwi/
 spice/
 qemu-ga/
 */__pycache__
+
+# Visual Studio build artifacts
+bin/
+obj/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+
+# Generated from .in templates at build time
+virtio-win-drivers-installer/constants.wxi
+virtio-win-installers-bundler/Bundle.wxs

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled;GenerateConstants" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProductVersion>3.10</ProductVersion>
+    <ProjectGuid>{8B3D5580-3C4F-4D3B-B247-9F6BE6B3E2A5}</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>virtio-win-gt-$(Platform)</OutputName>
+    <OutputType>Package</OutputType>
+    <Cultures>en-us</Cultures>
+    <SuppressValidation>true</SuppressValidation>
+  </PropertyGroup>
+
+  <!--
+    Configurable properties - override at build time:
+      msbuild /p:InstallerVersion=1.2.3.0 /p:VirtioWinDriversPath=C:\path\to\drivers
+    Or edit the defaults below for local development.
+  -->
+  <PropertyGroup>
+    <InstallerVersion Condition=" '$(InstallerVersion)' == '' ">0.1.0.0</InstallerVersion>
+    <VirtioWinDriversPath Condition=" '$(VirtioWinDriversPath)' == '' ">C:\virtio-win-drivers</VirtioWinDriversPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="installer.wxs" />
+    <Compile Include="properties.wxs" />
+    <Compile Include="features.wxs" />
+    <Compile Include="directories.wxs" />
+    <Compile Include="installSequence.wxs" />
+    <Compile Include="Drivers\Balloon\balloon.wxs" />
+    <Compile Include="Drivers\NetKVM\netkvm.wxs" />
+    <Compile Include="Drivers\pvpanic\pvpanic.wxs" />
+    <Compile Include="Drivers\fwcfg\fwcfg.wxs" />
+    <Compile Include="Drivers\qemupciserial\qemupciserial.wxs" />
+    <Compile Include="Drivers\vioinput\vioinput.wxs" />
+    <Compile Include="Drivers\viorng\viorng.wxs" />
+    <Compile Include="Drivers\vioscsi\vioscsi.wxs" />
+    <Compile Include="Drivers\vioserial\vioserial.wxs" />
+    <Compile Include="Drivers\viostor\viostor.wxs" />
+    <Compile Include="Drivers\viofs\viofs.wxs" />
+    <Compile Include="Drivers\viogpudo\viogpudo.wxs" />
+    <Compile Include="Drivers\viomem\viomem.wxs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="constants.wxi.in" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <WixExtension Include="WixUIExtension">
+      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
+      <Name>WixUIExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
+    <WixExtension Include="DrvInstExt">
+      <HintPath>..\Libraries\$(Platform)\DrvInstExt.dll</HintPath>
+      <Name>DrvInstExt</Name>
+    </WixExtension>
+  </ItemGroup>
+
+  <!--
+    Pre-build: generate constants.wxi from constants.wxi.in template.
+    Replaces all @@PLACEHOLDER@@ tokens with MSBuild property values.
+  -->
+  <Target Name="GenerateConstants">
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -Command &quot;(Get-Content -Path '$(MSBuildProjectDirectory)\constants.wxi.in' -Raw).Replace('@@VERSION@@', $env:INSTALLER_VERSION).Replace('@@VIRTIO-WIN-PATH@@', $env:VIRTIO_WIN_DRIVERS_PATH) | Set-Content -Path '$(MSBuildProjectDirectory)\constants.wxi' -Encoding UTF8&quot;"
+          EnvironmentVariables="INSTALLER_VERSION=$(InstallerVersion);VIRTIO_WIN_DRIVERS_PATH=$(VirtioWinDriversPath)" />
+  </Target>
+
+  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
+  <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
+    <Error Text="The WiX Toolset v3.11 build tools must be installed to build this project. To download the WiX Toolset, see https://github.com/wixtoolset/wix3/releases" />
+  </Target>
+</Project>

@@ -1,0 +1,41 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "virtio-win-drivers-installer", "virtio-win-drivers-installer\virtio-win-drivers-installer.wixproj", "{8B3D5580-3C4F-4D3B-B247-9F6BE6B3E2A5}"
+EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "virtio-win-installers-bundler", "virtio-win-installers-bundler\virtio-win-installers-bundler.wixproj", "{A1B2C3D4-E5F6-4A5B-9C8D-7E6F5A4B3C2D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8B3D5580-3C4F-4D3B-B247-9F6BE6B3E2A5} = {8B3D5580-3C4F-4D3B-B247-9F6BE6B3E2A5}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8B3D5580-3C4F-4D3B-B247-9F6BE6B3E2A5}.Debug|x64.ActiveCfg = Debug|x64
+		{8B3D5580-3C4F-4D3B-B247-9F6BE6B3E2A5}.Debug|x64.Build.0 = Debug|x64
+		{8B3D5580-3C4F-4D3B-B247-9F6BE6B3E2A5}.Debug|x86.ActiveCfg = Debug|x86
+		{8B3D5580-3C4F-4D3B-B247-9F6BE6B3E2A5}.Debug|x86.Build.0 = Debug|x86
+		{8B3D5580-3C4F-4D3B-B247-9F6BE6B3E2A5}.Release|x64.ActiveCfg = Release|x64
+		{8B3D5580-3C4F-4D3B-B247-9F6BE6B3E2A5}.Release|x64.Build.0 = Release|x64
+		{8B3D5580-3C4F-4D3B-B247-9F6BE6B3E2A5}.Release|x86.ActiveCfg = Release|x86
+		{8B3D5580-3C4F-4D3B-B247-9F6BE6B3E2A5}.Release|x86.Build.0 = Release|x86
+		{A1B2C3D4-E5F6-4A5B-9C8D-7E6F5A4B3C2D}.Debug|x64.ActiveCfg = Debug|x64
+		{A1B2C3D4-E5F6-4A5B-9C8D-7E6F5A4B3C2D}.Debug|x64.Build.0 = Debug|x64
+		{A1B2C3D4-E5F6-4A5B-9C8D-7E6F5A4B3C2D}.Debug|x86.ActiveCfg = Debug|x86
+		{A1B2C3D4-E5F6-4A5B-9C8D-7E6F5A4B3C2D}.Debug|x86.Build.0 = Debug|x86
+		{A1B2C3D4-E5F6-4A5B-9C8D-7E6F5A4B3C2D}.Release|x64.ActiveCfg = Release|x64
+		{A1B2C3D4-E5F6-4A5B-9C8D-7E6F5A4B3C2D}.Release|x64.Build.0 = Release|x64
+		{A1B2C3D4-E5F6-4A5B-9C8D-7E6F5A4B3C2D}.Release|x86.ActiveCfg = Release|x86
+		{A1B2C3D4-E5F6-4A5B-9C8D-7E6F5A4B3C2D}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

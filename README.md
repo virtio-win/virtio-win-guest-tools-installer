@@ -74,6 +74,34 @@ You can get it by:
 
 3. The build artifacts which are 2 msis (x64, x86) and one .exe file will be on the exported artifacts directory, which was created during the build process.
 
+### Building with Visual Studio 2022:
+
+#### Prerequisites:
+
+1. [Visual Studio 2022](https://visualstudio.microsoft.com/)
+2. [WiX Toolset v3.11](https://github.com/wixtoolset/wix3/releases)
+3. [WiX Toolset Visual Studio 2022 Extension](https://marketplace.visualstudio.com/items?itemName=WixToolset.WixToolsetVisualStudio2022Extension)
+4. Virtio-win drivers (extracted from the virtio-win ISO)
+
+#### Building from Visual Studio:
+
+1. Open `VirtioWinInstaller.sln` in Visual Studio 2022.
+
+2. Edit the default driver path in `virtio-win-drivers-installer\virtio-win-drivers-installer.wixproj` - set `VirtioWinDriversPath` to the location of your extracted virtio-win ISO content (see [Prerequisites](#prerequsits) for the expected driver directory structure).
+
+3. Select the desired platform (x64 or x86) from the toolbar.
+
+4. Build the solution (Ctrl+Shift+B).
+
+5. The MSI output will be in `virtio-win-drivers-installer\bin\<platform>\<configuration>\`.
+
+6. The Bundle (.exe) requires additional MSI paths for Spice and QEMU Guest Agent. Edit the default paths in `virtio-win-installers-bundler\virtio-win-installers-bundler.wixproj` or pass them via command line using `msbuild /p:SpiceDriver64MsiPath=... /p:QemuGa64MsiPath=...` etc. **Note:** To build the Bundle, you must build the solution for both x64 and x86 platforms first, as the bundle includes both installers.
+
+#### Build outputs:
+
+- MSI installers: `virtio-win-drivers-installer\bin\<platform>\<configuration>\virtio-win-gt-<platform>.msi`
+- Bundle (.exe): `virtio-win-installers-bundler\bin\<platform>\<configuration>\virtio-win-guest-tools.exe`
+
 ## Contributions:
 
 Contributions are more than welcome, please fork the repository and create a PR.
