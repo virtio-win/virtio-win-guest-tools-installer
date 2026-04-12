@@ -89,6 +89,8 @@ clean:
 	-e "s|@@SPICE_DRIVER_86_MSI_PATH@@|${SPICE_DRIVER_86_MSI_PATH}|g" \
 	-e "s|@@QEMU_GA_64_MSI_PATH@@|${QEMU_GA_64_MSI_PATH}|g" \
 	-e "s|@@QEMU_GA_86_MSI_PATH@@|${QEMU_GA_86_MSI_PATH}|g" \
+	-e "s|@@VIRTIO_WIN_GT_X64_MSI_PATH@@|../virtio-win-drivers-installer/virtio-win-gt-x64.msi|g" \
+	-e "s|@@VIRTIO_WIN_GT_X86_MSI_PATH@@|../virtio-win-drivers-installer/virtio-win-gt-x86.msi|g" \
 	-e "s|@@VERSION@@|${VERSION}|g" \
 	$< > $@
 
