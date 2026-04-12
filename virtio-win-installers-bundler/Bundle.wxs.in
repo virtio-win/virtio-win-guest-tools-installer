@@ -18,14 +18,14 @@
     </BootstrapperApplicationRef>
 		<Chain>
              <MsiPackage
-                SourceFile="../virtio-win-drivers-installer/virtio-win-gt-x64.msi"
+                SourceFile="@@VIRTIO_WIN_GT_X64_MSI_PATH@@"
                 InstallCondition="VersionNT64"
                 EnableFeatureSelection="yes"
                 DisplayInternalUI="yes"
                 DisplayName="virtio-win-drivers"
                 Description="MSI to install virtio-win drivers for x64 systems"/>
              <MsiPackage
-                SourceFile="../virtio-win-drivers-installer/virtio-win-gt-x86.msi"
+                SourceFile="@@VIRTIO_WIN_GT_X86_MSI_PATH@@"
                 InstallCondition="NOT VersionNT64"
                 EnableFeatureSelection="yes"
                 DisplayInternalUI="yes"
