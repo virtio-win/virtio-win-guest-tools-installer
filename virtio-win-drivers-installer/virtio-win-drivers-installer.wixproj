@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled;GenerateConstants" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
@@ -20,12 +20,13 @@
   <PropertyGroup>
     <InstallerVersion Condition=" '$(InstallerVersion)' == '' ">0.1.0.0</InstallerVersion>
     <VirtioWinDriversPath Condition=" '$(VirtioWinDriversPath)' == '' ">C:\virtio-win-drivers</VirtioWinDriversPath>
+    <DefineConstants>Version=$(InstallerVersion);virtio_path=$(VirtioWinDriversPath)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug</DefineConstants>
+    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
@@ -34,7 +35,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug</DefineConstants>
+    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
@@ -63,10 +64,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="constants.wxi.in" />
-  </ItemGroup>
-
-  <ItemGroup>
     <WixExtension Include="WixUIExtension">
       <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
       <Name>WixUIExtension</Name>
@@ -80,15 +77,6 @@
       <Name>DrvInstExt</Name>
     </WixExtension>
   </ItemGroup>
-
-  <!--
-    Pre-build: generate constants.wxi from constants.wxi.in template.
-    Replaces all @@PLACEHOLDER@@ tokens with MSBuild property values.
-  -->
-  <Target Name="GenerateConstants">
-    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -Command &quot;(Get-Content -Path '$(MSBuildProjectDirectory)\constants.wxi.in' -Raw).Replace('@@VERSION@@', $env:INSTALLER_VERSION).Replace('@@VIRTIO-WIN-PATH@@', $env:VIRTIO_WIN_DRIVERS_PATH) | Set-Content -Path '$(MSBuildProjectDirectory)\constants.wxi' -Encoding UTF8&quot;"
-          EnvironmentVariables="INSTALLER_VERSION=$(InstallerVersion);VIRTIO_WIN_DRIVERS_PATH=$(VirtioWinDriversPath)" />
-  </Target>
 
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
