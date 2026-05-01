@@ -105,6 +105,7 @@ bool ConfigWrite::Run()
                 cf->WriteLine(INTEGER_FORMAT, DNSWINSRES, VT_BOOL, nac->GetBoolProperty(DNSWINSRES));
                 cf->WriteLine(STRING_FORMAT, DNSSRCHORD, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(DNSSRCHORD).c_str());
                 cf->WriteLine(INTEGER_FORMAT, INDX, VT_I4, nac->GetIntProperty(INDX));
+                // ServiceName must be last: ConfigRead::Run() uses it as the adapter block boundary
                 cf->WriteLine(STRING_FORMAT, SRVSNAME, VT_BSTR, srvname.c_str());
             }
         }
@@ -115,13 +116,6 @@ bool ConfigWrite::Run()
 
 ConfigRead::ConfigRead(const PCWSTR filename) : Config(filename)
 {
-    dhcp_en = false;
-    ip_en = false;
-    ip_filt_sec_en = false;
-    dns_for_wins_res_en = false;
-
-    ip_conn_metr = 0;
-    index = 0;
 }
 
 bool ConfigRead::IsValidIPv4Address(std::wstring const& address)
@@ -162,11 +156,11 @@ bool ConfigRead::ProcessInteger(std::vector<std::wstring>& vector)
 
     if (method == IPCONMET)
     {
-        ip_conn_metr = _wtoi(vector[2].c_str());
+        cur.ip_conn_metr = _wtoi(vector[2].c_str());
     }
     else if (method == INDX)
     {
-        index = _wtoi(vector[2].c_str());
+        cur.index = _wtoi(vector[2].c_str());
     }
     else
     {
@@ -182,23 +176,23 @@ bool ConfigRead::ProcessString(std::vector<std::wstring>& vector)
 
     if (method == MACADDR)
     {
-        mac_addr = vector[2].c_str();
+        cur.mac_addr = vector[2].c_str();
     }
     else if (method == DESCR)
     {
-        descr = vector[2].c_str();
+        cur.descr = vector[2].c_str();
     }
     else if (method == DNSDOM)
     {
-        dns_dom = vector[2].c_str();
+        cur.dns_dom = vector[2].c_str();
     }
     else if (method == SRVSNAME)
     {
-        srvc_name = vector[2].c_str();
+        cur.srvc_name = vector[2].c_str();
     }
     else if (method == DNSHOSTNAME)
     {
-        dns_host_name = vector[2].c_str();
+        cur.dns_host_name = vector[2].c_str();
     }
     else
     {
@@ -214,19 +208,19 @@ bool ConfigRead::ProcessBoolean(std::vector<std::wstring>& vector)
 
     if (method == DHCPEN)
     {
-        dhcp_en = !!(_wtoi(vector[2].c_str()));
+        cur.dhcp_en = !!(_wtoi(vector[2].c_str()));
     }
     else if (method == IPEN)
     {
-        ip_en = !!(_wtoi(vector[2].c_str()));
+        cur.ip_en = !!(_wtoi(vector[2].c_str()));
     }
     else if (method == IPFLTSECEN)
     {
-        ip_filt_sec_en = !!(_wtoi(vector[2].c_str()));
+        cur.ip_filt_sec_en = !!(_wtoi(vector[2].c_str()));
     }
     else if (method == DNSWINSRES)
     {
-        dns_for_wins_res_en = !!(_wtoi(vector[2].c_str()));
+        cur.dns_for_wins_res_en = !!(_wtoi(vector[2].c_str()));
     }
     else
     {
@@ -242,26 +236,26 @@ bool ConfigRead::ProcessArrayOfStrings(std::vector<std::wstring>& vector)
 
     if (method == IPADDR)
     {
-        ipv4_addr = SplitStringAsVector(vector[2], STRING_DELIM, SplitType::Ipv4);
-        ipv6_addr = SplitStringAsVector(vector[2], STRING_DELIM, SplitType::Ipv6);
+        cur.ipv4_addr = SplitStringAsVector(vector[2], STRING_DELIM, SplitType::Ipv4);
+        cur.ipv6_addr = SplitStringAsVector(vector[2], STRING_DELIM, SplitType::Ipv6);
     }
     else if (method == IPSUBNET)
     {
-        ipv4_subnet = SplitStringAsVector(vector[2], STRING_DELIM, SplitType::Ipv4);
-        ipv6_subnet = SplitStringAsVector(vector[2], STRING_DELIM, SplitType::Ipv6);
+        cur.ipv4_subnet = SplitStringAsVector(vector[2], STRING_DELIM, SplitType::Ipv4);
+        cur.ipv6_subnet = SplitStringAsVector(vector[2], STRING_DELIM, SplitType::Ipv6);
     }
     else if (method == DEFIPGW)
     {
-        ipv4_def_gw = SplitStringAsVector(vector[2], STRING_DELIM, SplitType::Ipv4);
-        ipv6_def_gw = SplitStringAsVector(vector[2], STRING_DELIM, SplitType::Ipv6);
+        cur.ipv4_def_gw = SplitStringAsVector(vector[2], STRING_DELIM, SplitType::Ipv4);
+        cur.ipv6_def_gw = SplitStringAsVector(vector[2], STRING_DELIM, SplitType::Ipv6);
     }
     else if (method == DNSDMSUFSRCHORD)
     {
-        dns_dom_suff_srch_ord = SplitStringAsVector(vector[2], STRING_DELIM);
+        cur.dns_dom_suff_srch_ord = SplitStringAsVector(vector[2], STRING_DELIM);
     }
     else if (method == DNSSRCHORD)
     {
-        dns_serv_srch_ord = SplitStringAsVector(vector[2], STRING_DELIM);
+        cur.dns_serv_srch_ord = SplitStringAsVector(vector[2], STRING_DELIM);
     }
     else
     {
@@ -275,6 +269,10 @@ bool ConfigRead::ProcessParametesAsVector(std::vector<std::wstring>& vector)
 {
     assert(vector.size() == 3);
     bool res = false;
+
+    if (vector.size() != 3)
+        return res;
+
     int type = _wtoi(vector[1].c_str());
 
     switch (type)
@@ -323,7 +321,7 @@ bool ConfigRead::BuildSafeArrayFromVector(SAFEARRAY** sa, std::vector<std::wstri
     return false;
 }
 
-bool ConfigRead::EnableStatic(bool ipv4)
+bool ConfigRead::EnableStatic(AdapterConfig const& cfg, bool ipv4)
 {
     CComPtr<IWbemClassObject> pInInstClass = nullptr;
 
@@ -331,8 +329,8 @@ bool ConfigRead::EnableStatic(bool ipv4)
     {
         SAFEARRAY* sa1 = nullptr;
         SAFEARRAY* sa2 = nullptr;
-        if (BuildSafeArrayFromVector(&sa1, ipv4 ? ipv4_addr : ipv6_addr) &&
-            BuildSafeArrayFromVector(&sa2, ipv4 ? ipv4_subnet : ipv6_subnet))
+        if (BuildSafeArrayFromVector(&sa1, ipv4 ? cfg.ipv4_addr : cfg.ipv6_addr) &&
+            BuildSafeArrayFromVector(&sa2, ipv4 ? cfg.ipv4_subnet : cfg.ipv6_subnet))
         {
             CComVariant var1;
             var1.vt = VT_ARRAY | VT_BSTR;
@@ -358,14 +356,14 @@ bool ConfigRead::EnableStatic(bool ipv4)
     return false;
 }
 
-bool ConfigRead::SetDNSServer(void)
+bool ConfigRead::SetDNSServer(AdapterConfig const& cfg)
 {
     CComPtr<IWbemClassObject> pInInstClass = nullptr;
 
     if (nac->GetMethod(SETDNSSRCORD_METHOD, pInInstClass))
     {
         SAFEARRAY* sa1 = nullptr;
-        if (BuildSafeArrayFromVector(&sa1, dns_serv_srch_ord))
+        if (BuildSafeArrayFromVector(&sa1, cfg.dns_serv_srch_ord))
         {
             CComVariant var1;
             var1.vt = VT_ARRAY | VT_BSTR;
@@ -388,7 +386,7 @@ bool ConfigRead::SetDNSServer(void)
     return false;
 }
 
-bool ConfigRead::EnableDNS(void)
+bool ConfigRead::EnableDNS(AdapterConfig const& cfg)
 {
     CComPtr<IWbemClassObject> pInInstClass = nullptr;
 
@@ -396,16 +394,16 @@ bool ConfigRead::EnableDNS(void)
     {
         SAFEARRAY* sa1 = nullptr;
         SAFEARRAY* sa2 = nullptr;
-        if (BuildSafeArrayFromVector(&sa1, dns_serv_srch_ord) &&
-            BuildSafeArrayFromVector(&sa2, dns_dom_suff_srch_ord))
+        if (BuildSafeArrayFromVector(&sa1, cfg.dns_serv_srch_ord) &&
+            BuildSafeArrayFromVector(&sa2, cfg.dns_dom_suff_srch_ord))
         {
             CComVariant var1;
             var1.vt = VT_BSTR;
-            var1.bstrVal = (BSTR)bstr_t(dns_host_name.c_str());
+            var1.bstrVal = (BSTR)bstr_t(cfg.dns_host_name.c_str());
 
             CComVariant var2;
             var2.vt = VT_BSTR;
-            var2.bstrVal = (BSTR)bstr_t(dns_dom.c_str());
+            var2.bstrVal = (BSTR)bstr_t(cfg.dns_dom.c_str());
 
             CComVariant var3;
             var3.vt = VT_ARRAY | VT_BSTR;
@@ -434,14 +432,14 @@ bool ConfigRead::EnableDNS(void)
     return false;
 }
 
-bool ConfigRead::SetGateWays(bool ipv4)
+bool ConfigRead::SetGateWays(AdapterConfig const& cfg, bool ipv4)
 {
     CComPtr<IWbemClassObject> pInInstClass = nullptr;
 
     if (nac->GetMethod(SETGW_METHOD, pInInstClass))
     {
         SAFEARRAY* sa1 = nullptr;
-        if (BuildSafeArrayFromVector(&sa1, ipv4 ? ipv4_def_gw : ipv6_def_gw))
+        if (BuildSafeArrayFromVector(&sa1, ipv4 ? cfg.ipv4_def_gw : cfg.ipv6_def_gw))
         {
             CComVariant var1;
             var1.vt = VT_ARRAY | VT_BSTR;
@@ -464,38 +462,38 @@ bool ConfigRead::SetGateWays(bool ipv4)
     return false;
 }
 
-bool ConfigRead::RestoreConfig()
+bool ConfigRead::RestoreAdapter(AdapterConfig const& cfg)
 {
     if (nac->GetInstances())
     {
         while (nac->MoveNext())
         {
             std::wstring mac = nac->GetStringProperty(MACADDR);
-            LogReport(S_OK, L"macs %ws <--> %ws.", mac.c_str(), mac_addr.c_str());
-            if (nac->GetStringProperty(MACADDR) == mac_addr &&
-                nac->GetStringProperty(SRVSNAME) == srvc_name)
+            LogReport(S_OK, L"macs %ws <--> %ws.", mac.c_str(), cfg.mac_addr.c_str());
+            if (mac == cfg.mac_addr &&
+                nac->GetStringProperty(SRVSNAME) == cfg.srvc_name)
             {
-                if (!EnableStatic(true))
+                if (!EnableStatic(cfg, true))
                 {
                     LogReport(S_OK, L"EnableStatic IPv4 failed");
                 }
-                if (!EnableStatic(false))
+                if (!EnableStatic(cfg, false))
                 {
                     LogReport(S_OK, L"EnableStatic IPv6 failed");
                 }
-                if (!SetDNSServer())
+                if (!SetDNSServer(cfg))
                 {
                     LogReport(S_OK, L"SetDNSServer failed");
                 }
-                if (!SetGateWays(true))
+                if (!SetGateWays(cfg, true))
                 {
                     LogReport(S_OK, L"SetGateWays IPv4 failed");
                 }
-                if (!SetGateWays(false))
+                if (!SetGateWays(cfg, false))
                 {
                     LogReport(S_OK, L"SetGateWays IPv6 failed");
                 }
-                if (!EnableDNS())
+                if (!EnableDNS(cfg))
                 {
                     LogReport(S_OK, L"EnableDNS failed");
                 }
@@ -515,9 +513,17 @@ bool ConfigRead::Run()
     {
         std::vector<std::wstring> params;
         params = SplitStringAsVector(line, PARAMS_DELIM);
-        ProcessParametesAsVector(params);
+        if (ProcessParametesAsVector(params) == true && params[0] == SRVSNAME)
+        {
+            adapters.push_back(cur);
+            cur = AdapterConfig();
+        }
     }
-    RestoreConfig();
+
+    for (size_t i = 0; i < adapters.size(); i++)
+    {
+        RestoreAdapter(adapters[i]);
+    }
 
     return true;
 }
