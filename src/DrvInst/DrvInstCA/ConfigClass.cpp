@@ -332,7 +332,7 @@ bool ConfigRead::EnableStatic(bool ipv4)
         SAFEARRAY* sa1 = nullptr;
         SAFEARRAY* sa2 = nullptr;
         if (BuildSafeArrayFromVector(&sa1, ipv4 ? ipv4_addr : ipv6_addr) &&
-            BuildSafeArrayFromVector(&sa2, ipv4 ? ipv4_subnet : ipv4_subnet))
+            BuildSafeArrayFromVector(&sa2, ipv4 ? ipv4_subnet : ipv6_subnet))
         {
             CComVariant var1;
             var1.vt = VT_ARRAY | VT_BSTR;
