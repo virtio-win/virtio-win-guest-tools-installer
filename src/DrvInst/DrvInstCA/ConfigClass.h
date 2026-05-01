@@ -92,6 +92,32 @@ public:
     bool Run();
 };
 
+struct AdapterConfig
+{
+    std::vector<std::wstring> ipv4_addr;
+    std::vector<std::wstring> ipv4_subnet;
+    std::vector<std::wstring> ipv4_def_gw;
+    std::vector<std::wstring> ipv6_addr;
+    std::vector<std::wstring> ipv6_subnet;
+    std::vector<std::wstring> ipv6_def_gw;
+    std::vector<std::wstring> dns_dom_suff_srch_ord;
+    std::vector<std::wstring> dns_serv_srch_ord;
+
+    std::wstring mac_addr;
+    std::wstring descr;
+    std::wstring dns_dom;
+    std::wstring srvc_name;
+    std::wstring dns_host_name;
+
+    bool dhcp_en = false;
+    bool ip_en = false;
+    bool ip_filt_sec_en = false;
+    bool dns_for_wins_res_en = false;
+
+    unsigned int ip_conn_metr = 0;
+    unsigned int index = 0;
+};
+
 class ConfigRead : public Config
 {
 public:
@@ -110,35 +136,15 @@ protected:
     bool ProcessBoolean(std::vector<std::wstring>& vector);
     bool ProcessArrayOfStrings(std::vector<std::wstring>& vector);
     bool ProcessParametesAsVector(std::vector<std::wstring>& vector);
-    bool RestoreConfig();
+    bool RestoreAdapter(AdapterConfig const& cfg);
 private:
-    bool EnableStatic(bool ipv4 = true);
-    bool SetDNSServer(void);
-    bool SetGateWays(bool ipv4 = true);
-    bool EnableDNS(void);
+    bool EnableStatic(AdapterConfig const& cfg, bool ipv4 = true);
+    bool SetDNSServer(AdapterConfig const& cfg);
+    bool SetGateWays(AdapterConfig const& cfg, bool ipv4 = true);
+    bool EnableDNS(AdapterConfig const& cfg);
     bool BuildSafeArrayFromVector(SAFEARRAY** sa, std::vector<std::wstring> const& arr);
     bool IsValidIPv4Address(std::wstring const& address);
 protected:
-    std::vector<std::wstring> ipv4_addr;
-    std::vector<std::wstring> ipv4_subnet;
-    std::vector<std::wstring> ipv4_def_gw;
-    std::vector<std::wstring> ipv6_addr;
-    std::vector<std::wstring> ipv6_subnet;
-    std::vector<std::wstring> ipv6_def_gw;
-    std::vector<std::wstring> dns_dom_suff_srch_ord;
-    std::vector<std::wstring> dns_serv_srch_ord;
-
-    std::wstring mac_addr;
-    std::wstring descr;
-    std::wstring dns_dom;
-    std::wstring srvc_name;
-    std::wstring dns_host_name;
-
-    bool dhcp_en;
-    bool ip_en;
-    bool ip_filt_sec_en;
-    bool dns_for_wins_res_en;
-
-    unsigned int ip_conn_metr;
-    unsigned int index;
+    AdapterConfig cur;
+    std::vector<AdapterConfig> adapters;
 };
