@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
 <?if $(sys.BUILDARCH) = "x64" ?>
-    <?define Win64 = "yes" ?>
+    <?define RegistryBitness = "always64" ?>
     <?define WinUninstallRegLocation = Wow6432Node\ ?>
 <?else ?>
-    <?define Win64 = "no" ?>
+    <?define RegistryBitness = "always32" ?>
     <?define WinUninstallRegLocation = '' ?>
 <?endif ?>
     <!-- Set Cited Properties -->
@@ -15,23 +15,17 @@
     <!-- Launch Condition supported os-->
     <Fragment>
         <Property Id="LaunchConditionsSupportedOS" Value="1" />
-        <Condition Message="OS must be Windows 10 or higher.">
-                <![CDATA[Installed OR ((VersionNT >= 603) AND (REGISTRY_CURRENT_BUILD_NUMBER > 10240))]]>
-        </Condition>
+        <Launch Condition="Installed OR ((VersionNT &gt;= 603) AND (REGISTRY_CURRENT_BUILD_NUMBER &gt; 10240))" Message="OS must be Windows 10 or higher." />
     </Fragment>
     <!-- Launch Condition to disable launch on arch x86-->
     <Fragment>
         <Property Id="x86_Validation" Value="1" />
-        <Condition Message= "Detected x64 Windows version, please use a x64 installer">
-                <![CDATA[VersionNT <> VersionNT64 AND "$(sys.BUILDARCH)" = "x86"]]>
-        </Condition>
+        <Launch Condition="VersionNT &lt;&gt; VersionNT64 AND &quot;$(sys.BUILDARCH)&quot; = &quot;x86&quot;" Message="Detected x64 Windows version, please use a x64 installer" />
     </Fragment>
     <!-- Launch Condition to disable launch on arch x64 -->
     <Fragment>
         <Property Id="x64_Validation" Value="1" />
-        <Condition Message= "Detected x86 Windows version, please use a x86 installer">
-                <![CDATA[VersionNT = VersionNT64 AND "$(sys.BUILDARCH)" = "x64"]]>
-        </Condition>
+        <Launch Condition="VersionNT = VersionNT64 AND &quot;$(sys.BUILDARCH)&quot; = &quot;x64&quot;" Message="Detected x86 Windows version, please use a x86 installer" />
     </Fragment>
     <!-- Query the ProductName registry value to detect os version -->
     <Fragment>
@@ -64,7 +58,7 @@
                 Key="SOFTWARE\$(var.WinUninstallRegLocation)Microsoft\Windows\CurrentVersion\Uninstall\{042CD13C-735D-4140-B146-D3F8263D7E4C}"
                 Type="raw"
                 Name="UninstallString"
-                Win64='$(var.Win64)'/>
+                Bitness="$(var.RegistryBitness)"/>
         </Property>
         <CustomAction 
             Id="CA_InvokeUninstallWGT"
@@ -84,7 +78,7 @@
         <Property Id="VIOCONFFILENAME" Value="viocfg.cfg" />
         <CustomAction
             Id="CA_RestoreVIOConfig"
-            BinaryKey="ConfManagementDll"
+            BinaryRef="ConfManagementDll"
             DllEntry="RestoreSettings"
             Impersonate="no"
             Execute="deferred">
@@ -95,7 +89,7 @@
             Value = "[INSTALLERDIR][VIOCONFFILENAME]" />
         <CustomAction
             Id="CA_SaveVIOConfig"
-            BinaryKey="ConfManagementDll"
+            BinaryRef="ConfManagementDll"
             DllEntry="SaveSettings"
             Impersonate="no"
             Execute="deferred">
@@ -106,7 +100,7 @@
             Value = "[INSTALLERDIR][VIOCONFFILENAME]" />
         <CustomAction
             Id="CA_RollbackRestoreVIOConfig"
-            BinaryKey="ConfManagementDll"
+            BinaryRef="ConfManagementDll"
             DllEntry="RestoreSettings"
             Impersonate="no"
             Execute="rollback">
@@ -121,5 +115,5 @@
             Execute="immediate">
         </CustomAction>
     </Fragment>
-<?undef Win64?>
+<?undef RegistryBitness?>
 </Wix>

@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'
-     xmlns:dinst='http://www.redhat.com/DrvInstExt'>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
 
      <?include constants.wxi ?>
 
-      <Product Id="*"
+      <Package
             Name="Virtio-win-driver-installer"
             Language="1033"
             Version="$(var.Version)"
             Manufacturer="Red Hat, Inc."
-            UpgradeCode="$(var.UpgradeCode)">
-            <Package Id="*"
-                  InstallerVersion="200"
-                  Compressed="yes"
-                  InstallScope="perMachine"
-                  Description="Virtio-win installer for drivers"/>
+            UpgradeCode="$(var.UpgradeCode)"
+            InstallerVersion="200"
+            Compressed="yes"
+            Scope="perMachine">
+            <SummaryInformation Description="Virtio-win installer for drivers" />
             <PropertyRef Id="$(var.LaunchCondition)" />
             <PropertyRef Id="LaunchConditionsSupportedOS" />
             <PropertyRef Id="Set_ProductName" />
             <PropertyRef Id="Set_CurrentBuildNumber" />
             <PropertyRef Id="Set_Old_WGT_props" />
+            <PropertyRef Id="DriverInstallActions" />
             <MajorUpgrade 
                   DowngradeErrorMessage="A newer version of [ProductName] is already installed."
                   Schedule="afterInstallInitialize" />
-            <UIRef Id="WixUI_FeatureTree" />
+            <ui:WixUI Id="WixUI_FeatureTree" />
             <WixVariable Id="WixUIBannerBmp" Value="graphics/horizontal_banner.bmp" />
             <WixVariable Id="WixUIDialogBmp" Value="graphics/background.bmp" />
             <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
@@ -33,5 +33,5 @@
             <PropertyRef Id="DirectoryProperty" />
             <PropertyRef Id="FeatureProperty" />
             <PropertyRef Id="InstallSequenceProperty" />
-      </Product>
+      </Package>
 </Wix>
