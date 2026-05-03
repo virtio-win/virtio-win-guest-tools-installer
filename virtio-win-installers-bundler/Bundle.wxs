@@ -1,34 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?define UpgradeCode = "{418D4443-48DC-4FCF-BA11-29D5E241B7D1}" ?>
 
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
-     xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
   <Bundle
     Name="Virtio-win-guest-tools"
     Version="$(var.Version)"
     Manufacturer="Red Hat, Inc."
     UpgradeCode="$(var.UpgradeCode)"
     IconSourceFile="Resources/icon.ico">
-    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense" >
+    <BootstrapperApplication>
       <bal:WixStandardBootstrapperApplication
+        Theme="rtfLicense"
         LicenseFile="Resources/License.rtf"
         LogoFile="Resources/Logo.png"
         ThemeFile="Resources/Theme.xml"
         LocalizationFile="Resources/Theme.wxl"/>
-    </BootstrapperApplicationRef>
+    </BootstrapperApplication>
     <Chain>
       <MsiPackage
          SourceFile="$(var.VirtioWinGtX64MsiPath)"
          InstallCondition="VersionNT64"
          EnableFeatureSelection="yes"
-         DisplayInternalUI="yes"
+         bal:DisplayInternalUICondition="WixBundleAction = 6"
          DisplayName="virtio-win-drivers"
          Description="MSI to install virtio-win drivers for x64 systems"/>
       <MsiPackage
          SourceFile="$(var.VirtioWinGtX86MsiPath)"
          InstallCondition="NOT VersionNT64"
          EnableFeatureSelection="yes"
-         DisplayInternalUI="yes"
+         bal:DisplayInternalUICondition="WixBundleAction = 6"
          DisplayName="virtio-win-drivers"
          Description="MSI to install virtio-win drivers for x86 systems"/>
       <MsiPackage SourceFile="$(var.SpiceDriver64MsiPath)"
