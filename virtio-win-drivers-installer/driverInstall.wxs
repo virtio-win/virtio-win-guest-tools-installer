@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+<?include constants.wxi ?>
+
+    <Fragment>
+        <Property Id="DriverInstallActions" Value="1" />
+
+        <CustomTable Id="DriverInstallTable">
+            <Column Id="Component" PrimaryKey="yes" Type="string" Width="72"
+                    Modularize="column" Category="identifier"
+                    KeyTable="Component" KeyColumn="1" />
+            <Column Id="FileName" Type="string" Width="0" Nullable="yes"
+                    Modularize="property" Category="formatted" />
+            <Column Id="Directory" Type="string" Width="0" Nullable="yes"
+                    Modularize="property" Category="formatted" />
+            <Column Id="Flags" Type="int" Width="4" />
+            <Column Id="Sequence" Type="int" Width="4" Nullable="yes" />
+        </CustomTable>
+
+<?if $(sys.BUILDARCH) = "x64" ?>
+        <Binary Id="DrvInstallDll" SourceFile="../Libraries/x64/DrvInstCA.dll" />
+<?else ?>
+        <Binary Id="DrvInstallDll" SourceFile="../Libraries/x86/DrvInstCA.dll" />
+<?endif ?>
+
+        <CustomAction Id="ProcessDriverPackages"
+                      BinaryRef="DrvInstallDll" DllEntry="ProcessPackages"
+                      SuppressModularization="yes" Execute="immediate" />
+        <CustomAction Id="InstallDriverPackages"
+                      BinaryRef="DrvInstallDll" DllEntry="InstallPackages"
+                      SuppressModularization="yes" Execute="deferred"
+                      Impersonate="no" Return="check" />
+        <CustomAction Id="RollbackInstall"
+                      BinaryRef="DrvInstallDll" DllEntry="UninstallPackages"
+                      SuppressModularization="yes" Execute="rollback"
+                      Impersonate="no" />
+        <CustomAction Id="UninstallDriverPackages"
+                      BinaryRef="DrvInstallDll" DllEntry="UninstallPackages"
+                      SuppressModularization="yes" Execute="deferred"
+                      Impersonate="no" Return="check" />
+        <CustomAction Id="RollbackUninstall"
+                      BinaryRef="DrvInstallDll" DllEntry="InstallPackages"
+                      SuppressModularization="yes" Execute="rollback"
+                      Impersonate="no" />
+
+        <InstallExecuteSequence>
+            <Custom Action="ProcessDriverPackages" After="InstallFiles"
+                    Condition="VersionNT &gt;= 603" />
+        </InstallExecuteSequence>
+
+        <UI>
+            <ProgressText Action="InstallDriverPackages" Message="Installing Windows Virtio-Win Drivers." />
+            <ProgressText Action="UninstallDriverPackages" Message="Uninstalling Windows Virtio-Win Drivers." />
+            <ProgressText Action="RollbackInstall" Message="Rolling back installing Windows Virtio-Win Drivers." />
+            <ProgressText Action="RollbackUninstall" Message="Rolling back uninstalling Windows Virtio-Win Drivers." />
+        </UI>
+    </Fragment>
+</Wix>
