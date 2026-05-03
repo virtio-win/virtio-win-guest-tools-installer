@@ -1,16 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="WixToolset.Sdk/4.0.0">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    <ProductVersion>3.10</ProductVersion>
-    <ProjectGuid>{A1B2C3D4-E5F6-4A5B-9C8D-7E6F5A4B3C2D}</ProjectGuid>
-    <SchemaVersion>2.0</SchemaVersion>
     <OutputName>virtio-win-guest-tools</OutputName>
     <OutputType>Bundle</OutputType>
     <SuppressValidation>true</SuppressValidation>
   </PropertyGroup>
-
   <!--
     Configurable properties - override at build time:
       msbuild /p:InstallerVersion=1.2.3.0 /p:SpiceDriver64MsiPath=C:\path\to\spice-driver-x64.msi ...
@@ -28,7 +22,6 @@
     <VirtioWinGtX86MsiPath Condition=" '$(VirtioWinGtX86MsiPath)' == '' ">$(MSBuildThisFileDirectory)..\virtio-win-drivers-installer\bin\x86\$(Configuration)\virtio-win-gt-x86.msi</VirtioWinGtX86MsiPath>
     <DefineConstants>Version=$(InstallerVersion);VirtioWinGtX64MsiPath=$(VirtioWinGtX64MsiPath);VirtioWinGtX86MsiPath=$(VirtioWinGtX86MsiPath);SpiceDriver64MsiPath=$(SpiceDriver64MsiPath);SpiceDriver86MsiPath=$(SpiceDriver86MsiPath);SpiceVdagent64MsiPath=$(SpiceVdagent64MsiPath);SpiceVdagent86MsiPath=$(SpiceVdagent86MsiPath);QemuGa64MsiPath=$(QemuGa64MsiPath);QemuGa86MsiPath=$(QemuGa86MsiPath)</DefineConstants>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
@@ -47,26 +40,11 @@
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="Bundle.wxs" />
-  </ItemGroup>
-
   <ItemGroup>
     <Content Include="Resources\Theme.xml" />
     <Content Include="Resources\Theme.wxl" />
   </ItemGroup>
-
   <ItemGroup>
-    <WixExtension Include="WixBalExtension">
-      <HintPath>$(WixExtDir)\WixBalExtension.dll</HintPath>
-      <Name>WixBalExtension</Name>
-    </WixExtension>
+    <PackageReference Include="WixToolset.Bal.wixext" Version="4.0.6" />
   </ItemGroup>
-
-  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
-  <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
-    <Error Text="The WiX Toolset v3.11 build tools must be installed to build this project. To download the WiX Toolset, see https://github.com/wixtoolset/wix3/releases" />
-  </Target>
 </Project>

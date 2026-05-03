@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<Include xmlns:dins='http://www.redhat.com/DrvInstExt'>
+<Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 <?define osFullName = "WinServer2022" ?>
 <?define osShort = "2k22" ?>
 <?define ISA = "amd64" ?>
-<?define Win64 = "yes" ?>
+<?define RegistryBitness = "always64" ?>
 <?define condition = "$(var.condition_2k22)" ?>
 <?include ./template.wxi ?>
 <?undef osFullName?>
 <?undef osShort?>
 <?undef ISA?>
-<?undef Win64?>
+<?undef RegistryBitness?>
 <?undef condition?>
 </Include>

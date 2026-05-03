@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
-<Include xmlns:dins='http://www.redhat.com/DrvInstExt'>
+<Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
         <Component Id='CMP_$(var.driverName)_viorngum_$(var.osShort)_$(var.ISA)'
             Guid='$(var.viorng_viorngum_guid)'
             Transitive='no'
-            Win64='$(var.Win64)'>
-            <Condition><![CDATA[$(var.condition)]]></Condition>
+            Bitness="$(var.RegistryBitness)"
+            Condition="$(var.condition)">
             <File Id='FILE_$(var.driverName)_viorngum_$(var.osShort)_$(var.ISA)'
                 Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\viorngum.dll'
                 KeyPath='yes'/>

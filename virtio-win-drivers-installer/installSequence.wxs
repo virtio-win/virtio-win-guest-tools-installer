@@ -1,25 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
 <?include constants.wxi ?>
     <Fragment>
         <Property Id="InstallSequenceProperty" Value="1" />
         <InstallUISequence>
-            <Custom Action='CA_InvokeUninstallWGT' After="CostFinalize">
-                REGISTRYSEARCH_OLD_WGT_UNINSTALL_PATH
-            </Custom>
-            <Custom Action='CA_OldInstallerError' After="CA_InvokeUninstallWGT">
-                REGISTRYSEARCH_OLD_WGT_UNINSTALL_PATH
-            </Custom>
+            <Custom Action='CA_InvokeUninstallWGT' After="CostFinalize" Condition="REGISTRYSEARCH_OLD_WGT_UNINSTALL_PATH" />
+            <Custom Action='CA_OldInstallerError' After="CA_InvokeUninstallWGT" Condition="REGISTRYSEARCH_OLD_WGT_UNINSTALL_PATH" />
         </InstallUISequence>
         <InstallExecuteSequence>
-            <AllocateRegistrySpace>NOT Installed</AllocateRegistrySpace>
-            <Custom Action='CA_RestoreVIOConfig' Before='InstallFinalize'>NOT Installed</Custom>
-            <Custom Action='CA_RestoreVIOConfigProperty' Before='CA_RestoreVIOConfig'></Custom>
-            <Custom Action='CA_SaveVIOConfig' After='InstallInitialize'>Installed AND REMOVE="ALL"</Custom>
-            <Custom Action='CA_SaveVIOConfigProperty' Before='CA_SaveVIOConfig'></Custom>
-            <Custom Action='CA_RollbackRestoreVIOConfig' After="RemoveFiles">NOT Installed</Custom>
-            <Custom Action='CA_RollbackRestoreVIOConfigProperty' Before='CA_RollbackRestoreVIOConfig'></Custom>
-	    <Custom Action='CA_ScheduleReboot' After='InstallFinalize'> REMOVE&lt;&gt;"ALL" AND REINSTALL&lt;&gt;"" AND REINSTALLMODE&lt;&gt;""</Custom>
+            <AllocateRegistrySpace Condition="NOT Installed" />
+            <Custom Action='CA_RestoreVIOConfig' Before='InstallFinalize' Condition="NOT Installed" />
+            <Custom Action='CA_RestoreVIOConfigProperty' Before='CA_RestoreVIOConfig' />
+            <Custom Action='CA_SaveVIOConfig' After='InstallInitialize' Condition='Installed AND REMOVE="ALL"' />
+            <Custom Action='CA_SaveVIOConfigProperty' Before='CA_SaveVIOConfig' />
+            <Custom Action='CA_RollbackRestoreVIOConfig' After="RemoveFiles" Condition="NOT Installed" />
+            <Custom Action='CA_RollbackRestoreVIOConfigProperty' Before='CA_RollbackRestoreVIOConfig' />
+            <Custom Action='CA_ScheduleReboot' After='InstallFinalize' Condition='REMOVE&lt;&gt;"ALL" AND REINSTALL&lt;&gt;"" AND REINSTALLMODE&lt;&gt;""' />
         </InstallExecuteSequence>
     </Fragment>
 </Wix>
