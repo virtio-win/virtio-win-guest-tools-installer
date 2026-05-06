@@ -131,6 +131,7 @@ private:
     );
 
     bool RemoveDevices(void);
+    bool RemovePreviousVersions(void);
     void FindFunctions(void);
 private:
     BOOL m_bRebootNeeded;

@@ -754,6 +754,7 @@ bool DevDriver::UnInstall()
 {
     RemoveDevices();
     UnInstallOEMInf();
+    RemovePreviousVersions();
     return true;
 }
 
@@ -777,6 +778,7 @@ bool DevDriver::Install()
         }
         FindStrongName();
         SetComponentRegKey();
+        RemovePreviousVersions();
         return true;
     }
 
@@ -970,6 +972,83 @@ bool DevDriver::RemoveDevices(void)
     return bRet;
 }
 
+
+bool DevDriver::RemovePreviousVersions()
+{
+    WIN32_FIND_DATA FindFileData;
+    HANDLE hFind;
+    UINT size = MAX_PATH;
+    std::unique_ptr< wchar_t[] > sys_buf(new wchar_t[size]);
+    std::wstring sys_path;
+    DWORD Err = ERROR_SUCCESS;
+    bool bRemoved = false;
+
+    size = GetSystemWindowsDirectory(sys_buf.get(), size);
+    sys_path.resize(size + 1);
+    if (size == 0)
+    {
+        Err = GetLastError();
+        sys_path = L"C:\\Windows\\INF\\";
+    }
+    else
+    {
+        sys_path = sys_buf.get();
+        sys_path.resize(size);
+        sys_path += L"\\INF\\";
+    }
+
+    std::wstring oem_temp = sys_path + L"oem*.inf";
+    std::wstring current_oem = GetOemName();
+
+    hFind = FindFirstFile(oem_temp.c_str(), &FindFileData);
+    if (hFind == INVALID_HANDLE_VALUE)
+    {
+        Err = GetLastError();
+        LogReport(HRESULT_FROM_WIN32(Err), L"FindFirstFile  failed err = 0x%x: %ws", Err, GetErrorString(Err));
+        return false;
+    }
+
+    do
+    {
+        std::wstring oem_file = sys_path;
+        std::wstring file = FindFileData.cFileName;
+        oem_file += file;
+
+        if (!current_oem.empty() && _wcsicmp(file.c_str(), current_oem.c_str()) == 0)
+        {
+            continue;
+        }
+
+        DevProps* tmp_dp = new DevProps(oem_file.c_str());
+        tmp_dp->Init();
+
+        if (IsEqualGUID(*tmp_dp->GetClassGUID(), *GetClassGUID()) &&
+            (wcscmp(tmp_dp->GetProviderName(), GetProviderName()) == 0) &&
+            (wcscmp(tmp_dp->GetCatalogFile(), GetCatalogFile()) == 0))
+        {
+            LogReport(S_OK, L"%ws removing previous driver version: %ws (build %u, current build %u)",
+                WFUNCTION, oem_file.c_str(),
+                tmp_dp->GetDriverVersion()->build, GetDriverVersion()->build);
+
+            if (SetupUninstallOEMInf(file.c_str(), 0, NULL))
+            {
+                bRemoved = true;
+            }
+            else
+            {
+                Err = GetLastError();
+                LogReport(HRESULT_FROM_WIN32(Err), L"SetupUninstallOEMInf failed for %ws err = 0x%x: %ws",
+                    file.c_str(), Err, GetErrorString(Err));
+            }
+        }
+        delete tmp_dp;
+
+    } while (FindNextFile(hFind, &FindFileData));
+
+    FindClose(hFind);
+
+    return bRemoved;
+}
 
 HDEVINFO DevDriver::FindNonPresentDevices()
 {
