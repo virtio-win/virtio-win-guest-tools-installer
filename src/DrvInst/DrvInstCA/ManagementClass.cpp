@@ -48,6 +48,15 @@ bool ManagementClass::GetInstances()
 {
     HRESULT hr;
 
+    /* Release any previous state so GetInstances() can be called
+     * multiple times safely (e.g., during retry loops). CComPtr
+     * asserts that the pointer is NULL in operator&(), so we must
+     * explicitly release before re-initializing. */
+    m_pclsObj.Release();
+    m_pEnumerator.Release();
+    m_pSvc.Release();
+    m_pLoc.Release();
+
     if (m_bSecurity == false)
     {
         hr = CoInitializeSecurity(

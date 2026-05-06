@@ -474,31 +474,39 @@ bool ConfigRead::SetGateWays(AdapterConfig const& cfg, bool ipv4)
  */
 bool ConfigRead::ApplyAdapterConfig(AdapterConfig const& cfg)
 {
+    bool ok = true;
+
     if (!EnableStatic(cfg, true))
     {
         LogReport(S_OK, L"EnableStatic IPv4 failed");
+        ok = false;
     }
     if (!EnableStatic(cfg, false))
     {
         LogReport(S_OK, L"EnableStatic IPv6 failed");
+        ok = false;
     }
     if (!SetDNSServer(cfg))
     {
         LogReport(S_OK, L"SetDNSServer failed");
+        ok = false;
     }
     if (!SetGateWays(cfg, true))
     {
         LogReport(S_OK, L"SetGateWays IPv4 failed");
+        ok = false;
     }
     if (!SetGateWays(cfg, false))
     {
         LogReport(S_OK, L"SetGateWays IPv6 failed");
+        ok = false;
     }
     if (!EnableDNS(cfg))
     {
         LogReport(S_OK, L"EnableDNS failed");
+        ok = false;
     }
-    return true;
+    return ok;
 }
 
 bool ConfigRead::Run()
@@ -516,7 +524,7 @@ bool ConfigRead::Run()
         }
     }
 
-    LogReport(S_OK, L"Parsed %zu adapter(s) from config file", adapters.size());
+    LogReport(S_OK, L"Parsed %d adapter(s) from config file", (int)adapters.size());
 
     /*
      * Use a set of indices to track which adapters have been restored.
@@ -539,10 +547,10 @@ bool ConfigRead::Run()
     {
         if (attempt > 1)
         {
-            LogReport(S_OK, L"Attempt %d/%d: %zu adapter(s) pending, "
+            LogReport(S_OK, L"Attempt %d/%d: %d adapter(s) pending, "
                      L"waiting %lu ms for device re-enumeration",
                      attempt, RESTORE_MAX_RETRIES,
-                     adapters.size() - restored.size(),
+                     (int)(adapters.size() - restored.size()),
                      RESTORE_RETRY_DELAY_MS);
             Sleep(RESTORE_RETRY_DELAY_MS);
         }
@@ -563,8 +571,10 @@ bool ConfigRead::Run()
                 {
                     LogReport(S_OK, L"Restoring adapter mac=%ws (attempt %d)",
                              mac.c_str(), attempt);
-                    ApplyAdapterConfig(adapters[i]);
-                    restored.insert(i);
+                    if (ApplyAdapterConfig(adapters[i]))
+                    {
+                        restored.insert(i);
+                    }
                     break;
                 }
             }
