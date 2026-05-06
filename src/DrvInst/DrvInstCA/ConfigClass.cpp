@@ -324,6 +324,7 @@ bool ConfigRead::BuildSafeArrayFromVector(SAFEARRAY** sa, std::vector<std::wstri
 bool ConfigRead::EnableStatic(AdapterConfig const& cfg, bool ipv4)
 {
     CComPtr<IWbemClassObject> pInInstClass = nullptr;
+    bool result = false;
 
     if (nac->GetMethod(ENSTATIC_METHOD, pInInstClass))
     {
@@ -348,10 +349,19 @@ bool ConfigRead::EnableStatic(AdapterConfig const& cfg, bool ipv4)
                     {
                         LogReport(S_OK, L"%ws method completed with the error code %d", ENSTATIC_METHOD, ret);
                     }
-                    return true;
+                    result = true;
                 }
             }
+            var1.vt = VT_EMPTY;
+            var1.parray = nullptr;
+            var2.vt = VT_EMPTY;
+            var2.parray = nullptr;
+            SafeArrayDestroy(sa1);
+            SafeArrayDestroy(sa2);
+            return result;
         }
+        if (sa1)
+            SafeArrayDestroy(sa1);
     }
     return false;
 }
@@ -359,6 +369,7 @@ bool ConfigRead::EnableStatic(AdapterConfig const& cfg, bool ipv4)
 bool ConfigRead::SetDNSServer(AdapterConfig const& cfg)
 {
     CComPtr<IWbemClassObject> pInInstClass = nullptr;
+    bool result = false;
 
     if (nac->GetMethod(SETDNSSRCORD_METHOD, pInInstClass))
     {
@@ -377,9 +388,13 @@ bool ConfigRead::SetDNSServer(AdapterConfig const& cfg)
                     {
                         LogReport(S_OK, L"%ws method completed with the error code %d", SETDNSSRCORD_METHOD, ret);
                     }
-                    return true;
+                    result = true;
                 }
             }
+            var1.vt = VT_EMPTY;
+            var1.parray = nullptr;
+            SafeArrayDestroy(sa1);
+            return result;
         }
     }
 
@@ -389,6 +404,7 @@ bool ConfigRead::SetDNSServer(AdapterConfig const& cfg)
 bool ConfigRead::EnableDNS(AdapterConfig const& cfg)
 {
     CComPtr<IWbemClassObject> pInInstClass = nullptr;
+    bool result = false;
 
     if (nac->GetMethod(ENDNS_METHOD, pInInstClass))
     {
@@ -399,11 +415,11 @@ bool ConfigRead::EnableDNS(AdapterConfig const& cfg)
         {
             CComVariant var1;
             var1.vt = VT_BSTR;
-            var1.bstrVal = (BSTR)bstr_t(cfg.dns_host_name.c_str());
+            var1.bstrVal = SysAllocString(cfg.dns_host_name.c_str());
 
             CComVariant var2;
             var2.vt = VT_BSTR;
-            var2.bstrVal = (BSTR)bstr_t(cfg.dns_dom.c_str());
+            var2.bstrVal = SysAllocString(cfg.dns_dom.c_str());
 
             CComVariant var3;
             var3.vt = VT_ARRAY | VT_BSTR;
@@ -423,10 +439,19 @@ bool ConfigRead::EnableDNS(AdapterConfig const& cfg)
                     {
                         LogReport(S_OK, L"%ws method completed with the error code %d", ENDNS_METHOD, ret);
                     }
-                    return true;
+                    result = true;
                 }
             }
+            var3.vt = VT_EMPTY;
+            var3.parray = nullptr;
+            var4.vt = VT_EMPTY;
+            var4.parray = nullptr;
+            SafeArrayDestroy(sa1);
+            SafeArrayDestroy(sa2);
+            return result;
         }
+        if (sa1)
+            SafeArrayDestroy(sa1);
     }
 
     return false;
@@ -435,6 +460,7 @@ bool ConfigRead::EnableDNS(AdapterConfig const& cfg)
 bool ConfigRead::SetGateWays(AdapterConfig const& cfg, bool ipv4)
 {
     CComPtr<IWbemClassObject> pInInstClass = nullptr;
+    bool result = false;
 
     if (nac->GetMethod(SETGW_METHOD, pInInstClass))
     {
@@ -453,9 +479,13 @@ bool ConfigRead::SetGateWays(AdapterConfig const& cfg, bool ipv4)
                     {
                         LogReport(S_OK, L"%ws method completed with the error code %d", SETGW_METHOD, ret);
                     }
-                    return true;
+                    result = true;
                 }
             }
+            var1.vt = VT_EMPTY;
+            var1.parray = nullptr;
+            SafeArrayDestroy(sa1);
+            return result;
         }
     }
 
