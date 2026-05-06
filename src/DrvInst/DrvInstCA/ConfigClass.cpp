@@ -84,6 +84,8 @@ void Config::Close()
 
 bool ConfigWrite::Run()
 {
+    int saved = 0;
+
     if (nac->GetInstances())
     {
         while (nac->MoveNext())
@@ -95,28 +97,38 @@ bool ConfigWrite::Run()
             {
                 LogReport(S_OK, L"srvmane = %ws", srvname.c_str());
 
-                cf->WriteLine(STRING_FORMAT, MACADDR, VT_BSTR, nac->GetStringProperty(MACADDR).c_str());
-                cf->WriteLine(STRING_FORMAT, DESCR, VT_BSTR, nac->GetStringProperty(DESCR).c_str());
-//                cf->WriteLine(INTEGER_FORMAT, DHCPEN, VT_BOOL, nac->GetBoolProperty(DHCPEN));
-                cf->WriteLine(STRING_FORMAT, IPADDR, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(IPADDR).c_str());
-                cf->WriteLine(STRING_FORMAT, IPSUBNET, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(IPSUBNET).c_str());
-                cf->WriteLine(INTEGER_FORMAT, IPCONMET, VT_I4, nac->GetIntProperty(IPCONMET));
-                cf->WriteLine(STRING_FORMAT, DNSDOM, VT_BSTR, nac->GetStringProperty(DNSDOM).c_str());
-//                cf->WriteLine(INTEGER_FORMAT, IPEN, VT_BOOL, nac->GetBoolProperty(IPEN));
-                cf->WriteLine(STRING_FORMAT, DEFIPGW, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(DEFIPGW).c_str());
-                cf->WriteLine(INTEGER_FORMAT, IPFLTSECEN, VT_BOOL, nac->GetBoolProperty(IPFLTSECEN));
-                cf->WriteLine(STRING_FORMAT, DNSDMSUFSRCHORD, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(DNSDMSUFSRCHORD).c_str());
-                cf->WriteLine(STRING_FORMAT, DNSHOSTNAME, VT_BSTR, nac->GetStringProperty(DNSHOSTNAME).c_str());
-                cf->WriteLine(INTEGER_FORMAT, DNSWINSRES, VT_BOOL, nac->GetBoolProperty(DNSWINSRES));
-                cf->WriteLine(STRING_FORMAT, DNSSRCHORD, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(DNSSRCHORD).c_str());
-                cf->WriteLine(INTEGER_FORMAT, INDX, VT_I4, nac->GetIntProperty(INDX));
+                bool ok = true;
+                ok = cf->WriteLine(STRING_FORMAT, MACADDR, VT_BSTR, nac->GetStringProperty(MACADDR).c_str()) && ok;
+                ok = cf->WriteLine(STRING_FORMAT, DESCR, VT_BSTR, nac->GetStringProperty(DESCR).c_str()) && ok;
+                ok = cf->WriteLine(STRING_FORMAT, IPADDR, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(IPADDR).c_str()) && ok;
+                ok = cf->WriteLine(STRING_FORMAT, IPSUBNET, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(IPSUBNET).c_str()) && ok;
+                ok = cf->WriteLine(INTEGER_FORMAT, IPCONMET, VT_I4, nac->GetIntProperty(IPCONMET)) && ok;
+                ok = cf->WriteLine(STRING_FORMAT, DNSDOM, VT_BSTR, nac->GetStringProperty(DNSDOM).c_str()) && ok;
+                ok = cf->WriteLine(STRING_FORMAT, DEFIPGW, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(DEFIPGW).c_str()) && ok;
+                ok = cf->WriteLine(INTEGER_FORMAT, IPFLTSECEN, VT_BOOL, nac->GetBoolProperty(IPFLTSECEN)) && ok;
+                ok = cf->WriteLine(STRING_FORMAT, DNSDMSUFSRCHORD, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(DNSDMSUFSRCHORD).c_str()) && ok;
+                ok = cf->WriteLine(STRING_FORMAT, DNSHOSTNAME, VT_BSTR, nac->GetStringProperty(DNSHOSTNAME).c_str()) && ok;
+                ok = cf->WriteLine(INTEGER_FORMAT, DNSWINSRES, VT_BOOL, nac->GetBoolProperty(DNSWINSRES)) && ok;
+                ok = cf->WriteLine(STRING_FORMAT, DNSSRCHORD, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(DNSSRCHORD).c_str()) && ok;
+                ok = cf->WriteLine(INTEGER_FORMAT, INDX, VT_I4, nac->GetIntProperty(INDX)) && ok;
                 // ServiceName must be last: ConfigRead::Run() uses it as the adapter block boundary
-                cf->WriteLine(STRING_FORMAT, SRVSNAME, VT_BSTR, srvname.c_str());
+                ok = cf->WriteLine(STRING_FORMAT, SRVSNAME, VT_BSTR, srvname.c_str()) && ok;
+
+                if (ok)
+                {
+                    saved++;
+                }
+                else
+                {
+                    LogReport(S_OK, L"ERROR: failed to write config for adapter mac=%ws",
+                             nac->GetStringProperty(MACADDR).c_str());
+                }
             }
         }
     }
 
-    return true;
+    LogReport(S_OK, L"Saved %d adapter config(s)", saved);
+    return (saved > 0);
 }
 
 ConfigRead::ConfigRead(const PCWSTR filename) : Config(filename)
