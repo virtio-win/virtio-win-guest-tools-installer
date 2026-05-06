@@ -373,28 +373,30 @@ void DevProps::ObtainDevHWIDs()
 
 const wchar_t* GetErrorString(DWORD Error)
 {
-    std::wstring msg;
+    static thread_local wchar_t buf[ERR_BUF_SIZE];
 
     LPWSTR msgbuf = nullptr;
-    FormatMessage(
+    DWORD len = FormatMessage(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
         nullptr,
         Error,
         0,
-        (LPWSTR)msgbuf,
-        0,//MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
+        (LPWSTR)&msgbuf,
+        0,
         nullptr);
-    if (msgbuf != nullptr)
+    if (len > 0 && msgbuf != nullptr)
     {
-        msg = msgbuf;
+        wcsncpy_s(buf, ERR_BUF_SIZE, msgbuf, _TRUNCATE);
         LocalFree(msgbuf);
     }
     else
     {
-        msg = L"Unknown error";
+        if (msgbuf != nullptr)
+            LocalFree(msgbuf);
+        wcscpy_s(buf, ERR_BUF_SIZE, L"Unknown error");
     }
 
-    return msg.c_str();
+    return buf;
 }
 
 const wchar_t* DevProps::GetFullPath()
