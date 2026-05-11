@@ -311,6 +311,8 @@ bool ConfigRead::BuildSafeArrayFromVector(SAFEARRAY** sa, std::vector<std::wstri
             hr = SafeArrayPutElement(param1_list, idx, (BSTR)bstr_t(arr[i].c_str()));
             if (FAILED(hr))
             {
+                SafeArrayDestroy(param1_list);
+                *sa = nullptr;
                 return (false);
             }
         }
@@ -318,6 +320,7 @@ bool ConfigRead::BuildSafeArrayFromVector(SAFEARRAY** sa, std::vector<std::wstri
         *sa = param1_list;
         return true;
     }
+    *sa = nullptr;
     return false;
 }
 
@@ -357,11 +360,16 @@ bool ConfigRead::EnableStatic(AdapterConfig const& cfg, bool ipv4)
             var2.vt = VT_EMPTY;
             var2.parray = nullptr;
             SafeArrayDestroy(sa1);
+            sa1 = nullptr;
             SafeArrayDestroy(sa2);
+            sa2 = nullptr;
             return result;
         }
         if (sa1)
+        {
             SafeArrayDestroy(sa1);
+            sa1 = nullptr;
+        }
     }
     return false;
 }
@@ -394,6 +402,7 @@ bool ConfigRead::SetDNSServer(AdapterConfig const& cfg)
             var1.vt = VT_EMPTY;
             var1.parray = nullptr;
             SafeArrayDestroy(sa1);
+            sa1 = nullptr;
             return result;
         }
     }
@@ -447,11 +456,16 @@ bool ConfigRead::EnableDNS(AdapterConfig const& cfg)
             var4.vt = VT_EMPTY;
             var4.parray = nullptr;
             SafeArrayDestroy(sa1);
+            sa1 = nullptr;
             SafeArrayDestroy(sa2);
+            sa2 = nullptr;
             return result;
         }
         if (sa1)
+        {
             SafeArrayDestroy(sa1);
+            sa1 = nullptr;
+        }
     }
 
     return false;
@@ -485,6 +499,7 @@ bool ConfigRead::SetGateWays(AdapterConfig const& cfg, bool ipv4)
             var1.vt = VT_EMPTY;
             var1.parray = nullptr;
             SafeArrayDestroy(sa1);
+            sa1 = nullptr;
             return result;
         }
     }
