@@ -422,13 +422,8 @@ bool ConfigRead::EnableDNS(AdapterConfig const& cfg)
         if (BuildSafeArrayFromVector(&sa1, cfg.dns_serv_srch_ord) &&
             BuildSafeArrayFromVector(&sa2, cfg.dns_dom_suff_srch_ord))
         {
-            CComVariant var1;
-            var1.vt = VT_BSTR;
-            var1.bstrVal = SysAllocString(cfg.dns_host_name.c_str());
-
-            CComVariant var2;
-            var2.vt = VT_BSTR;
-            var2.bstrVal = SysAllocString(cfg.dns_dom.c_str());
+            CComVariant var1(cfg.dns_host_name.c_str());
+            CComVariant var2(cfg.dns_dom.c_str());
 
             CComVariant var3;
             var3.vt = VT_ARRAY | VT_BSTR;
