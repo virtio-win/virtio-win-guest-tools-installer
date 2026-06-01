@@ -136,7 +136,7 @@ protected:
     bool ProcessBoolean(std::vector<std::wstring>& vector);
     bool ProcessArrayOfStrings(std::vector<std::wstring>& vector);
     bool ProcessParametesAsVector(std::vector<std::wstring>& vector);
-    bool RestoreAdapter(AdapterConfig const& cfg);
+    bool ApplyAdapterConfig(AdapterConfig const& cfg);
 private:
     bool EnableStatic(AdapterConfig const& cfg, bool ipv4 = true);
     bool SetDNSServer(AdapterConfig const& cfg);
