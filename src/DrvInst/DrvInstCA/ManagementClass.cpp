@@ -48,6 +48,11 @@ bool ManagementClass::GetInstances()
 {
     HRESULT hr;
 
+    m_pclsObj.Release();
+    m_pEnumerator.Release();
+    m_pSvc.Release();
+    m_pLoc.Release();
+
     if (m_bSecurity == false)
     {
         hr = CoInitializeSecurity(
