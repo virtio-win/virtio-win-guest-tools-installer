@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<Include>
+    <Fragment>
+        <ComponentGroup
+            Id="CMPG_$(var.osFullName)_viogpudo_service"
+            Directory="VIOGPUDO">
+            <Component Id='CMP_vgpusrv_$(var.osShort)_$(var.ISA)'
+                Guid='$(var.viogpudo_vgpusrv_guid)'
+                Transitive='no'
+                Win64='$(var.Win64)'>
+                <Condition><![CDATA[$(var.condition)]]></Condition>
+                <File Id='FILE_vgpusrv_$(var.osShort)_$(var.ISA)'
+                    Source='$(var.virtio_path)\viogpudo\$(var.osShort)\$(var.ISA)\vgpusrv.exe'
+                    KeyPath='yes'/>
+                <ServiceInstall
+                    Id="VioGpuSrv_$(var.osShort)_$(var.ISA)"
+                    Name="VioGpuSrv"
+                    DisplayName="VioGpu Resolution Service"
+                    Description="Synchronizes the guest display resolution with the VM window size for virtio-gpu devices."
+                    Start="auto"
+                    ErrorControl="ignore"
+                    Type="ownProcess"
+                    Vital="no"/>
+                <ServiceControl
+                    Id="sc_VioGpuSrv_$(var.osShort)_$(var.ISA)"
+                    Name="VioGpuSrv"
+                    Start="install"
+                    Stop="both"
+                    Remove="uninstall"
+                    Wait="yes" />
+            </Component>
+            <Component Id='CMP_viogpuap_$(var.osShort)_$(var.ISA)'
+                Guid='$(var.viogpudo_viogpuap_guid)'
+                Transitive='no'
+                Win64='$(var.Win64)'>
+                <Condition><![CDATA[$(var.condition)]]></Condition>
+                <File Id='FILE_viogpuap_$(var.osShort)_$(var.ISA)'
+                    Source='$(var.virtio_path)\viogpudo\$(var.osShort)\$(var.ISA)\viogpuap.exe'
+                    KeyPath='yes'/>
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+</Include>
