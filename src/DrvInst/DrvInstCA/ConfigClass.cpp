@@ -28,6 +28,10 @@
  */
 #include "stdafx.h"
 #include "ConfigClass.h"
+#include <set>
+
+static const int RESTORE_MAX_RETRIES = 5;
+static const DWORD RESTORE_RETRY_DELAY_MS = 3000;
 
 Config::Config(const PCWSTR filename)
 {
@@ -502,47 +506,27 @@ bool ConfigRead::SetGateWays(AdapterConfig const& cfg, bool ipv4)
     return false;
 }
 
-bool ConfigRead::RestoreAdapter(AdapterConfig const& cfg)
+bool ConfigRead::ApplyAdapterConfig(AdapterConfig const& cfg)
 {
-    if (nac->GetInstances())
-    {
-        while (nac->MoveNext())
-        {
-            std::wstring mac = nac->GetStringProperty(MACADDR);
-            LogReport(S_OK, L"macs %ws <--> %ws.", mac.c_str(), cfg.mac_addr.c_str());
-            if (mac == cfg.mac_addr &&
-                nac->GetStringProperty(SRVSNAME) == cfg.srvc_name)
-            {
-                if (!EnableStatic(cfg, true))
-                {
-                    LogReport(S_OK, L"EnableStatic IPv4 failed");
-                }
-                if (!EnableStatic(cfg, false))
-                {
-                    LogReport(S_OK, L"EnableStatic IPv6 failed");
-                }
-                if (!SetDNSServer(cfg))
-                {
-                    LogReport(S_OK, L"SetDNSServer failed");
-                }
-                if (!SetGateWays(cfg, true))
-                {
-                    LogReport(S_OK, L"SetGateWays IPv4 failed");
-                }
-                if (!SetGateWays(cfg, false))
-                {
-                    LogReport(S_OK, L"SetGateWays IPv6 failed");
-                }
-                if (!EnableDNS(cfg))
-                {
-                    LogReport(S_OK, L"EnableDNS failed");
-                }
-                return true;
-            }
-        }
-    }
+    if (!cfg.ipv4_addr.empty() && !EnableStatic(cfg, true))
+        LogReport(S_OK, L"EnableStatic IPv4 failed");
 
-    return false;
+    if (!cfg.ipv6_addr.empty() && !EnableStatic(cfg, false))
+        LogReport(S_OK, L"EnableStatic IPv6 failed");
+
+    if (!cfg.dns_serv_srch_ord.empty() && !SetDNSServer(cfg))
+        LogReport(S_OK, L"SetDNSServer failed");
+
+    if (!cfg.ipv4_def_gw.empty() && !SetGateWays(cfg, true))
+        LogReport(S_OK, L"SetGateWays IPv4 failed");
+
+    if (!cfg.ipv6_def_gw.empty() && !SetGateWays(cfg, false))
+        LogReport(S_OK, L"SetGateWays IPv6 failed");
+
+    if (!cfg.dns_serv_srch_ord.empty() && !cfg.dns_dom_suff_srch_ord.empty() && !EnableDNS(cfg))
+        LogReport(S_OK, L"EnableDNS failed");
+
+    return true;
 }
 
 bool ConfigRead::Run()
@@ -560,9 +544,60 @@ bool ConfigRead::Run()
         }
     }
 
+    LogReport(S_OK, L"Parsed %d adapter(s) from config file", (int)adapters.size());
+
+    std::set<size_t> restored;
+
+    for (int attempt = 1;
+         attempt <= RESTORE_MAX_RETRIES && restored.size() < adapters.size();
+         attempt++)
+    {
+        if (attempt > 1)
+        {
+            LogReport(S_OK, L"Attempt %d/%d: %d adapter(s) pending, "
+                     L"waiting %lu ms for device re-enumeration",
+                     attempt, RESTORE_MAX_RETRIES,
+                     (int)(adapters.size() - restored.size()),
+                     RESTORE_RETRY_DELAY_MS);
+            Sleep(RESTORE_RETRY_DELAY_MS);
+        }
+
+        if (!nac->GetInstances())
+            continue;
+
+        while (nac->MoveNext())
+        {
+            std::wstring mac = nac->GetStringProperty(MACADDR);
+            std::wstring svc = nac->GetStringProperty(SRVSNAME);
+
+            for (size_t i = 0; i < adapters.size(); i++)
+            {
+                if (restored.count(i))
+                    continue;
+                if (mac == adapters[i].mac_addr && svc == adapters[i].srvc_name)
+                {
+                    LogReport(S_OK, L"Restoring adapter mac=%ws (attempt %d)",
+                             mac.c_str(), attempt);
+                    if (ApplyAdapterConfig(adapters[i]))
+                    {
+                        restored.insert(i);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
     for (size_t i = 0; i < adapters.size(); i++)
     {
-        RestoreAdapter(adapters[i]);
+        if (!restored.count(i))
+        {
+            LogReport(S_OK, L"ERROR: adapter mac=%ws svc=%ws not restored "
+                     L"after %d attempts",
+                     adapters[i].mac_addr.c_str(),
+                     adapters[i].srvc_name.c_str(),
+                     RESTORE_MAX_RETRIES);
+        }
     }
 
     return true;
