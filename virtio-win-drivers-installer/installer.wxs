@@ -10,7 +10,7 @@
             Version="$(var.Version)"
             Manufacturer="Red Hat, Inc."
             UpgradeCode="$(var.UpgradeCode)"
-            InstallerVersion="200"
+            InstallerVersion="500"
             Compressed="yes"
             Scope="perMachine">
             <SummaryInformation Description="Virtio-win installer for drivers" />
