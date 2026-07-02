@@ -1,4 +1,4 @@
-<Project Sdk="WixToolset.Sdk/4.0.0">
+<Project Sdk="WixToolset.Sdk/6.0.2">
   <PropertyGroup>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <OutputName>virtio-win-gt-$(Platform)</OutputName>
@@ -34,7 +34,7 @@
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WixToolset.UI.wixext" Version="4.0.6" />
-    <PackageReference Include="WixToolset.Util.wixext" Version="4.0.6" />
+    <PackageReference Include="WixToolset.UI.wixext" Version="6.0.2" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="6.0.2" />
   </ItemGroup>
 </Project>
