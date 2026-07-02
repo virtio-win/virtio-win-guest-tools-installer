@@ -1,4 +1,4 @@
-<Project Sdk="WixToolset.Sdk/4.0.0">
+<Project Sdk="WixToolset.Sdk/6.0.2">
   <PropertyGroup>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <OutputName>virtio-win-guest-tools</OutputName>
@@ -45,6 +45,6 @@
     <Content Include="Resources\Theme.wxl" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="WixToolset.Bal.wixext" Version="4.0.6" />
+    <PackageReference Include="WixToolset.Bal.wixext" Version="6.0.2" />
   </ItemGroup>
 </Project>
