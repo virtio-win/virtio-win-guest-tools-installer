@@ -14,6 +14,7 @@
                 Name="VirtioFsSvc"
                 DisplayName="VirtIO-FS Service"
                 Description="Enables Windows virtual machines to access directories on the host that have been shared with them using virtiofs."
+                Dependencies="WinFsp.Launcher/VirtioFsDrv"
                 Start="demand"
                 ErrorControl="ignore"
                 Type="ownProcess"
