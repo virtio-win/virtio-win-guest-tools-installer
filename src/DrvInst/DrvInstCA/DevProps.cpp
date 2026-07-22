@@ -1205,7 +1205,7 @@ DWORD DevDriver::UnInstallOEMInf()
     else
     {
         pOem = GetStrongName();
-        if (pOem && m_pDiUninstallDriver(NULL, pOem, 0/*DIURFLAG_NO_REMOVE_INF*/, &m_bRebootNeeded))
+        if (pOem && m_pDiUninstallDriver(NULL, pOem, DIURFLAG_NO_REMOVE_INF, &m_bRebootNeeded))
         {
             return NO_ERROR;
         }
