@@ -100,6 +100,13 @@ bool ConfigWrite::Run()
 //                cf->WriteLine(INTEGER_FORMAT, DHCPEN, VT_BOOL, nac->GetBoolProperty(DHCPEN));
                 std::wstring setting_id = nac->GetStringProperty(SETTINGID);
 
+                std::wstring conn_name = ReadConnectionName(setting_id);
+                if (!conn_name.empty())
+                {
+                    LogReport(S_OK, L"conn_name = %ws", conn_name.c_str());
+                    cf->WriteLine(STRING_FORMAT, NETCONNID, VT_BSTR, conn_name.c_str());
+                }
+
                 std::wstring ipaddr = nac->GetSafeArrayProperty(IPADDR).c_str();
                 std::wstring subnet = nac->GetSafeArrayProperty(IPSUBNET).c_str();
 
@@ -218,6 +225,10 @@ bool ConfigRead::ProcessString(std::vector<std::wstring>& vector)
     else if (method == DNSHOSTNAME)
     {
         cur.dns_host_name = vector[2].c_str();
+    }
+    else if (method == NETCONNID)
+    {
+        cur.net_conn_id = vector[2].c_str();
     }
     else if (method == IPADDRPRIM)
     {
@@ -630,6 +641,20 @@ bool ConfigRead::Run()
                              mac.c_str(), attempt);
                     if (ApplyAdapterConfig(adapters[i]))
                     {
+                        if (!adapters[i].net_conn_id.empty())
+                        {
+                            std::wstring cur_guid = nac->GetStringProperty(SETTINGID);
+                            if (WriteConnectionName(cur_guid, adapters[i].net_conn_id))
+                            {
+                                LogReport(S_OK, L"Restored connection name '%ws' for adapter %ws",
+                                         adapters[i].net_conn_id.c_str(), mac.c_str());
+                            }
+                            else
+                            {
+                                LogReport(S_OK, L"Failed to restore connection name '%ws' for adapter %ws",
+                                         adapters[i].net_conn_id.c_str(), mac.c_str());
+                            }
+                        }
                         restored.insert(i);
                     }
                     break;

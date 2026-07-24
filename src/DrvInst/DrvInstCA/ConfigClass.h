@@ -62,6 +62,7 @@ const PCWSTR DNSSRCHORD = _TEXT("DNSServerSearchOrder");
 const PCWSTR INDX = _TEXT("Index");
 const PCWSTR SRVSNAME = _TEXT("ServiceName");
 const PCWSTR SETTINGID = _TEXT("SettingID");
+const PCWSTR NETCONNID = _TEXT("NetConnectionID");
 
 const PCWSTR NETKVM = _TEXT("netkvm");
 
@@ -111,6 +112,7 @@ struct AdapterConfig
     std::wstring dns_dom;
     std::wstring srvc_name;
     std::wstring dns_host_name;
+    std::wstring net_conn_id;
     std::wstring ipv4_addr_prim;
     std::wstring ipv4_subnet_prim;
 

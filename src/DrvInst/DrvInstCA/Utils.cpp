@@ -49,6 +49,40 @@ static std::vector<std::wstring> ReadRegStrings(HKEY rootKey, const std::wstring
     return result;
 }
 
+static const wchar_t NETWORK_CONNECTIONS_KEY[] =
+    L"SYSTEM\\CurrentControlSet\\Control\\Network"
+    L"\\{4D36E972-E325-11CE-BFC1-08002BE10318}\\";
+
+std::wstring ReadConnectionName(const std::wstring& guid)
+{
+    if (guid.empty())
+        return std::wstring();
+
+    std::wstring path = NETWORK_CONNECTIONS_KEY + guid + L"\\Connection";
+    std::vector<std::wstring> vals = ReadRegStrings(HKEY_LOCAL_MACHINE, path, L"Name");
+    if (!vals.empty())
+        return vals[0];
+    return std::wstring();
+}
+
+bool WriteConnectionName(const std::wstring& guid, const std::wstring& name)
+{
+    if (guid.empty() || name.empty())
+        return false;
+
+    std::wstring path = NETWORK_CONNECTIONS_KEY + guid + L"\\Connection";
+    HKEY hKey = NULL;
+    LONG rc = RegOpenKeyExW(HKEY_LOCAL_MACHINE, path.c_str(), 0, KEY_SET_VALUE, &hKey);
+    if (rc != ERROR_SUCCESS)
+        return false;
+
+    DWORD cbData = static_cast<DWORD>((name.size() + 1) * sizeof(wchar_t));
+    rc = RegSetValueExW(hKey, L"Name", 0, REG_SZ,
+        reinterpret_cast<const BYTE*>(name.c_str()), cbData);
+    RegCloseKey(hKey);
+    return (rc == ERROR_SUCCESS);
+}
+
 // Read primary stored IP/mask for adapter GUID from SYSTEM\ControlSetNN\Services\Tcpip\Parameters\Interfaces\{GUID}
 bool ReadStaticIPOrder(std::wstring& ipaddr, std::wstring& subnet, const std::wstring& guid)
 {
