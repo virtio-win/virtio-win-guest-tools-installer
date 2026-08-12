@@ -7,6 +7,8 @@
 
     <?if $(sys.BUILDARCH) = "x64" ?>
     <Binary Id="DrvInstallDll" SourceFile="../Install/Release/x64/DrvInstCA.dll" />
+    <?elseif $(sys.BUILDARCH) = "arm64" ?>
+    <Binary Id="DrvInstallDll" SourceFile="../Install/Release/ARM64/DrvInstCA.dll" />
     <?else ?>
     <Binary Id="DrvInstallDll" SourceFile="../Install/Release/x86/DrvInstCA.dll" />
     <?endif ?>

@@ -5,6 +5,7 @@ import msi_values
 
 MSIx64_PATH = "../tmp/virtio-win-drivers-installer/virtio-win-gt-x64.msi"
 MSIx86_PATH = "../tmp/virtio-win-drivers-installer/virtio-win-gt-x86.msi"
+MSIARM64_PATH = "../tmp/virtio-win-drivers-installer/virtio-win-gt-arm64.msi"
 
 
 def run_command(command):
@@ -75,7 +76,11 @@ class MSI(object):
 
 @pytest.fixture(scope="session")
 def get_msis():
-    return [MSI(MSIx64_PATH, "x64"), MSI(MSIx86_PATH, "x86")]
+    return [
+        MSI(MSIx64_PATH, "x64"),
+        MSI(MSIx86_PATH, "x86"),
+        MSI(MSIARM64_PATH, "arm64"),
+    ]
 
 
 def _generic_msi_value_test(msis, table, expected):
@@ -117,4 +122,3 @@ def test_allusers(get_msis):
 def test_old_wgt_uninstall_path(get_msis):
     _, expected_values = msi_values.get_expected_RegLocator()
     _generic_msi_value_test(get_msis, "RegLocator", expected_values)
-

@@ -51,12 +51,30 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>objchk_win10_arm64\arm64\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM64'">
+    <OutputPath>objfre_win10_arm64\arm64\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="wix">
-      <HintPath>..\..\..\..\Program Files (x86)\WiX Toolset v3.11\bin\wix.dll</HintPath>
+      <HintPath>$(WIX)bin\wix.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -73,7 +91,7 @@
     <EmbeddedResource Include="TableDefinitions.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="C:\work\devel\DrvInst\Install\Release\$(Platform)\DrvInstLib.wixlib">
+    <EmbeddedResource Include="$(SolutionDir)Install\$(Configuration)\$(Platform)\DrvInstLib.wixlib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

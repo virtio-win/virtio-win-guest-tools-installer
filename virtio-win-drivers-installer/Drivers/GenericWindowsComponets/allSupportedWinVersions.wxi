@@ -7,6 +7,9 @@
     <?include ./w10x64.wxi ?>
     <?include ./w11x64.wxi ?>
     <?include ./2k25.wxi ?>
+    <?elseif $(sys.BUILDARCH) = "arm64" ?>
+    <?include ./w10arm64.wxi ?>
+    <?include ./w11arm64.wxi ?>
     <?else ?>
     <?include ./w10x86.wxi ?>
     <?endif ?>

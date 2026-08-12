@@ -9,8 +9,10 @@
                     <Directory Id="BALLOON" Name="Balloon"/>
                     <Directory Id="NETWORK" Name="Network"/>
                     <Directory Id="PVPANIC" Name="Pvpanic"/>
+<?if $(sys.BUILDARCH) != "arm64" ?>
                     <Directory Id="FWCFG" Name="Fwcfg"/>
                     <Directory Id="QEMUPCISERIAL" Name="Qemupciserial"/>
+<?endif ?>
                     <Directory Id="VIOINPUT" Name="Vioinput"/>
                     <Directory Id="VIORNG" Name="Viorng"/>
                     <Directory Id="VIOSCSI" Name="Vioscsi"/>
@@ -18,7 +20,7 @@
                     <Directory Id="VIOSTOR" Name="Viostor"/>
                     <Directory Id="VIOFS" Name="VioFS"/>
                     <Directory Id="VIOGPUDO" Name="Viogpudo"/>
-<?if $(sys.BUILDARCH) = "x64" ?>
+<?if $(sys.BUILDARCH) = "x64" OR $(sys.BUILDARCH) = "arm64" ?>
                     <Directory Id="VIOMEM" Name="Viomem"/>
 <?endif ?>
                 </Directory>

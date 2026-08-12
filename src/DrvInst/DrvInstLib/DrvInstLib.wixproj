@@ -32,6 +32,19 @@
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <LibAdditionalOptions>-bf</LibAdditionalOptions>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|ARM64' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug</DefineConstants>
+    <LibAdditionalOptions>-bf</LibAdditionalOptions>
+    <InstallerPlatform>arm64</InstallerPlatform>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|ARM64' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <LibAdditionalOptions>-bf</LibAdditionalOptions>
+    <InstallerPlatform>arm64</InstallerPlatform>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="VirtWinDrvExtension.wxs" />
     <EmbeddedResource Include="en-us.wxl">
@@ -41,7 +54,7 @@
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
   <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
-    <Error Text="The WiX Toolset v3.11 build tools must be installed to build this project. To download the WiX Toolset, see https://wixtoolset.org/releases/v3.11/stable" />
+    <Error Text="WiX Toolset 3.14.1 or newer build tools must be installed to build this project. See https://github.com/wixtoolset/wix3/releases/tag/wix3141rtm" />
   </Target>
   <PropertyGroup>
     <PostBuildEvent>COPY "$(TargetDir)%2a.wixlib" "$(SolutionDir)Install\$(Configuration)\$(Platform)\"

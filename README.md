@@ -8,6 +8,8 @@ Virtio-win guest tools installer is a msi (Microsoft installer) created with [Wi
 
 <u>Spice guest agent and driver</u> - Spice is an open remote computing solution, providing client access to remote machine display and devices, more info on the [Offical website](https://www.spice-space.org).
 
+The driver MSI can be built for x86, x64, and ARM64. The guest tools bundle remains an x86/x64 artifact because its SPICE and QEMU guest-agent packages are not available for ARM64.
+
 
 The installer is distributed as part of virtio-win package on [Fedora](https://fedorapeople.org/groups/virt/virtio-win/repo/rpms/).
 
@@ -33,11 +35,24 @@ Before buidling the installer you must have the virtio-win drivers localy on the
 |-viogpu['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
 |-viomem['2k16', '2k19', '2k22', '2k25', 'w10', 'w11']
 ```
+
+ARM64 builds require the `w10/ARM64` and `w11/ARM64` variants of Balloon, NetKVM, pvpanic, vioinput, viorng, vioscsi, vioserial, viostor, viofs, viogpudo, and viomem. Fwcfg and QEMU PCI serial are not included in the ARM64 MSI.
+
 You can get it by:
 
 - Extracting the virtio-win iso content (availabe on virtio-win rpm package).
 
 - Run make-driver-dir.py from [virtio-win-pkg-scripts github repo](https://github.com/crobinso/virtio-win-pkg-scripts).
+
+#### ARM64 build prerequisites:
+
+The ARM64 build requires [WiX Toolset 3.14.1](https://github.com/wixtoolset/wix3/releases/tag/wix3141rtm) and native ARM64 WiX libraries. On a Windows machine with Visual Studio 2019 or newer, the MSVC v142 C++ and ATL ARM64 tools, a Windows 10/11 SDK, and .NET Framework 3.5 development tools, run the following from a Visual Studio Developer PowerShell prompt:
+
+```powershell
+.\Tools\build-arm64-libraries.ps1
+```
+
+This builds `Release|ARM64` and copies the required files to `Libraries\arm64` for the Linux/Wine MSI build.
 
 ### Building with Mock Runner:
 
@@ -55,7 +70,7 @@ You can get it by:
    path/to/jenkins/mock_configs/mock_runner.sh -b fc30
    ```
 
-4. The build artifacts which are 2 msis (x64, x86) and one .exe file will be on the exported artifacts directory, which was created during the build process.
+4. The build artifacts which are 3 msis (x64, x86, ARM64) and one x86/x64 .exe file will be on the exported artifacts directory, which was created during the build process.
 
 ### Building with make:
 
@@ -72,7 +87,13 @@ You can get it by:
    - QEMU_GA_86_MSI_PATH - path to the qemu ga x86 MSI
    - VERSION - version on the installer
 
-3. The build artifacts which are 2 msis (x64, x86) and one .exe file will be on the exported artifacts directory, which was created during the build process.
+   To build only the ARM64 driver MSI, run:
+
+   ```bash
+   make ARCH=arm64 VERSION=1.0.0 VIRTIO_WIN_DRIVERS_PATH=/path/to/virtio-win-drivers
+   ```
+
+3. The build artifacts which are 3 msis (x64, x86, ARM64) and one x86/x64 .exe file will be on the exported artifacts directory, which was created during the build process.
 
 ## Contributions:
 

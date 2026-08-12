@@ -123,6 +123,45 @@ def get_expected_componentids():
         'CMP_Win11x64_viomem':['{F2D3A4F6-2ECA-4CC1-9260-7707B3A6034C}'],
     }
 
+    expected_values_arm64 = {
+        'CMP_Win10ARM64_balloon':['{321D2B32-117B-4F87-A5BB-BAE9FF7321AE}'],
+        'CMP_blnsvr_w10_ARM64':['{ECCD58BD-3EBC-487E-AE7F-4923AF4433FF}'],
+        'CMP_Win11ARM64_balloon':['{ACCD2591-8A13-4D89-93C2-419E964F4A25}'],
+        'CMP_blnsvr_w11_ARM64':['{2B144E07-A2BE-4DB7-8375-40099F2CA15F}'],
+        'CMP_Win10ARM64_netkvm':['{CE9FC1FF-B942-4344-9CD4-3C2742361FC1}'],
+        'CMP_netkvm_netkvmp_w10_ARM64':['{03AF3898-E3BC-4498-A886-0C63350A47D2}'],
+        'CMP_Win11ARM64_netkvm':['{2CEDE95D-F31C-4278-A9F0-6C01B2E29EFD}'],
+        'CMP_netkvm_netkvmp_w11_ARM64':['{CFEE289F-FC9D-4E29-9836-D593367B1DF0}'],
+        'CMP_Win10ARM64_pvpanic':['{BD7AA64B-0DF2-492F-BD3C-75EB19EDEF2F}'],
+        'CMP_Win11ARM64_pvpanic':['{3A3F74A3-5021-4E6B-A7BF-A714A91CDC2E}'],
+        'CMP_Win10ARM64_vioinput':['{4F5125C0-0667-4B28-AF72-07A7BF2FC254}'],
+        'CMP_vioinput_viohidkmdf_w10_ARM64':['{2368B203-CD40-4E8E-8C24-067F7CB34A48}'],
+        'CMP_Win11ARM64_vioinput':['{3A29D831-38AC-4D1A-9C8F-16F9CDEF79F3}'],
+        'CMP_vioinput_viohidkmdf_w11_ARM64':['{E7962A06-BAE5-40DC-A449-868C6D5326E7}'],
+        'CMP_Win10ARM64_viorng':['{E67D47E3-B39E-4309-A1DF-8B83B4AB6BF0}'],
+        'CMP_viorng_viorngum_w10_ARM64':['{059D592F-9C7F-40F7-AF70-B1D76A900FFB}'],
+        'CMP_Win11ARM64_viorng':['{CE65B500-38E5-4BBA-AE5F-1A8243D74E8A}'],
+        'CMP_viorng_viorngum_w11_ARM64':['{2F692B65-0D8E-4AFD-9F3F-CFC6B08D6011}'],
+        'CMP_Win10ARM64_vioscsi':['{76DAB93A-A0FE-42CF-A311-85040011106A}'],
+        'CMP_Win11ARM64_vioscsi':['{175427DA-4222-4B0D-AFEA-1218DDB4CA0A}'],
+        'CMP_Win10ARM64_vioser':['{7162B92B-034A-42DA-90F6-5146E13C1BC1}'],
+        'CMP_Win11ARM64_vioser':['{1FBC6A77-B86B-49BE-A79B-37E9D2808158}'],
+        'CMP_Win10ARM64_viostor':['{8792F2B6-2E96-4E42-8C42-0662BB398B3B}'],
+        'CMP_Win11ARM64_viostor':['{2A51A632-C976-4D06-816D-E9084D5DEA66}'],
+        'CMP_Win10ARM64_viofs':['{F5C84930-9444-4FC3-A8A9-ADDEDDE8DB6D}'],
+        'CMP_virtiofs_w10_ARM64':['{768F38CE-8AA0-47E9-A003-69E67F4E9D75}'],
+        'CMP_Win11ARM64_viofs':['{8BC473EA-01D6-4DC4-9428-DE90C41B8231}'],
+        'CMP_virtiofs_w11_ARM64':['{6434B13B-CB05-4132-BB77-3A6B104E41D6}'],
+        'CMP_Win10ARM64_viogpudo':['{AA916132-443A-42E4-AAAB-E84F3D86E7FF}'],
+        'CMP_vgpusrv_w10_ARM64':['{10192C28-26B1-4022-9396-6EC8137BB01F}'],
+        'CMP_viogpuap_w10_ARM64':['{6822C365-5C95-42D1-AE29-D7C5B5BCA47A}'],
+        'CMP_Win11ARM64_viogpudo':['{F1EDB7C1-BE41-494E-865B-19BEE72727D4}'],
+        'CMP_vgpusrv_w11_ARM64':['{A6C218EE-17E7-43D7-AA1A-20BF46185F89}'],
+        'CMP_viogpuap_w11_ARM64':['{D7388331-BD41-4635-923B-0FCA5E6BCD97}'],
+        'CMP_Win10ARM64_viomem':['{8966D5E9-187C-4D02-A626-47D589F10543}'],
+        'CMP_Win11ARM64_viomem':['{145BE046-3576-4300-83D8-E932C47F02D1}'],
+    }
+
     expected_values_x86 = {
         'CMP_Win10x86_balloon':['{DF5DA075-CFCF-425A-A555-548E60B2835E}'],
         'CMP_blnsvr_w10_x86':['{908D56E1-A780-46CB-BAFC-8775E7BC2B7F}'],
@@ -146,7 +185,8 @@ def get_expected_componentids():
         ("Component", "ComponentId"),
         {
             'x86': expected_values_x86,
-            'x64': expected_values_x64
+            'x64': expected_values_x64,
+            'arm64': expected_values_arm64
         }
     )
 
@@ -154,22 +194,26 @@ def get_expected_componentids():
 def get_expected_upgrade_code():
     expected_values_x64 = {'UpgradeCode':['{05294E2F-7778-4E46-B2A3-CF039D5767C8}']}
     expected_values_x86 = {'UpgradeCode':['{22C8F100-2ED1-4A99-A8FC-C391F0D1D7E7}']}
+    expected_values_arm64 = {'UpgradeCode':['{48E49368-7070-4E35-A4D0-8932518A95CE}']}
     return (
         ("Property", "Value"),
         {
             'x86': expected_values_x86,
-            'x64': expected_values_x64
+            'x64': expected_values_x64,
+            'arm64': expected_values_arm64
         }
     )
 
 def get_expected_allusers_property():
     expected_values_x64 = {'ALLUSERS':['1']}
     expected_values_x86 = {'ALLUSERS':['1']}
+    expected_values_arm64 = {'ALLUSERS':['1']}
     return (
         ("Property", "Value"),
         {
             'x86': expected_values_x86,
-            'x64': expected_values_x64
+            'x64': expected_values_x64,
+            'arm64': expected_values_arm64
         }
     )
 
@@ -183,11 +227,16 @@ def get_expected_RegLocator():
         'ProductNameSearch':[r'SOFTWARE\Microsoft\Windows NT\CurrentVersion', 'ProductName'],
         'wgt_uninstall_path':[r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{042CD13C-735D-4140-B146-D3F8263D7E4C}', 'UninstallString'],
     }
+    expected_values_arm64 = {
+        'ProductNameSearch': [r'SOFTWARE\Microsoft\Windows NT\CurrentVersion', 'ProductName'],
+        'CurrentBuildNumberSearch': [r'SOFTWARE\Microsoft\Windows NT\CurrentVersion', 'CurrentBuildNumber'],
+        'wgt_uninstall_path': [r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\{042CD13C-735D-4140-B146-D3F8263D7E4C}', 'UninstallString']
+    }
     return (
         ("Signature", "Key", "Name"),
         {
             'x86': expected_values_x86,
-            'x64': expected_values_x64
+            'x64': expected_values_x64,
+            'arm64': expected_values_arm64
         }
     )
-

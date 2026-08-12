@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Include xmlns:dins='http://www.redhat.com/DrvInstExt'>
+<?define osFullName = "Win11ARM64" ?>
+<?define osShort = "w11" ?>
+<?define ISA = "ARM64" ?>
+<?define Win64 = "yes" ?>
+<?define condition = "$(var.condition_w11arm64)" ?>
+<?include ./template.wxi ?>
+<?undef osFullName?>
+<?undef osShort?>
+<?undef ISA?>
+<?undef Win64?>
+<?undef condition?>
+</Include>

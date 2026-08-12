@@ -10,11 +10,19 @@
             Version="$(var.Version)"
             Manufacturer="Red Hat, Inc."
             UpgradeCode="$(var.UpgradeCode)">
+<?if $(sys.BUILDARCH) = "arm64" ?>
+            <Package Id="*"
+                  InstallerVersion="500"
+                  Compressed="yes"
+                  InstallScope="perMachine"
+                  Description="Virtio-win installer for ARM64 drivers"/>
+<?else ?>
             <Package Id="*"
                   InstallerVersion="200"
                   Compressed="yes"
                   InstallScope="perMachine"
                   Description="Virtio-win installer for drivers"/>
+<?endif ?>
             <PropertyRef Id="$(var.LaunchCondition)" />
             <PropertyRef Id="LaunchConditionsSupportedOS" />
             <PropertyRef Id="Set_ProductName" />

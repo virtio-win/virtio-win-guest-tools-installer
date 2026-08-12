@@ -45,6 +45,19 @@
 <?include ../GenericWindowsComponets/w11x64.wxi ?>
 <?undef balloon_blnsvr_guid?>
 <?undef guid?>
+<?elseif $(sys.BUILDARCH) = "arm64" ?>
+<!-- w10arm64 -->
+<?define guid = "321D2B32-117B-4F87-A5BB-BAE9FF7321AE"?>
+<?define balloon_blnsvr_guid = "ECCD58BD-3EBC-487E-AE7F-4923AF4433FF"?>
+<?include ../GenericWindowsComponets/w10arm64.wxi ?>
+<?undef balloon_blnsvr_guid?>
+<?undef guid?>
+<!-- w11arm64 -->
+<?define guid = "ACCD2591-8A13-4D89-93C2-419E964F4A25"?>
+<?define balloon_blnsvr_guid = "2B144E07-A2BE-4DB7-8375-40099F2CA15F"?>
+<?include ../GenericWindowsComponets/w11arm64.wxi ?>
+<?undef balloon_blnsvr_guid?>
+<?undef guid?>
 <?else ?>
 <!-- w10x86 -->
 <?define guid = "DF5DA075-CFCF-425A-A555-548E60B2835E"?>

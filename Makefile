@@ -30,8 +30,10 @@ GENERATED = \
 	virtio-win-installers-bundler/Bundle.wxs \
 	virtio-win-drivers-installer/constants.wxi \
 	virtio-win-drivers-installer/build_args/candle_argsx64.txt \
+	virtio-win-drivers-installer/build_args/candle_argsarm64.txt \
 	virtio-win-drivers-installer/build_args/candle_argsx86.txt \
 	virtio-win-drivers-installer/build_args/light_argsx64.txt \
+	virtio-win-drivers-installer/build_args/light_argsarm64.txt \
 	virtio-win-drivers-installer/build_args/light_argsx86.txt \
 	$(NULL)
 
@@ -46,7 +48,27 @@ wix: $(WIX_BINARIES_FILES)
 	ln -s "$(WIX_BINARIES_FILES)" $(WIX_BINARIES_LINK)
 
 
-create-installer: $(GENERATED) wix
+check-arch:
+	case "$(ARCH)" in x86|x64|arm64) ;; *) echo "ARCH must be one of: x86, x64, arm64" >&2; exit 2 ;; esac
+	if [[ "$(ARCH)" == "arm64" ]]; then \
+		test -f "$(WIX_LIBRARIES_LINK)/arm64/DrvInstExt.dll" && \
+		test -f "$(WIX_LIBRARIES_LINK)/arm64/DrvInstCA.dll" || { \
+			echo "ARM64 WiX libraries are missing; run Tools/build-arm64-libraries.ps1 first" >&2; \
+			exit 2; \
+		}; \
+		for driver in Balloon NetKVM pvpanic vioinput viorng vioscsi vioserial viostor viofs viogpudo viomem; do \
+			for os in w10 w11; do \
+				test -d "$(VIRTIO_WIN_DRIVERS_PATH)/$$driver/$$os/ARM64" || { \
+					echo "Missing ARM64 driver directory: $(VIRTIO_WIN_DRIVERS_PATH)/$$driver/$$os/ARM64" >&2; \
+					exit 2; \
+				}; \
+			done; \
+		done; \
+	fi
+
+
+create-installer: $(GENERATED) wix check-arch
+	set -e; \
 	pushd virtio-win-drivers-installer/ ;\
 	wine cmd.exe /c "$(WIX_BINARIES_LINK)/candle.exe @build_args/candle_args$(ARCH).txt" ;\
 	wine cmd.exe /c "$(WIX_BINARIES_LINK)/light.exe -sval @build_args/light_args$(ARCH).txt" ;\
@@ -58,6 +80,7 @@ test:
 	python3 -m pytest test/test.py
 
 bundle:
+	set -e; \
 	pushd virtio-win-installers-bundler/ ;\
 	wine cmd.exe /c "$(WIX_BINARIES_LINK)/candle.exe *.wxs -ext $(WIX_BINARIES_WIN_PATH)/WixBalExtension.dll" ;\
 	wine cmd.exe /c "$(WIX_BINARIES_LINK)/light.exe *.wixobj -o ../virtio-win-guest-tools.exe -ext $(WIX_BINARIES_WIN_PATH)/WixBalExtension.dll" ;\
@@ -97,4 +120,4 @@ dist:
 	tar -cvf "$(ARCHIVE)" --owner=root --group=root ./*
 
 
-.PHONY : all init-files wix create-installer dist test bundle
+.PHONY : all init-files wix check-arch create-installer dist test bundle

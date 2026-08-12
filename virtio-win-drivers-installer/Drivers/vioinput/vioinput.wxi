@@ -45,6 +45,19 @@
 <?include ../GenericWindowsComponets/w11x64.wxi ?>
 <?undef vioinput_viohidkmdf_guid?>
 <?undef guid?>
+<?elseif $(sys.BUILDARCH) = "arm64" ?>
+<!-- w10arm64 -->
+<?define guid = "4F5125C0-0667-4B28-AF72-07A7BF2FC254"?>
+<?define vioinput_viohidkmdf_guid = "2368B203-CD40-4E8E-8C24-067F7CB34A48"?>
+<?include ../GenericWindowsComponets/w10arm64.wxi ?>
+<?undef vioinput_viohidkmdf_guid?>
+<?undef guid?>
+<!-- w11arm64 -->
+<?define guid = "3A29D831-38AC-4D1A-9C8F-16F9CDEF79F3"?>
+<?define vioinput_viohidkmdf_guid = "E7962A06-BAE5-40DC-A449-868C6D5326E7"?>
+<?include ../GenericWindowsComponets/w11arm64.wxi ?>
+<?undef vioinput_viohidkmdf_guid?>
+<?undef guid?>
 <?else ?>
 <!-- w10x86 -->
 <?define guid = "6B54D870-E342-40F9-8CEE-42FA2C2EDEEA"?>
