@@ -45,30 +45,43 @@ jobs:
           Pop-Location
           Get-ChildItem -Recurse driver-src/pvpanic
 
-      - name: Install the actual WDK (headers/libs, not just the VS extension)
+      - name: Install the actual WDK + matching SDK (headers/libs, not just the VS extension)
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
           # windows-latest ships the "WDK Visual Studio Extension" (MSBuild
-          # integration/project templates only) but not the WDK itself -
-          # confirmed by the previous failure: ntddk.h not found even though
-          # the WindowsKernelModeDriver10.0 toolset was found and invoked
-          # fine. Installing build 26100.6584 specifically: the WDK's build
-          # number must match the installed Windows SDK's build number
-          # (confirmed 10.0.26100.0 on this runner in an earlier workflow),
-          # not whatever the "latest WDK" docs push for VS2026.
-          Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2335869" -OutFile "$env:RUNNER_TEMP\wdksetup.exe"
-          $logPath = "$env:RUNNER_TEMP\wdksetup.log"
-          $proc = Start-Process -FilePath "$env:RUNNER_TEMP\wdksetup.exe" `
-            -ArgumentList "/quiet", "/norestart", "/log", $logPath -Wait -PassThru
-          Write-Host "wdksetup.exe exit code: $($proc.ExitCode)"
-          if (Test-Path $logPath) {
-            Write-Host "--- wdksetup.log (last 100 lines) ---"
-            Get-Content $logPath -Tail 100
+          # integration/project templates only) but not the WDK itself.
+          #
+          # First attempt installed WDK 26100.6584 (Microsoft's docs pair it
+          # with the installed SDK build, 10.0.26100.0, confirmed present on
+          # this runner) - it installed successfully (verified: real exit
+          # code 0, full package list including WindowsDriverKitARM64* in
+          # the log) but the build still failed loading
+          # Microsoft.DriverKit.Build.Tasks.18.0.dll. Its own install log
+          # showed why: it ships "WindowsDriverKitRootDev17Content" (VS2022/
+          # "Dev17" integration) but no "Dev18" package at all - this build
+          # doesn't support VS2026, which is the only Visual Studio actually
+          # on this runner (every MSVC path resolved across this session's
+          # other workflows was Visual Studio\18\...). Switching to WDK
+          # 28000.2526 + its paired SDK, the combo Microsoft's docs say
+          # matches VS2026, accepting the extra SDK install to keep the
+          # build-number pairing intact per their own versioning rules.
+          Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2372508" -OutFile "$env:RUNNER_TEMP\sdksetup.exe"
+          Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?LinkId=2371554" -OutFile "$env:RUNNER_TEMP\wdksetup.exe"
+
+          function Install-Bootstrapper($path, $logPath) {
+            $proc = Start-Process -FilePath $path -ArgumentList "/quiet", "/norestart", "/log", $logPath -Wait -PassThru
+            Write-Host "$(Split-Path $path -Leaf) exit code: $($proc.ExitCode)"
+            if (Test-Path $logPath) {
+              Write-Host "--- $(Split-Path $logPath -Leaf) (last 100 lines) ---"
+              Get-Content $logPath -Tail 100
+            }
+            if ($proc.ExitCode -ne 0) {
+              throw "$(Split-Path $path -Leaf) failed with exit code $($proc.ExitCode)"
+            }
           }
-          if ($proc.ExitCode -ne 0) {
-            throw "wdksetup.exe failed with exit code $($proc.ExitCode)"
-          }
+          Install-Bootstrapper "$env:RUNNER_TEMP\sdksetup.exe" "$env:RUNNER_TEMP\sdksetup.log"
+          Install-Bootstrapper "$env:RUNNER_TEMP\wdksetup.exe" "$env:RUNNER_TEMP\wdksetup.log"
 
       - name: Build pvpanic.sln (arm64)
         shell: pwsh
