@@ -154,11 +154,17 @@ jobs:
         working-directory: qemu
         run: |
           set -e
-          ninja -C build qga/qemu-ga.exe
-          file build/qga/qemu-ga.exe
+          # 'qga/qemu-ga.exe' wasn't the right ninja target name - rather than
+          # guess again, build everything configure left enabled (small,
+          # since system/user/tools/docs are all disabled) and locate the
+          # actual output afterward instead of pre-guessing meson's naming.
+          ninja -C build
+          find build -iname 'qemu-ga.exe'
+          find build -iname 'qemu-ga.exe' -exec cp {} qemu-ga.exe \;
+          file qemu-ga.exe
 
       - uses: actions/upload-artifact@v4
         with:
           name: qemu-ga-arm64
-          path: qemu/build/qga/qemu-ga.exe
+          path: qemu/qemu-ga.exe
           if-no-files-found: error
