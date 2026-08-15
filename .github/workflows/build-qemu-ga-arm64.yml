@@ -39,10 +39,12 @@ jobs:
           # compile Windows Event Log message-table resources - it's pure
           # text/binary table generation, not machine code, so it isn't
           # actually architecture-specific despite the x86_64 prefix.
-          # llvm-mingw doesn't ship an equivalent at all; meson's
-          # find_program('windmc', 'mc') looks for that literal name on
-          # PATH, not a cross-prefixed one, so exposing Debian's copy under
-          # a plain name is enough.
+          # llvm-mingw doesn't ship an equivalent at all. First attempt
+          # symlinked a bare 'windmc', which failed - under cross-compile,
+          # meson's find_program auto-prefixes the search with the cross
+          # prefix (error was literally "aarch64-w64-mingw32-windmc not
+          # found"), so that's the name it actually needs on PATH.
+          sudo ln -s /usr/bin/x86_64-w64-mingw32-windmc /usr/local/bin/aarch64-w64-mingw32-windmc
           sudo ln -s /usr/bin/x86_64-w64-mingw32-windmc /usr/local/bin/windmc
 
       - name: Fetch llvm-mingw
