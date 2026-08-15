@@ -99,7 +99,10 @@ jobs:
           # certification here, just a working test-signed driver, so skip
           # the check rather than debug why aitstatic fails in this
           # environment.
-          & $msbuild pvpanic.sln /p:Configuration="${{ env.CONFIGURATION }}" /p:Platform=ARM64 /p:RunApiValidation=false /m
+          # RunApiValidation was the wrong property name (guessed, unverified -
+          # the check still ran identically). ApiValidator_Enable=false is
+          # confirmed correct from a real driver project's own build script.
+          & $msbuild pvpanic.sln /p:Configuration="${{ env.CONFIGURATION }}" /p:Platform=ARM64 /p:ApiValidator_Enable=false /m
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Locate build output
