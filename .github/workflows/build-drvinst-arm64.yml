@@ -66,6 +66,24 @@ jobs:
           Write-Host "Using Windows SDK $($sdk.Name)"
           "version=$($sdk.Name)" >> $env:GITHUB_OUTPUT
 
+      - name: Detect installed .NET Framework targeting pack
+        id: netfx
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          # DrvInstExt.csproj needs at least v4.5 to reference WiX 3.14.1's wix.dll,
+          # but v4.5 itself isn't installed on current runner images - use whatever
+          # >= 4.5 targeting pack actually is, rather than guess a specific one.
+          $fx = Get-ChildItem "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework" |
+            Where-Object { $_.Name -match '^v4\.[5-9]' -or $_.Name -match '^v[5-9]' } |
+            Sort-Object Name -Descending | Select-Object -First 1
+          if (-not $fx) {
+            Write-Error "No .NET Framework >= 4.5 targeting pack found"
+            exit 1
+          }
+          Write-Host "Using .NET Framework targeting pack $($fx.Name)"
+          "version=$($fx.Name)" >> $env:GITHUB_OUTPUT
+
       - name: Build DrvInstCA.dll (native CA, arm64)
         shell: pwsh
         run: |
@@ -94,7 +112,8 @@ jobs:
             /p:Configuration=Release `
             /p:Platform=arm64 `
             /p:WixInstallPath="${{ env.WIX_DIR }}" `
-            /p:SolutionDir="${{ env.SOLUTION_DIR }}"
+            /p:SolutionDir="${{ env.SOLUTION_DIR }}" `
+            /p:TargetFrameworkVersion=${{ steps.netfx.outputs.version }}
 
       - name: Collect Libraries/arm64 artifacts
         shell: pwsh
