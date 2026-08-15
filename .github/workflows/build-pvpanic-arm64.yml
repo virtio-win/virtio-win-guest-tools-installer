@@ -37,7 +37,11 @@ jobs:
           git clone --depth 1 --branch "${{ env.DRIVER_REF }}" --filter=blob:none --sparse `
             https://github.com/virtio-win/kvm-guest-drivers-windows.git driver-src
           Push-Location driver-src
-          git sparse-checkout set pvpanic
+          # pvpanic.vcxproj imports ../../build/Driver.Common.props - a
+          # shared props file at the repo's top level, common to all driver
+          # subprojects in this monorepo, not something pvpanic/ carries on
+          # its own.
+          git sparse-checkout set pvpanic build
           Pop-Location
           Get-ChildItem -Recurse driver-src/pvpanic
 
