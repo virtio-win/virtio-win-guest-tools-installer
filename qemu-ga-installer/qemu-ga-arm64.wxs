@@ -4,13 +4,15 @@
 
   Not a copy of QEMU's own qga/installer/qemu-ga.wxs: that template assumes a
   GCC-mingw toolchain (libgcc_s_seh-1.dll, libwinpthread-1.dll, libssp-0.dll,
-  iconv.dll) and offers a VSS-enabled component set. This build uses
-  llvm-mingw/clang against UCRT instead - no GCC runtime DLLs are linked at
-  all (confirmed via strings on the built exe: only libglib-2.0-0.dll plus
-  Windows-provided kernel32/advapi32/api-ms-win-crt-* imports) - and VSS is
-  disabled (-Dqga_vss=disabled, see the build workflow for why). The actual
-  bundled DLL set matches what the workflow verified exists in the MSYS2
-  CLANGARM64 packages glib2 depends on.
+  iconv.dll). This build uses llvm-mingw/clang against UCRT instead - no GCC
+  runtime DLLs are linked at all (confirmed via strings on the built exe:
+  only libglib-2.0-0.dll plus Windows-provided kernel32/advapi32/
+  api-ms-win-crt-* imports). VSS support is enabled: qga-vss.dll is C++
+  (unlike qemu-ga.exe itself, plain C), so it needs clang's own C++ runtime
+  - libc++.dll and libunwind.dll - rather than GCC's libstdc++-6.dll that
+  QEMU's template bundles. The RegisterCom/UnRegisterCom custom actions
+  below are copied verbatim from QEMU's own template though: that's just
+  how MSI-driven COM self-registration works, independent of toolchain.
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product
@@ -52,6 +54,7 @@
     <MajorUpgrade
       DowngradeErrorMessage="Error: A newer version of QEMU Guest Agent (arm64) is already installed."
       />
+    <Property Id="rundll" Value="rundll32.exe"/>
 
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
@@ -101,6 +104,18 @@
           <Component Id="libcharset" Guid="{837DEB54-B132-4B4A-997F-C0D27875BEAC}">
             <File Id="libcharset_1.dll" Name="libcharset-1.dll" Source="$(var.BIN_DIR)/libcharset-1.dll" KeyPath="yes" DiskId="1"/>
           </Component>
+          <Component Id="libcxx" Guid="{E68BA740-9DDA-452D-8F25-E88C38203C6C}">
+            <File Id="libcxx.dll" Name="libc++.dll" Source="$(var.BIN_DIR)/libc++.dll" KeyPath="yes" DiskId="1"/>
+          </Component>
+          <Component Id="libunwind" Guid="{5FF35C88-06CC-4D49-B8AF-8094C0975890}">
+            <File Id="libunwind_1.dll" Name="libunwind.dll" Source="$(var.BIN_DIR)/libunwind.dll" KeyPath="yes" DiskId="1"/>
+          </Component>
+          <Component Id="qga_vss_dll" Guid="{8A365F07-6A18-4D8C-AEE6-3D80C670CEC4}">
+            <File Id="qga_vss.dll" Name="qga-vss.dll" Source="$(var.BIN_DIR)/qga-vss.dll" KeyPath="yes" DiskId="1"/>
+          </Component>
+          <Component Id="qga_vss_tlb" Guid="{C78C29D7-9AFA-4C8D-AC90-10F25BABB15A}">
+            <File Id="qga_vss.tlb" Name="qga-vss.tlb" Source="$(var.BIN_DIR)/qga-vss.tlb" KeyPath="yes" DiskId="1"/>
+          </Component>
           <Component Id="registry_entries" Guid="{1EA3374E-4A89-41C2-A15F-E810FF95398C}">
             <RegistryKey Root="HKLM"
                          Key="Software\$(var.QEMU_GA_MANUFACTURER)\$(var.QEMU_GA_DISTRO)\Tools\QemuGA">
@@ -112,10 +127,42 @@
               <RegistryValue Type="integer" Name="TypesSupported" Value="7" />
               <RegistryValue Type="string" Name="EventMessageFile" Value="[qemu_ga_directory]qemu-ga.exe" />
             </RegistryKey>
+            <RegistryKey Root="HKLM"
+                         Key="System\CurrentControlSet\Services\QEMU Guest Agent VSS Provider">
+              <RegistryValue Type="integer" Name="VssOption" Value="1" />
+            </RegistryKey>
           </Component>
         </Directory>
       </Directory>
     </Directory>
+
+    <!-- Verbatim from QEMU's own qga/installer/qemu-ga.wxs: this is just how
+         MSI-driven COM self-registration for a VSS provider works, nothing
+         toolchain-specific about it. -->
+    <CustomAction Id="RegisterCom"
+              ExeCommand='"[qemu_ga_directory]qga-vss.dll",DLLCOMRegister'
+              Execute="deferred"
+              Property="rundll"
+              Impersonate="no"
+              Return="check"
+              >
+    </CustomAction>
+    <CustomAction Id="UnRegisterCom"
+              ExeCommand='"[qemu_ga_directory]qga-vss.dll",DLLCOMUnregister'
+              Execute="deferred"
+              Property="rundll"
+              Impersonate="no"
+              Return="check"
+              >
+    </CustomAction>
+    <CustomAction Id="UnRegisterCom_Rollback"
+              ExeCommand='"[qemu_ga_directory]qga-vss.dll",DLLCOMUnregister'
+              Execute="rollback"
+              Property="rundll"
+              Impersonate="no"
+              Return="check"
+              >
+    </CustomAction>
 
     <Feature Id="QemuGA" Title="QEMU Guest Agent" Level="1">
       <ComponentRef Id="qemu_ga" />
@@ -128,7 +175,21 @@
       <ComponentRef Id="libintl" />
       <ComponentRef Id="libiconv" />
       <ComponentRef Id="libcharset" />
+      <ComponentRef Id="libcxx" />
+      <ComponentRef Id="libunwind" />
+      <ComponentRef Id="qga_vss_dll" />
+      <ComponentRef Id="qga_vss_tlb" />
       <ComponentRef Id="registry_entries" />
     </Feature>
+
+    <InstallExecuteSequence>
+      <!-- Explicit Sequence numbers to place UnRegisterCom_Rollback right
+           before RegisterCom and after InstallFiles, matching QEMU's own
+           template comment: WiX doesn't order this correctly from
+           After=/Before= attributes alone here. -->
+      <Custom Action="UnRegisterCom_Rollback" Sequence="5849">NOT REMOVE</Custom>
+      <Custom Action="RegisterCom" Sequence="5850">NOT REMOVE</Custom>
+      <Custom Action="UnRegisterCom" Sequence="1901">Installed</Custom>
+    </InstallExecuteSequence>
   </Product>
 </Wix>
