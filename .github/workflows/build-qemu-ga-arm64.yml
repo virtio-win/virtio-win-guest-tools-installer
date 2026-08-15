@@ -210,6 +210,10 @@ jobs:
           find build -iname 'qemu-ga.exe'
           find build -iname 'qemu-ga.exe' -exec cp {} qemu-ga.exe \;
           file qemu-ga.exe
+          # qga-vss.dll built as part of the default set, but qga-vss.tlb
+          # (the gen-tlb custom_target) apparently isn't wired into it -
+          # request it explicitly by its declared output path.
+          ninja -C build qga/vss-win32/qga-vss.tlb
           find build -iname 'qga-vss.dll' -o -iname 'qga-vss.tlb'
           find build -iname 'qga-vss.dll' -exec cp {} qga-vss.dll \;
           find build -iname 'qga-vss.tlb' -exec cp {} qga-vss.tlb \;
@@ -239,6 +243,15 @@ jobs:
           cp qemu/qemu-ga.exe package/
           cp qemu/qga-vss.dll package/
           cp qemu/qga-vss.tlb package/
+          # qga-vss.dll's own imports (checked via strings, since Debian's
+          # objdump doesn't recognize PE-ARM64): everything else it needs
+          # is Windows-provided (VSSAPI.DLL ships with Windows itself, plus
+          # the usual ADVAPI32/OLE32/OLEAUT32/SHLWAPI/USER32 system DLLs),
+          # except libc++.dll and libunwind.dll - clang/llvm-mingw's C++
+          # runtime, not part of Windows. qemu-ga.exe itself is plain C so
+          # it never needed these; qga-vss.dll is C++.
+          cp "$HOME/llvm-mingw/aarch64-w64-mingw32/bin/libc++.dll" package/
+          cp "$HOME/llvm-mingw/aarch64-w64-mingw32/bin/libunwind.dll" package/
           for dll in \
             libglib-2.0-0.dll \
             libpcre2-8-0.dll \
