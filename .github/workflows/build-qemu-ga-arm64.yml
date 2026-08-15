@@ -113,30 +113,6 @@ jobs:
           done < packages.txt
           find /clangarm64 -name '*.pc' | xargs grep -l '^prefix=' | head -5
 
-      - name: Write meson cross-file
-        run: |
-          set -e
-          mkdir -p "${{ github.workspace }}"
-          cat > cross-aarch64-w64-mingw32.ini << EOF
-          [binaries]
-          c = 'aarch64-w64-mingw32-gcc'
-          cpp = 'aarch64-w64-mingw32-g++'
-          ar = 'aarch64-w64-mingw32-ar'
-          strip = 'aarch64-w64-mingw32-strip'
-          windres = 'aarch64-w64-mingw32-windres'
-          pkg-config = 'pkg-config'
-
-          [host_machine]
-          system = 'windows'
-          cpu_family = 'aarch64'
-          cpu = 'aarch64'
-          endian = 'little'
-
-          [properties]
-          pkg_config_libdir = '/clangarm64/lib/pkgconfig'
-          EOF
-          cat cross-aarch64-w64-mingw32.ini
-
       - name: Fetch QEMU source
         run: |
           set -e
@@ -145,11 +121,20 @@ jobs:
       - name: Configure (guest-agent only)
         working-directory: qemu
         env:
+          # configure defaults PKG_CONFIG to "${cross_prefix}pkg-config"
+          # (aarch64-w64-mingw32-pkg-config), which llvm-mingw doesn't ship -
+          # use the bare system pkg-config, scoped to the extracted MSYS2
+          # packages via PKG_CONFIG_LIBDIR/SYSROOT_DIR instead.
+          PKG_CONFIG: pkg-config
           PKG_CONFIG_LIBDIR: /clangarm64/lib/pkgconfig
           PKG_CONFIG_SYSROOT_DIR: /clangarm64
         run: |
           set -e
           export PATH="$HOME/.local/bin:$PATH"
+          # --cross-prefix builds its own internal meson cross-file from the
+          # detected aarch64-w64-mingw32-* tools; no separate --cross-file
+          # needed. --meson= isn't accepted by current configure - it always
+          # bootstraps its own meson into a venv.
           ./configure \
             --cross-prefix=aarch64-w64-mingw32- \
             --disable-system \
@@ -157,8 +142,7 @@ jobs:
             --disable-tools \
             --disable-docs \
             --disable-guest-agent-msi \
-            -Dqga_vss=disabled \
-            --meson=meson
+            -Dqga_vss=disabled
 
       - name: Build qemu-ga.exe
         working-directory: qemu
