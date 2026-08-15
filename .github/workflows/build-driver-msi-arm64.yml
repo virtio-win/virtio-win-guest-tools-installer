@@ -11,6 +11,19 @@ name: Build virtio-win-gt-arm64.msi
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'MSI version (e.g. 0.1.0)'
+        type: string
+        required: false
+        default: '0.0.1'
+  workflow_call:
+    inputs:
+      version:
+        description: 'MSI version (e.g. 0.1.0)'
+        type: string
+        required: false
+        default: '0.0.1'
   push:
     paths:
       - 'virtio-win-drivers-installer/**'
@@ -27,7 +40,7 @@ env:
   WIX_DIR: ${{ github.workspace }}\wix314
   DRIVERS_DIR: ${{ github.workspace }}\virtio-win-arm64-drivers
   INSTALLER_DIR: ${{ github.workspace }}\virtio-win-drivers-installer
-  MSI_VERSION: '0.0.1'
+  MSI_VERSION: ${{ inputs.version || '0.0.1' }}
 
 jobs:
   build:

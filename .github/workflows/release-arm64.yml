@@ -1,0 +1,85 @@
+name: Release arm64 packages
+
+# Manual only - creating a public release is a visible, one-way action, not
+# something to fire on every push. Builds both arm64 MSIs (reusing the
+# existing build-driver-msi-arm64.yml / build-qemu-ga-arm64.yml workflows via
+# workflow_call rather than duplicating their steps), generates SHA256
+# checksums, and publishes both plus the checksum file as a prerelease -
+# this is experimental arm64 support, untested on real hardware, not
+# something to present as a finished release.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 0.1.0)'
+        type: string
+        required: true
+      tag:
+        description: 'Git tag for this release (e.g. arm64-preview-0.1.0)'
+        type: string
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  driver-msi:
+    uses: ./.github/workflows/build-driver-msi-arm64.yml
+    with:
+      version: ${{ inputs.version }}
+
+  qemu-ga-msi:
+    uses: ./.github/workflows/build-qemu-ga-arm64.yml
+    with:
+      version: ${{ inputs.version }}
+
+  publish:
+    needs: [driver-msi, qemu-ga-msi]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: virtio-win-gt-arm64-msi
+          path: release
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: qemu-ga-arm64-msi
+          path: release
+
+      - name: Generate checksums
+        working-directory: release
+        run: |
+          set -e
+          ls -la
+          sha256sum *.msi | tee SHA256SUMS.txt
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          gh release create "${{ inputs.tag }}" \
+            release/*.msi release/SHA256SUMS.txt \
+            --repo "${{ github.repository }}" \
+            --title "arm64 preview ${{ inputs.version }}" \
+            --prerelease \
+            --notes "$(cat <<'EOF'
+          Experimental arm64 (aarch64) build - not upstream, not reviewed, not tested on real hardware yet.
+
+          **virtio-win-gt-arm64.msi**: drivers built and packaged for Balloon, NetKVM,
+          viogpudo, vioinput, viomem, viorng, vioscsi, vioserial, viostor. pvpanic is
+          present in the WiX packaging but its component could not be validated in CI
+          (the test driver source used has no arm64 pvpanic files in this particular
+          release) - treat pvpanic as unverified until tested. fwcfg, qemupciserial and
+          viofs are not included: no arm64 driver build exists upstream yet for those.
+
+          **qemu-ga-arm64.msi**: qemu-ga cross-compiled for aarch64-w64-mingw32 via
+          llvm-mingw. VSS (application-consistent snapshot) support is disabled in this
+          build - a real feature gap versus the x64/x86 qemu-ga packages, not just a
+          test shortcut.
+
+          Verify SHA256SUMS.txt against the checksums below before installing.
+          EOF
+          )"

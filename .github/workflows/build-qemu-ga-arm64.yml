@@ -13,6 +13,19 @@ name: Cross-compile qemu-ga for arm64 Windows
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'MSI version (e.g. 0.1.0)'
+        type: string
+        required: false
+        default: '0.0.1'
+  workflow_call:
+    inputs:
+      version:
+        description: 'MSI version (e.g. 0.1.0)'
+        type: string
+        required: false
+        default: '0.0.1'
   push:
     paths:
       - '.github/workflows/build-qemu-ga-arm64.yml'
@@ -229,7 +242,7 @@ jobs:
     runs-on: windows-latest
     env:
       WIX_DIR: ${{ github.workspace }}\wix314
-      QEMU_GA_VERSION: '0.0.1'
+      QEMU_GA_VERSION: ${{ inputs.version || '0.0.1' }}
       QEMU_GA_MANUFACTURER: 'Red Hat, Inc.'
       QEMU_GA_DISTRO: 'Fedora'
     steps:
