@@ -64,10 +64,13 @@
              <MsiPackage SourceFile="@@QEMU_GA_86_MSI_PATH@@"
                 InstallCondition="NOT VersionNT64"
                 DisplayName="qemu-guest-agent"/>
-             <!-- TODO(Phase 3/4): no qemu-guest-agent arm64 MSI exists yet (needs a native
-                  aarch64-w64-mingw32 build); spice has no arm64 build upstream at all (unverified -
-                  worth confirming with the SPICE project). Until qemu-ga arm64 lands, arm64 guests
-                  get only the virtio-win-drivers package from this bundle. -->
+             <MsiPackage SourceFile="@@QEMU_GA_ARM64_MSI_PATH@@"
+                InstallCondition="VersionNT64 AND ProcessorArchitecture = &quot;ARM64&quot;"
+                DisplayName="qemu-guest-agent"/>
+             <!-- spice has no arm64 build upstream at all (unverified - worth confirming
+                  with the SPICE project). arm64 guests get virtio-win-drivers and
+                  qemu-guest-agent from this bundle, but no spice packages, until/unless
+                  that changes. -->
 		</Chain>
 	</Bundle>
 </Wix>
