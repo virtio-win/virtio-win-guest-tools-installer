@@ -124,8 +124,11 @@ jobs:
           $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" |
             Sort-Object FullName -Descending | Select-Object -First 1 -ExpandProperty FullName
           Write-Host "Using signtool: $signtool"
-          $catFiles = Get-ChildItem -Recurse -Include "pvpanic.cat"
-          $sysFiles = Get-ChildItem -Recurse -Include "pvpanic.sys"
+          # @(...) forces array context - Get-ChildItem returns a bare
+          # FileInfo (not a 1-element array) when there's exactly one match,
+          # and FileInfo + FileInfo isn't a valid operation.
+          $catFiles = @(Get-ChildItem -Recurse -Include "pvpanic.cat")
+          $sysFiles = @(Get-ChildItem -Recurse -Include "pvpanic.sys")
           foreach ($f in ($catFiles + $sysFiles)) {
             & $signtool sign /v /fd SHA256 /a /s My /n "virtio-win-guest-tools-installer arm64 test build (NOT for production)" "$($f.FullName)"
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
