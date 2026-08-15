@@ -1,0 +1,174 @@
+name: Cross-compile qemu-ga for arm64 Windows
+
+# Builds qemu-ga.exe for aarch64-w64-mingw32 on free ubuntu-latest - no native
+# ARM64 host needed at all, since this is a genuine cross-compile (unlike
+# MSYS2's CLANGARM64 environment, whose clang.exe only runs on real ARM64
+# Windows and would need the paid windows-11-arm runner).
+#
+# Toolchain: llvm-mingw (portable clang/lld cross-compiler, runs on any x86_64
+# Linux host). qemu-ga's only real external dependency is glib2; rather than
+# build glib2 (and its own dependency chain) from source, this extracts
+# MSYS2's prebuilt CLANGARM64 glib2 package and its transitive dependencies -
+# just unpacking files, no ARM64 code ever executes on the runner.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build-qemu-ga-arm64.yml'
+  pull_request:
+    paths:
+      - '.github/workflows/build-qemu-ga-arm64.yml'
+
+env:
+  LLVM_MINGW_VERSION: '20260616'
+  QEMU_REF: 'master'
+  SYSROOT: ${{ github.workspace }}/sysroot
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install build tools
+        run: |
+          set -e
+          sudo apt-get update
+          sudo apt-get install -y ninja-build python3-pip zstd
+          pip install --user meson
+
+      - name: Fetch llvm-mingw
+        run: |
+          set -e
+          curl -fsSL -o llvm-mingw.tar.xz \
+            "https://github.com/mstorsjo/llvm-mingw/releases/download/${LLVM_MINGW_VERSION}/llvm-mingw-${LLVM_MINGW_VERSION}-ucrt-ubuntu-22.04-x86_64.tar.xz"
+          mkdir -p "$HOME/llvm-mingw"
+          tar -xJf llvm-mingw.tar.xz -C "$HOME/llvm-mingw" --strip-components=1
+          echo "$HOME/llvm-mingw/bin" >> "$GITHUB_PATH"
+
+      - name: Resolve and fetch glib2's arm64 dependency closure from MSYS2
+        run: |
+          set -e
+          mkdir -p msys2db && cd msys2db
+          curl -fsSL -o clangarm64.db "https://mirror.msys2.org/mingw/clangarm64/clangarm64.db"
+          tar -I zstd -xf clangarm64.db
+
+          cat > resolve.py << 'PYEOF'
+          import os, re, sys
+
+          PREFIX = "mingw-w64-clang-aarch64-"
+          # python/python-packaging are only needed for glib2's dev-tool scripts
+          # (gdbus-codegen etc.), not for compiling/linking against the library.
+          SKIP = {PREFIX + "python", PREFIX + "python-packaging"}
+
+          def parse_desc(pkgdir):
+              with open(os.path.join(pkgdir, "desc")) as f:
+                  content = f.read()
+              fields = {}
+              parts = re.split(r'%([A-Z]+)%\n', content)[1:]
+              for i in range(0, len(parts), 2):
+                  fields[parts[i]] = [l for l in parts[i + 1].strip().split('\n') if l]
+              return fields
+
+          name_to_dir = {}
+          for d in os.listdir('.'):
+              if not os.path.isdir(d):
+                  continue
+              fields = parse_desc(d)
+              for n in fields.get('NAME', []):
+                  name_to_dir[n] = d
+
+          def strip_version(dep):
+              return re.split(r'[<>=]', dep)[0]
+
+          resolved = set()
+
+          def resolve(pkgname):
+              if pkgname in resolved or pkgname in SKIP:
+                  return
+              if pkgname not in name_to_dir:
+                  print(f"WARN: {pkgname} not found in db", file=sys.stderr)
+                  return
+              resolved.add(pkgname)
+              fields = parse_desc(name_to_dir[pkgname])
+              for dep in fields.get('DEPENDS', []):
+                  dn = strip_version(dep)
+                  if dn.startswith(PREFIX):
+                      resolve(dn)
+
+          resolve(PREFIX + "glib2")
+
+          for n in sorted(resolved):
+              fields = parse_desc(name_to_dir[n])
+              print(fields['FILENAME'][0])
+          PYEOF
+          python3 resolve.py > ../packages.txt
+          cat ../packages.txt
+          cd ..
+
+          sudo mkdir -p /clangarm64
+          sudo chown "$USER" /clangarm64
+          while read -r pkg; do
+            curl -fsSL -o "/tmp/$pkg" "https://mirror.msys2.org/mingw/clangarm64/$pkg"
+            tar -I zstd -xf "/tmp/$pkg" -C /clangarm64
+          done < packages.txt
+          find /clangarm64 -name '*.pc' | xargs grep -l '^prefix=' | head -5
+
+      - name: Write meson cross-file
+        run: |
+          set -e
+          mkdir -p "${{ github.workspace }}"
+          cat > cross-aarch64-w64-mingw32.ini << EOF
+          [binaries]
+          c = 'aarch64-w64-mingw32-gcc'
+          cpp = 'aarch64-w64-mingw32-g++'
+          ar = 'aarch64-w64-mingw32-ar'
+          strip = 'aarch64-w64-mingw32-strip'
+          windres = 'aarch64-w64-mingw32-windres'
+          pkg-config = 'pkg-config'
+
+          [host_machine]
+          system = 'windows'
+          cpu_family = 'aarch64'
+          cpu = 'aarch64'
+          endian = 'little'
+
+          [properties]
+          pkg_config_libdir = '/clangarm64/lib/pkgconfig'
+          EOF
+          cat cross-aarch64-w64-mingw32.ini
+
+      - name: Fetch QEMU source
+        run: |
+          set -e
+          git clone --depth 1 --branch "${{ env.QEMU_REF }}" https://gitlab.com/qemu-project/qemu.git
+
+      - name: Configure (guest-agent only)
+        working-directory: qemu
+        env:
+          PKG_CONFIG_LIBDIR: /clangarm64/lib/pkgconfig
+          PKG_CONFIG_SYSROOT_DIR: /clangarm64
+        run: |
+          set -e
+          export PATH="$HOME/.local/bin:$PATH"
+          ./configure \
+            --cross-prefix=aarch64-w64-mingw32- \
+            --disable-system \
+            --disable-user \
+            --disable-tools \
+            --disable-docs \
+            --disable-guest-agent-msi \
+            -Dqga_vss=disabled \
+            --meson=meson
+
+      - name: Build qemu-ga.exe
+        working-directory: qemu
+        run: |
+          set -e
+          ninja -C build qga/qemu-ga.exe
+          file build/qga/qemu-ga.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: qemu-ga-arm64
+          path: qemu/build/qga/qemu-ga.exe
+          if-no-files-found: error
