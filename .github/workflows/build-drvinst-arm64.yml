@@ -46,6 +46,20 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
 
+      - name: Detect installed Windows SDK version
+        id: sdk
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $sdk = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\Include" |
+            Sort-Object Name -Descending | Select-Object -First 1
+          if (-not $sdk) {
+            Write-Error "No Windows 10/11 SDK found under Windows Kits\10\Include"
+            exit 1
+          }
+          Write-Host "Using Windows SDK $($sdk.Name)"
+          "version=$($sdk.Name)" >> $env:GITHUB_OUTPUT
+
       - name: Build DrvInstCA.dll (native CA, arm64)
         shell: pwsh
         run: |
@@ -54,6 +68,7 @@ jobs:
             /p:Platform=ARM64 `
             /p:WIX="${{ env.WIX_DIR }}\" `
             /p:WixPlatformToolset=VS2017 `
+            /p:WindowsTargetPlatformVersion=${{ steps.sdk.outputs.version }} `
             /m
 
       - name: Build DrvInstLib.wixlib (arm64)
