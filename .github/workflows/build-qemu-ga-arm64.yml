@@ -105,17 +105,18 @@ jobs:
           cat ../packages.txt
           cd ..
 
-          sudo mkdir -p /clangarm64
-          sudo chown "$USER" /clangarm64
+          # Extract into a user-owned dir rather than straight to / - some
+          # packages also ship files outside clangarm64/ (e.g. licenses under
+          # usr/share/...), which need root to write at real /. A single
+          # symlink at the end gets /clangarm64 pointing at the right place
+          # (matching what these packages' .pc files hardcode as their
+          # prefix=) without needing root for the extraction itself.
+          mkdir -p "$HOME/msys2root"
           while read -r pkg; do
             curl -fsSL -o "/tmp/$pkg" "https://mirror.msys2.org/mingw/clangarm64/$pkg"
-            # Package tarballs already contain the clangarm64/ prefix
-            # internally (verified: clangarm64/bin/..., clangarm64/lib/...) -
-            # extract at / so it lands at /clangarm64/..., not
-            # /clangarm64/clangarm64/... from double-prefixing.
-            tar -I zstd -xf "/tmp/$pkg" -C / \
-              --exclude='.BUILDINFO' --exclude='.MTREE' --exclude='.PKGINFO'
+            tar -I zstd -xf "/tmp/$pkg" -C "$HOME/msys2root" clangarm64/
           done < packages.txt
+          sudo ln -s "$HOME/msys2root/clangarm64" /clangarm64
           test -f /clangarm64/lib/pkgconfig/glib-2.0.pc || { echo "glib-2.0.pc missing after extraction"; exit 1; }
 
       - name: Fetch QEMU source
