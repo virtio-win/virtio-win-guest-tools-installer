@@ -33,8 +33,17 @@ jobs:
         run: |
           set -e
           sudo apt-get update
-          sudo apt-get install -y ninja-build python3-pip zstd
+          sudo apt-get install -y ninja-build python3-pip zstd binutils-mingw-w64-x86-64
           pip install --user meson
+          # qga/meson.build unconditionally requires 'windmc' (or 'mc') to
+          # compile Windows Event Log message-table resources - it's pure
+          # text/binary table generation, not machine code, so it isn't
+          # actually architecture-specific despite the x86_64 prefix.
+          # llvm-mingw doesn't ship an equivalent at all; meson's
+          # find_program('windmc', 'mc') looks for that literal name on
+          # PATH, not a cross-prefixed one, so exposing Debian's copy under
+          # a plain name is enough.
+          sudo ln -s /usr/bin/x86_64-w64-mingw32-windmc /usr/local/bin/windmc
 
       - name: Fetch llvm-mingw
         run: |
