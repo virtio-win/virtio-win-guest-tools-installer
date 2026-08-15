@@ -1,0 +1,99 @@
+name: Build pvpanic for arm64 Windows
+
+# Builds the pvpanic driver from source (virtio-win/kvm-guest-drivers-windows)
+# instead of trying to find a pre-built ARM64 binary - none is reachable from
+# any source checked (see build-driver-msi-arm64.yml's history for what was
+# tried). pvpanic.vcxproj already has Win10/Win11 Release|ARM64
+# configurations upstream, using the WindowsKernelModeDriver10.0 (WDK)
+# platform toolset, which windows-latest already has installed - no extra
+# toolchain setup needed, unlike qemu-ga or the DrvInst CA DLL.
+#
+# Signing: kernel-mode drivers won't load on 64-bit Windows without a valid
+# signature. Real WHQL/attestation signing needs a paid Microsoft Partner
+# Center account and hardware submission - out of reach here. This signs
+# with a throwaway self-signed certificate instead, which requires
+# `bcdedit /set testsigning on` + a reboot on the target machine to load -
+# standard practice for testing an unsigned/dev-built driver, not something
+# to rely on for a real end-user release.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build-pvpanic-arm64.yml'
+
+env:
+  DRIVER_REF: 'master'
+  CONFIGURATION: 'Win11 Release'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Fetch pvpanic driver source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          git clone --depth 1 --branch "${{ env.DRIVER_REF }}" --filter=blob:none --sparse `
+            https://github.com/virtio-win/kvm-guest-drivers-windows.git driver-src
+          Push-Location driver-src
+          git sparse-checkout set pvpanic
+          Pop-Location
+          Get-ChildItem -Recurse driver-src/pvpanic
+
+      - name: Build pvpanic.sln (arm64)
+        shell: pwsh
+        working-directory: driver-src/pvpanic
+        run: |
+          $ErrorActionPreference = "Stop"
+          $msbuild = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
+            -latest -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
+          Write-Host "Using MSBuild: $msbuild"
+          & $msbuild pvpanic.sln /p:Configuration="${{ env.CONFIGURATION }}" /p:Platform=ARM64 /m
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Locate build output
+        id: locate
+        shell: pwsh
+        working-directory: driver-src/pvpanic
+        run: |
+          $ErrorActionPreference = "Stop"
+          Get-ChildItem -Recurse -Include "pvpanic.sys","pvpanic.inf","pvpanic.cat" |
+            ForEach-Object { Write-Host $_.FullName }
+
+      - name: Self-sign for test-mode loading
+        shell: pwsh
+        working-directory: driver-src/pvpanic
+        run: |
+          $ErrorActionPreference = "Stop"
+          $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=virtio-win-guest-tools-installer arm64 test build (NOT for production)" `
+            -CertStoreLocation Cert:\CurrentUser\My -KeyUsage DigitalSignature -FriendlyName "pvpanic-arm64-test-signing"
+          $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" |
+            Sort-Object FullName -Descending | Select-Object -First 1 -ExpandProperty FullName
+          Write-Host "Using signtool: $signtool"
+          $catFiles = Get-ChildItem -Recurse -Include "pvpanic.cat"
+          $sysFiles = Get-ChildItem -Recurse -Include "pvpanic.sys"
+          foreach ($f in ($catFiles + $sysFiles)) {
+            & $signtool sign /v /fd SHA256 /a /s My /n "virtio-win-guest-tools-installer arm64 test build (NOT for production)" "$($f.FullName)"
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          # Export the test cert too - the target machine needs it in its own
+          # Trusted Root/Publisher stores to accept these signatures, on top
+          # of testsigning mode being enabled.
+          Export-Certificate -Cert $cert -FilePath pvpanic-test-cert.cer
+
+      - name: Collect artifacts
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          New-Item -ItemType Directory -Force -Path package | Out-Null
+          Get-ChildItem -Recurse driver-src/pvpanic -Include "pvpanic.sys","pvpanic.inf","pvpanic.cat" |
+            Copy-Item -Destination package
+          Copy-Item driver-src/pvpanic/pvpanic-test-cert.cer package/
+          Get-ChildItem package
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pvpanic-arm64
+          path: package/
+          if-no-files-found: error
