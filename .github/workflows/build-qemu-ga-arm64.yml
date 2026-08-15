@@ -141,6 +141,13 @@ jobs:
           # detected aarch64-w64-mingw32-* tools; no separate --cross-file
           # needed. --meson= isn't accepted by current configure - it always
           # bootstraps its own meson into a venv.
+          #
+          # guest_agent defaults to the 'auto' feature type, which top-level
+          # meson.build disables via disable_auto_if(not have_system and not
+          # have_tools) - since both are disabled here, 'auto' silently
+          # skipped it with no error at all (that's how meson 'auto' features
+          # behave: silent skip, not a failure). Force it on explicitly so
+          # any real problem fails loudly instead.
           ./configure \
             --cross-prefix=aarch64-w64-mingw32- \
             --disable-system \
@@ -148,6 +155,7 @@ jobs:
             --disable-tools \
             --disable-docs \
             --disable-guest-agent-msi \
+            -Dguest_agent=enabled \
             -Dqga_vss=disabled
 
       - name: Build qemu-ga.exe
