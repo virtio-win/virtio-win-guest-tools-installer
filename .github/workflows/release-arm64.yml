@@ -70,15 +70,17 @@ jobs:
 
           **virtio-win-gt-arm64.msi**: drivers built and packaged for Balloon, NetKVM,
           viogpudo, vioinput, viomem, viorng, vioscsi, vioserial, viostor. pvpanic is
-          present in the WiX packaging but its component could not be validated in CI
-          (the test driver source used has no arm64 pvpanic files in this particular
-          release) - treat pvpanic as unverified until tested. fwcfg, qemupciserial and
-          viofs are not included: no arm64 driver build exists upstream yet for those.
+          NOT included in this build: it has real upstream arm64 driver support, but no
+          accessible source of the actual arm64 driver files could be found (checked
+          fedorapeople.org - blocked by anti-bot protection -, every qemus/virtiso-arm
+          release, Fedora's Koji build system, and kvm-guest-drivers-windows' own
+          releases/CI - none carry it). Will be added once a real source turns up.
+          fwcfg, qemupciserial and viofs are also not included: no arm64 driver build
+          exists upstream yet for those at all.
 
           **qemu-ga-arm64.msi**: qemu-ga cross-compiled for aarch64-w64-mingw32 via
-          llvm-mingw. VSS (application-consistent snapshot) support is disabled in this
-          build - a real feature gap versus the x64/x86 qemu-ga packages, not just a
-          test shortcut.
+          llvm-mingw. VSS (application-consistent snapshot) support is enabled and
+          included (qga-vss.dll + its COM registration).
 
           Verify SHA256SUMS.txt against the checksums below before installing.
           EOF
