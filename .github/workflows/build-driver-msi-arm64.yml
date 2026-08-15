@@ -1,0 +1,114 @@
+name: Build virtio-win-gt-arm64.msi
+
+# End-to-end test of the arm64 WiX driver installer path, running natively on
+# windows-latest - no Wine needed at all, unlike the Linux Makefile, since
+# candle.exe/light.exe are ordinary Windows tools. Driver source content comes
+# from qemus/virtiso-arm's GitHub Release tarball (a stripped-down repack of
+# the official Fedora virtio-win ISO, ARM64-only) rather than the official
+# fedorapeople.org mirror, which is behind Anubis anti-bot protection and
+# blocks scripted fetches. Requires Libraries/arm64/* to already be committed
+# (see build-drvinst-arm64.yml).
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'virtio-win-drivers-installer/**'
+      - 'Libraries/arm64/**'
+      - '.github/workflows/build-driver-msi-arm64.yml'
+  pull_request:
+    paths:
+      - 'virtio-win-drivers-installer/**'
+      - 'Libraries/arm64/**'
+      - '.github/workflows/build-driver-msi-arm64.yml'
+
+env:
+  WIX_VERSION: '3.14.1'
+  WIX_DIR: ${{ github.workspace }}\wix314
+  DRIVERS_DIR: ${{ github.workspace }}\virtio-win-arm64-drivers
+  INSTALLER_DIR: ${{ github.workspace }}\virtio-win-drivers-installer
+  MSI_VERSION: '0.0.1'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch portable WiX Toolset ${{ env.WIX_VERSION }} binaries
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Invoke-WebRequest `
+            -Uri "https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip" `
+            -OutFile "$env:RUNNER_TEMP\wix314-binaries.zip"
+          Expand-Archive -Path "$env:RUNNER_TEMP\wix314-binaries.zip" -DestinationPath "${{ env.WIX_DIR }}"
+
+      - name: Fetch arm64 virtio-win driver content
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          # fedorapeople.org (the official mirror) is behind Anubis anti-bot
+          # protection and blocks scripted fetches - use qemus/virtiso-arm's
+          # GitHub Release instead, a repack of the same official driver tree
+          # stripped to arm64 only.
+          Invoke-WebRequest `
+            -Uri "https://github.com/qemus/virtiso-arm/releases/download/v0.1.285-1/virtio-win-0.1.285.tar.xz" `
+            -OutFile "$env:RUNNER_TEMP\virtio-win-arm64.tar.xz"
+          New-Item -ItemType Directory -Force -Path "${{ env.DRIVERS_DIR }}" | Out-Null
+          tar -xf "$env:RUNNER_TEMP\virtio-win-arm64.tar.xz" -C "${{ env.DRIVERS_DIR }}"
+          Get-ChildItem "${{ env.DRIVERS_DIR }}"
+
+      - name: Generate constants.wxi
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          (Get-Content "${{ env.INSTALLER_DIR }}\constants.wxi.in") `
+            -replace '@@VERSION@@', "${{ env.MSI_VERSION }}" `
+            -replace '@@VIRTIO-WIN-PATH@@', "${{ env.DRIVERS_DIR }}" |
+            Set-Content "${{ env.INSTALLER_DIR }}\constants.wxi"
+
+      - name: Compile (candle.exe, arch arm64)
+        shell: pwsh
+        working-directory: virtio-win-drivers-installer
+        run: |
+          $ErrorActionPreference = "Stop"
+          & "${{ env.WIX_DIR }}\candle.exe" `
+            *.wxs `
+            Drivers\Balloon\*.wxs `
+            Drivers\NetKVM\*.wxs `
+            Drivers\pvpanic\*.wxs `
+            Drivers\vioinput\*.wxs `
+            Drivers\viorng\*.wxs `
+            Drivers\vioscsi\*.wxs `
+            Drivers\vioserial\*.wxs `
+            Drivers\viostor\*.wxs `
+            Drivers\viogpudo\*.wxs `
+            Drivers\viomem\*.wxs `
+            -out wixobjarm64\ `
+            -nologo -pedantic -v -arch arm64 -fips `
+            -ext "${{ env.WIX_DIR }}\WixUtilExtension.dll" `
+            -ext "${{ env.WIX_DIR }}\WixUIExtension.dll" `
+            -ext "${{ github.workspace }}\Libraries\arm64\DrvInstExt.dll"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Link (light.exe)
+        shell: pwsh
+        working-directory: virtio-win-drivers-installer
+        run: |
+          $ErrorActionPreference = "Stop"
+          & "${{ env.WIX_DIR }}\light.exe" `
+            "wixobjarm64\*.wixobj" `
+            -out virtio-win-gt-arm64.msi `
+            -nologo -pedantic -v `
+            -ext "${{ env.WIX_DIR }}\WixUtilExtension.dll" `
+            -ext "${{ env.WIX_DIR }}\WixUIExtension.dll" `
+            -ext "${{ github.workspace }}\Libraries\arm64\DrvInstExt.dll" `
+            -cultures:en-us
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: virtio-win-gt-arm64-msi
+          path: virtio-win-drivers-installer/virtio-win-gt-arm64.msi
+          if-no-files-found: error
