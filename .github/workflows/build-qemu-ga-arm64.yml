@@ -48,7 +48,7 @@ jobs:
         run: |
           set -e
           sudo apt-get update
-          sudo apt-get install -y ninja-build python3-pip zstd binutils-mingw-w64-x86-64
+          sudo apt-get install -y ninja-build python3-pip zstd binutils-mingw-w64-x86-64 mingw-w64-tools
           pip install --user meson
           # qga/meson.build unconditionally requires 'windmc' (or 'mc') to
           # compile Windows Event Log message-table resources - it's pure
@@ -61,6 +61,12 @@ jobs:
           # found"), so that's the name it actually needs on PATH.
           sudo ln -s /usr/bin/x86_64-w64-mingw32-windmc /usr/local/bin/aarch64-w64-mingw32-windmc
           sudo ln -s /usr/bin/x86_64-w64-mingw32-windmc /usr/local/bin/windmc
+          # Same story for widl (qga/vss-win32/meson.build needs it to
+          # compile qga-vss.idl into a type library) - it's IDL/COM
+          # metadata generation, not machine code, so architecture-agnostic
+          # despite the x86_64 prefix. mingw-w64-tools ships it.
+          sudo ln -s /usr/bin/x86_64-w64-mingw32-widl /usr/local/bin/aarch64-w64-mingw32-widl
+          sudo ln -s /usr/bin/x86_64-w64-mingw32-widl /usr/local/bin/widl
 
       - name: Fetch llvm-mingw
         run: |
@@ -174,6 +180,14 @@ jobs:
           # skipped it with no error at all (that's how meson 'auto' features
           # behave: silent skip, not a failure). Force it on explicitly so
           # any real problem fails loudly instead.
+          # qga_vss: needs a C++ cross-compiler (llvm-mingw provides
+          # aarch64-w64-mingw32-g++), the VSS SDK headers (present in
+          # llvm-mingw's bundled mingw-w64 headers - checked directly:
+          # vss.h, vswriter.h, vsbackup.h all exist) and midl or widl
+          # (provided above). Force 'enabled' rather than leave 'auto', same
+          # reasoning as guest_agent: auto silently skips on any unmet
+          # requirement instead of erroring, which would hide a real
+          # problem instead of surfacing it.
           ./configure \
             --cross-prefix=aarch64-w64-mingw32- \
             --disable-system \
@@ -182,7 +196,7 @@ jobs:
             --disable-docs \
             --disable-guest-agent-msi \
             -Dguest_agent=enabled \
-            -Dqga_vss=disabled
+            -Dqga_vss=enabled
 
       - name: Build qemu-ga.exe
         working-directory: qemu
@@ -196,6 +210,15 @@ jobs:
           find build -iname 'qemu-ga.exe'
           find build -iname 'qemu-ga.exe' -exec cp {} qemu-ga.exe \;
           file qemu-ga.exe
+          find build -iname 'qga-vss.dll' -o -iname 'qga-vss.tlb'
+          find build -iname 'qga-vss.dll' -exec cp {} qga-vss.dll \;
+          find build -iname 'qga-vss.tlb' -exec cp {} qga-vss.tlb \;
+          file qga-vss.dll
+          # Don't yet know qga-vss.dll's own runtime DLL closure (clang's
+          # C++ runtime for mingw targets may differ from qemu-ga.exe's,
+          # which is plain C) - dump its imports so the next step can be
+          # based on what's actually there instead of another guess.
+          strings qga-vss.dll | grep -i '\.dll$' | sort -u
 
       - name: Collect runtime DLLs
         run: |
@@ -214,6 +237,8 @@ jobs:
           # build-time error here.
           mkdir -p package
           cp qemu/qemu-ga.exe package/
+          cp qemu/qga-vss.dll package/
+          cp qemu/qga-vss.tlb package/
           for dll in \
             libglib-2.0-0.dll \
             libpcre2-8-0.dll \
