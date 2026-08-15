@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-<?if $(sys.BUILDARCH) = "x64" ?>
+<?if $(sys.BUILDARCH) = "x64" OR $(sys.BUILDARCH) = "arm64" ?>
     <?define Win64 = "yes" ?>
     <?define WinUninstallRegLocation = Wow6432Node\ ?>
 <?else ?>
@@ -29,8 +29,15 @@
     <!-- Launch Condition to disable launch on arch x64 -->
     <Fragment>
         <Property Id="x64_Validation" Value="1" />
-        <Condition Message= "Detected x86 Windows version, please use a x86 installer">
-                <![CDATA[VersionNT = VersionNT64 AND "$(sys.BUILDARCH)" = "x64"]]>
+        <Condition Message= "Detected x86 or arm64 Windows version, please use the matching installer">
+                <![CDATA[VersionNT = VersionNT64 AND "$(sys.BUILDARCH)" = "x64" AND REGISTRY_PROCESSOR_ARCHITECTURE <> "ARM64"]]>
+        </Condition>
+    </Fragment>
+    <!-- Launch Condition to disable launch on arch arm64 -->
+    <Fragment>
+        <Property Id="arm64_Validation" Value="1" />
+        <Condition Message= "Detected non-arm64 Windows version, please use the matching installer">
+                <![CDATA[VersionNT = VersionNT64 AND "$(sys.BUILDARCH)" = "arm64" AND REGISTRY_PROCESSOR_ARCHITECTURE = "ARM64"]]>
         </Condition>
     </Fragment>
     <!-- Query the ProductName registry value to detect os version -->
@@ -41,6 +48,17 @@
                 Root="HKLM"
                 Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion"
                 Name="ProductName"
+                Type="raw" />
+        </Property>
+    </Fragment>
+    <!-- Query the native processor architecture to distinguish x64 from arm64 Windows (VersionNT64 alone is true for both) -->
+    <Fragment>
+        <Property Id="Set_ProcessorArchitecture" Value="1" />
+        <Property Id="REGISTRY_PROCESSOR_ARCHITECTURE" Secure="yes">
+            <RegistrySearch Id="ProcessorArchitectureSearch"
+                Root="HKLM"
+                Key="SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
+                Name="PROCESSOR_ARCHITECTURE"
                 Type="raw" />
         </Property>
     </Fragment>
@@ -78,6 +96,8 @@
     <Fragment>
 <?if $(sys.BUILDARCH) = "x64" ?>
         <Binary Id="ConfManagementDll" SourceFile="../Libraries/x64/DrvInstCA.dll" />
+<?elseif $(sys.BUILDARCH) = "arm64" ?>
+        <Binary Id="ConfManagementDll" SourceFile="../Libraries/arm64/DrvInstCA.dll" />
 <?else ?>
         <Binary Id="ConfManagementDll" SourceFile="../Libraries/x86/DrvInstCA.dll" />
 <?endif ?>

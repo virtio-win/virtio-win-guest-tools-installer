@@ -97,6 +97,39 @@
 <?undef ISA?>
 <?undef osShort?>
 <?undef osFullName?>
+<?elseif $(sys.BUILDARCH) = "arm64" ?>
+<!-- w10arm64 -->
+<?define osFullName = "Win10arm64" ?>
+<?define osShort = "w10" ?>
+<?define ISA = "ARM64" ?>
+<?define Win64 = "yes" ?>
+<?define condition = "$(var.condition_w10arm64)" ?>
+<?define viogpudo_vgpusrv_guid = "02374F06-B727-478A-A945-76A75990EDC9"?>
+<?define viogpudo_viogpuap_guid = "B5BD141C-5BC0-487B-B214-1069843DDF87"?>
+<?include viogpudo_service_components.wxi ?>
+<?undef viogpudo_viogpuap_guid?>
+<?undef viogpudo_vgpusrv_guid?>
+<?undef condition?>
+<?undef Win64?>
+<?undef ISA?>
+<?undef osShort?>
+<?undef osFullName?>
+<!-- w11arm64 -->
+<?define osFullName = "Win11arm64" ?>
+<?define osShort = "w11" ?>
+<?define ISA = "ARM64" ?>
+<?define Win64 = "yes" ?>
+<?define condition = "$(var.condition_w11arm64)" ?>
+<?define viogpudo_vgpusrv_guid = "98D0EEE3-B4BE-4A72-8CC8-E4F568DE3120"?>
+<?define viogpudo_viogpuap_guid = "4BC9AB4C-85C7-4453-B83B-E7836C8188D4"?>
+<?include viogpudo_service_components.wxi ?>
+<?undef viogpudo_viogpuap_guid?>
+<?undef viogpudo_vgpusrv_guid?>
+<?undef condition?>
+<?undef Win64?>
+<?undef ISA?>
+<?undef osShort?>
+<?undef osFullName?>
 <?else ?>
 <!-- w10x86 -->
 <?define osFullName = "Win10x86" ?>

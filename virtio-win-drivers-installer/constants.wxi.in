@@ -6,6 +6,10 @@
       <?define UpgradeCode = "{05294E2F-7778-4E46-B2A3-CF039D5767C8}" ?>
       <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
       <?define LaunchCondition = "x64_Validation" ?>
+<?elseif $(sys.BUILDARCH) = "arm64" ?>
+      <?define UpgradeCode = "{10725300-348B-4908-B52E-4D71B15480F4}" ?>
+      <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+      <?define LaunchCondition = "arm64_Validation" ?>
 <?else ?>
       <?define UpgradeCode = "{22C8F100-2ED1-4A99-A8FC-C391F0D1D7E7}" ?>
       <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
@@ -19,4 +23,6 @@
 <?define condition_w10x86 = '(REGISTRY_PRODUCT_NAME >< "Windows 10" AND VersionNT <> VersionNT64 AND MsiNTProductType = 1)' ?>
 <?define condition_w11x64 = '(REGISTRY_PRODUCT_NAME >< "Windows 10" AND REGISTRY_CURRENT_BUILD_NUMBER >= "22000" AND VersionNT = VersionNT64 AND MsiNTProductType = 1 )' ?>
 <?define condition_2k25 = '(REGISTRY_PRODUCT_NAME >< "2025" AND MsiNTProductType > 1 )' ?>
+<?define condition_w10arm64 = '(REGISTRY_PRODUCT_NAME >< "Windows 10" AND REGISTRY_CURRENT_BUILD_NUMBER < "22000" AND VersionNT = VersionNT64 AND MsiNTProductType = 1)' ?>
+<?define condition_w11arm64 = '(REGISTRY_PRODUCT_NAME >< "Windows 10" AND REGISTRY_CURRENT_BUILD_NUMBER >= "22000" AND VersionNT = VersionNT64 AND MsiNTProductType = 1 )' ?>
 </Include>

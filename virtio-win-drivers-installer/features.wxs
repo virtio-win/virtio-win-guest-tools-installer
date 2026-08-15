@@ -15,6 +15,9 @@
                 Description='QEMU pvpanic device driver'>
                 <ComponentGroupRef Id='CMPG_pvpanic_driver' />
         </Feature>
+
+<?if $(sys.BUILDARCH) <> "arm64" ?>
+        <!-- fwcfg and qemupciserial have no ARM64 driver build upstream yet -->
         <Feature Id='FE_fwcfg_driver' Title='Fwcfg' Level='1'
                 Description='FWCfg device driver'>
                 <ComponentGroupRef Id='CMPG_fwcfg_driver' />
@@ -23,6 +26,7 @@
                 Description='QEMU PCI serial device driver'>
                 <ComponentGroupRef Id='CMPG_qemupciserial_driver' />
         </Feature>
+<?endif ?>
         <Feature Id='FE_vioinput_driver' Title='Vioinput' Level='1'
                 Description='VirtIO Input Driver'>
                 <ComponentGroupRef Id='CMPG_vioinput_driver' />
@@ -43,10 +47,13 @@
                 Description='Virtio Block driver'>
                 <ComponentGroupRef Id='CMPG_viostor_driver' />
         </Feature>
+<?if $(sys.BUILDARCH) <> "arm64" ?>
+        <!-- viofs has no ARM64 driver build upstream yet -->
         <Feature Id='FE_viofs_driver' Title='Viofs' Level='1'
                 Description='Virtio File System driver'>
                 <ComponentGroupRef Id='CMPG_viofs_driver' />
         </Feature>
+<?endif ?>
         <Feature Id='FE_viogpudo_driver' Title='Viogpudo' Level='1'
                 Description='Virtio GPU DOD driver'>
                 <ComponentGroupRef Id='CMPG_viogpudo_driver' />
@@ -55,7 +62,7 @@
                         <ComponentGroupRef Id='CMPG_viogpudo_service' />
                 </Feature>
         </Feature>
-<?if $(sys.BUILDARCH) = "x64" ?>
+<?if $(sys.BUILDARCH) = "x64" OR $(sys.BUILDARCH) = "arm64" ?>
         <Feature Id='FE_viomem_driver' Title='Viomem' Level='1'
                 Description='Virtio Memory driver'>
                 <ComponentGroupRef Id='CMPG_viomem_driver' />

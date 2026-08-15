@@ -2,7 +2,8 @@
 <?define UpgradeCode = "{418D4443-48DC-4FCF-BA11-29D5E241B7D1}" ?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
-     xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+     xmlns:bal="http://schemas.microsoft.com/wix/BalExtension"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <Bundle
     Name="Virtio-win-guest-tools"
     Version="@@VERSION@@"
@@ -16,14 +17,28 @@
         ThemeFile="Resources/Theme.xml"
         LocalizationFile="Resources/Theme.wxl"/>
     </BootstrapperApplicationRef>
+        <!-- VersionNT64 alone is true on both x64 and arm64 Windows; this distinguishes them -->
+        <util:RegistrySearch Id="ProcessorArchitecture"
+            Variable="ProcessorArchitecture"
+            Root="HKLM"
+            Key="SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
+            Value="PROCESSOR_ARCHITECTURE"
+            Result="value" />
 		<Chain>
              <MsiPackage
                 SourceFile="../virtio-win-drivers-installer/virtio-win-gt-x64.msi"
-                InstallCondition="VersionNT64"
+                InstallCondition="VersionNT64 AND ProcessorArchitecture &lt;&gt; &quot;ARM64&quot;"
                 EnableFeatureSelection="yes"
                 DisplayInternalUI="yes"
                 DisplayName="virtio-win-drivers"
                 Description="MSI to install virtio-win drivers for x64 systems"/>
+             <MsiPackage
+                SourceFile="../virtio-win-drivers-installer/virtio-win-gt-arm64.msi"
+                InstallCondition="VersionNT64 AND ProcessorArchitecture = &quot;ARM64&quot;"
+                EnableFeatureSelection="yes"
+                DisplayInternalUI="yes"
+                DisplayName="virtio-win-drivers"
+                Description="MSI to install virtio-win drivers for arm64 systems"/>
              <MsiPackage
                 SourceFile="../virtio-win-drivers-installer/virtio-win-gt-x86.msi"
                 InstallCondition="NOT VersionNT64"
@@ -32,23 +47,27 @@
                 DisplayName="virtio-win-drivers"
                 Description="MSI to install virtio-win drivers for x86 systems"/>
              <MsiPackage SourceFile="@@SPICE_DRIVER_64_MSI_PATH@@"
-                InstallCondition="VersionNT64 AND VersionNT64 > v8"
+                InstallCondition="VersionNT64 AND VersionNT64 > v8 AND ProcessorArchitecture &lt;&gt; &quot;ARM64&quot;"
                 DisplayName="spice-driver"/>
              <MsiPackage SourceFile="@@SPICE_DRIVER_86_MSI_PATH@@"
                 InstallCondition="NOT VersionNT64 AND VersionNT > v8"
                 DisplayName="spice-driver"/>
              <MsiPackage SourceFile="@@SPICE_VDAGENT_64_MSI_PATH@@"
-                InstallCondition="VersionNT64"
+                InstallCondition="VersionNT64 AND ProcessorArchitecture &lt;&gt; &quot;ARM64&quot;"
                 DisplayName="spice-guest-agent"/>
              <MsiPackage SourceFile="@@SPICE_VDAGENT_86_MSI_PATH@@"
                 InstallCondition="NOT VersionNT64"
                 DisplayName="spice-guest-agent"/>
              <MsiPackage SourceFile="@@QEMU_GA_64_MSI_PATH@@"
-                InstallCondition="VersionNT64"
+                InstallCondition="VersionNT64 AND ProcessorArchitecture &lt;&gt; &quot;ARM64&quot;"
                 DisplayName="qemu-guest-agent"/>
              <MsiPackage SourceFile="@@QEMU_GA_86_MSI_PATH@@"
                 InstallCondition="NOT VersionNT64"
                 DisplayName="qemu-guest-agent"/>
+             <!-- TODO(Phase 3/4): no qemu-guest-agent arm64 MSI exists yet (needs a native
+                  aarch64-w64-mingw32 build); spice has no arm64 build upstream at all (unverified -
+                  worth confirming with the SPICE project). Until qemu-ga arm64 lands, arm64 guests
+                  get only the virtio-win-drivers package from this bundle. -->
 		</Chain>
 	</Bundle>
 </Wix>

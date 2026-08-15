@@ -31,8 +31,10 @@ GENERATED = \
 	virtio-win-drivers-installer/constants.wxi \
 	virtio-win-drivers-installer/build_args/candle_argsx64.txt \
 	virtio-win-drivers-installer/build_args/candle_argsx86.txt \
+	virtio-win-drivers-installer/build_args/candle_argsarm64.txt \
 	virtio-win-drivers-installer/build_args/light_argsx64.txt \
 	virtio-win-drivers-installer/build_args/light_argsx86.txt \
+	virtio-win-drivers-installer/build_args/light_argsarm64.txt \
 	$(NULL)
 
 
@@ -50,7 +52,7 @@ create-installer: $(GENERATED) wix
 	pushd virtio-win-drivers-installer/ ;\
 	wine cmd.exe /c "$(WIX_BINARIES_LINK)/candle.exe @build_args/candle_args$(ARCH).txt" ;\
 	wine cmd.exe /c "$(WIX_BINARIES_LINK)/light.exe -sval @build_args/light_args$(ARCH).txt" ;\
-	rm -rf wixobjx*; \
+	rm -rf wixobjx* wixobjarm64; \
 	popd
 
 
@@ -59,8 +61,8 @@ test:
 
 bundle:
 	pushd virtio-win-installers-bundler/ ;\
-	wine cmd.exe /c "$(WIX_BINARIES_LINK)/candle.exe *.wxs -ext $(WIX_BINARIES_WIN_PATH)/WixBalExtension.dll" ;\
-	wine cmd.exe /c "$(WIX_BINARIES_LINK)/light.exe *.wixobj -o ../virtio-win-guest-tools.exe -ext $(WIX_BINARIES_WIN_PATH)/WixBalExtension.dll" ;\
+	wine cmd.exe /c "$(WIX_BINARIES_LINK)/candle.exe *.wxs -ext $(WIX_BINARIES_WIN_PATH)/WixBalExtension.dll -ext $(WIX_BINARIES_WIN_PATH)/WixUtilExtension.dll" ;\
+	wine cmd.exe /c "$(WIX_BINARIES_LINK)/light.exe *.wixobj -o ../virtio-win-guest-tools.exe -ext $(WIX_BINARIES_WIN_PATH)/WixBalExtension.dll -ext $(WIX_BINARIES_WIN_PATH)/WixUtilExtension.dll" ;\
 	popd
 
 clean:

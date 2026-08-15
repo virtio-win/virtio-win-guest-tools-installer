@@ -12,6 +12,9 @@
             <ComponentGroupRef Id='CMPG_WinServer2025_viogpudo_service' />
             <ComponentGroupRef Id='CMPG_Win10x64_viogpudo_service' />
             <ComponentGroupRef Id='CMPG_Win11x64_viogpudo_service' />
+        <?elseif $(sys.BUILDARCH) = "arm64" ?>
+            <ComponentGroupRef Id='CMPG_Win10arm64_viogpudo_service' />
+            <ComponentGroupRef Id='CMPG_Win11arm64_viogpudo_service' />
         <?else ?>
             <ComponentGroupRef Id='CMPG_Win10x86_viogpudo_service' />
         <?endif ?>

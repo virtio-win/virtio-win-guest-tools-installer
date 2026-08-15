@@ -32,6 +32,17 @@
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <LibAdditionalOptions>-bf</LibAdditionalOptions>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|arm64' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug</DefineConstants>
+    <LibAdditionalOptions>-bf</LibAdditionalOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|arm64' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <LibAdditionalOptions>-bf</LibAdditionalOptions>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="VirtWinDrvExtension.wxs" />
     <EmbeddedResource Include="en-us.wxl">

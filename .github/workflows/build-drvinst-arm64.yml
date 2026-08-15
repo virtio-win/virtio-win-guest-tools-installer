@@ -1,0 +1,100 @@
+name: Build DrvInst ARM64 libraries
+
+# Cross-compiles DrvInstCA.dll / DrvInstLib.wixlib / DrvInstExt.dll for arm64 on a
+# free windows-latest (x64) runner. No native ARM64 runner is needed: the standard
+# runner image ships the MSVC ARM64 cross-compiler
+# (Microsoft.VisualStudio.Component.VC.Tools.ARM64), which is the normal way ARM64
+# Windows binaries are built. Output is uploaded as a workflow artifact for review
+# and manual commit into Libraries/arm64/ - this workflow does not push to the repo.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'src/DrvInst/**'
+      - '.github/workflows/build-drvinst-arm64.yml'
+  pull_request:
+    paths:
+      - 'src/DrvInst/**'
+      - '.github/workflows/build-drvinst-arm64.yml'
+
+env:
+  WIX_VERSION: '3.14.1'
+  WIX_DIR: ${{ github.workspace }}\wix314
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch portable WiX Toolset ${{ env.WIX_VERSION }} binaries
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Invoke-WebRequest `
+            -Uri "https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip" `
+            -OutFile "$env:RUNNER_TEMP\wix314-binaries.zip"
+          Expand-Archive -Path "$env:RUNNER_TEMP\wix314-binaries.zip" -DestinationPath "${{ env.WIX_DIR }}"
+          # Sanity check: this is the fact the whole arm64 CA build depends on -
+          # WiX v3.11 (this repo's historical default) never shipped these; v3.14.1 does.
+          if (-not (Test-Path "${{ env.WIX_DIR }}\sdk\vs2017\lib\arm64\dutil.lib")) {
+            Write-Error "WiX SDK arm64 libs not found - wix314-binaries.zip layout may have changed."
+            exit 1
+          }
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build DrvInstCA.dll (native CA, arm64)
+        shell: pwsh
+        run: |
+          msbuild src\DrvInst\DrvInstCA\DrvInstCA.vcxproj `
+            /p:Configuration=Release `
+            /p:Platform=ARM64 `
+            /p:WIX="${{ env.WIX_DIR }}\" `
+            /p:WixPlatformToolset=VS2017 `
+            /m
+
+      - name: Build DrvInstLib.wixlib (arm64)
+        shell: pwsh
+        run: |
+          msbuild src\DrvInst\DrvInstLib\DrvInstLib.wixproj `
+            /p:Configuration=Release `
+            /p:Platform=arm64 `
+            /p:WixInstallPath="${{ env.WIX_DIR }}"
+
+      - name: Build DrvInstExt.dll (arm64)
+        shell: pwsh
+        run: |
+          msbuild src\DrvInst\DrvInstExt\DrvInstExt.csproj `
+            /p:Configuration=Release `
+            /p:Platform=arm64 `
+            /p:WixInstallPath="${{ env.WIX_DIR }}"
+
+      - name: Collect Libraries/arm64 artifacts
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          New-Item -ItemType Directory -Force -Path "Libraries\arm64" | Out-Null
+          $src = "src\DrvInst\Install\Release\arm64"
+          $files = @(
+            "DrvInstCA.dll", "DrvInstCA.lib", "DrvInstCA.exp",
+            "DrvInstLib.wixlib", "VirtWinDrvExtension.wixobj",
+            "DrvInstExt.dll"
+          )
+          foreach ($f in $files) {
+            $p = Join-Path $src $f
+            if (-not (Test-Path $p)) {
+              Write-Error "Expected build output missing: $p"
+              exit 1
+            }
+            Copy-Item $p "Libraries\arm64\" -Force
+          }
+          Get-ChildItem "Libraries\arm64"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Libraries-arm64
+          path: Libraries/arm64/
+          if-no-files-found: error

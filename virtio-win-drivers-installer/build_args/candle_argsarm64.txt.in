@@ -1,0 +1,20 @@
+@@INSTALLER_PATH@@\*.wxs
+@@INSTALLER_PATH@@\Drivers\Balloon\*.wxs
+@@INSTALLER_PATH@@\Drivers\NetKVM\*.wxs
+@@INSTALLER_PATH@@\Drivers\pvpanic\*.wxs
+@@INSTALLER_PATH@@\Drivers\vioinput\*.wxs
+@@INSTALLER_PATH@@\Drivers\viorng\*.wxs
+@@INSTALLER_PATH@@\Drivers\vioscsi\*.wxs
+@@INSTALLER_PATH@@\Drivers\vioserial\*.wxs
+@@INSTALLER_PATH@@\Drivers\viostor\*.wxs
+@@INSTALLER_PATH@@\Drivers\viogpudo\*.wxs
+@@INSTALLER_PATH@@\Drivers\viomem\*.wxs
+-out wixobjarm64\
+-nologo
+-pedantic
+-v
+-arch arm64
+-fips
+-ext "@@WIX_BIN_PATH@@WixUtilExtension.dll"
+-ext "@@WIX_BIN_PATH@@WixUIExtension.dll"
+-ext "@@WIX_LIB_PATH@@arm64\DrvInstExt.dll"
