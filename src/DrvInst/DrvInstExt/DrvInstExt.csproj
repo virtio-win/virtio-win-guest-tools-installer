@@ -9,7 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DrvInstExt</RootNamespace>
     <AssemblyName>DrvInstExt</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <!-- wix.dll (WiX 3.14.1) targets .NET 4.5; a lower-targeted project can't
+         resolve a higher-targeted reference at all (every Microsoft.Tools.
+         WindowsInstallerXml.* type in wix.dll disappears, not just a warning) -->
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <WixInstallPath Condition=" '$(WixInstallPath)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Installer XML\3.14@InstallRoot)</WixInstallPath>
