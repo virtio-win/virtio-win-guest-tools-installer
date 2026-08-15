@@ -21,6 +21,12 @@ on:
 env:
   WIX_VERSION: '3.14.1'
   WIX_DIR: ${{ github.workspace }}\wix314
+  # DrvInstCA/DrvInstLib/DrvInstExt post-build steps all copy into
+  # $(SolutionDir)Install\... expecting the sibling projects to find each
+  # other there. $(SolutionDir) is only populated by MSBuild when building
+  # via the .sln; building each project file standalone (as below) leaves
+  # it empty, so it must be passed explicitly and consistently to all three.
+  SOLUTION_DIR: ${{ github.workspace }}\src\DrvInst\
 
 jobs:
   build:
@@ -69,6 +75,7 @@ jobs:
             /p:WIX="${{ env.WIX_DIR }}\" `
             /p:WixPlatformToolset=VS2017 `
             /p:WindowsTargetPlatformVersion=${{ steps.sdk.outputs.version }} `
+            /p:SolutionDir="${{ env.SOLUTION_DIR }}" `
             /m
 
       - name: Build DrvInstLib.wixlib (arm64)
@@ -77,7 +84,8 @@ jobs:
           msbuild src\DrvInst\DrvInstLib\DrvInstLib.wixproj `
             /p:Configuration=Release `
             /p:Platform=arm64 `
-            /p:WixInstallPath="${{ env.WIX_DIR }}"
+            /p:WixInstallPath="${{ env.WIX_DIR }}" `
+            /p:SolutionDir="${{ env.SOLUTION_DIR }}"
 
       - name: Build DrvInstExt.dll (arm64)
         shell: pwsh
@@ -85,7 +93,8 @@ jobs:
           msbuild src\DrvInst\DrvInstExt\DrvInstExt.csproj `
             /p:Configuration=Release `
             /p:Platform=arm64 `
-            /p:WixInstallPath="${{ env.WIX_DIR }}"
+            /p:WixInstallPath="${{ env.WIX_DIR }}" `
+            /p:SolutionDir="${{ env.SOLUTION_DIR }}"
 
       - name: Collect Libraries/arm64 artifacts
         shell: pwsh
