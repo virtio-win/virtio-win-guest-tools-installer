@@ -21,6 +21,15 @@
     Version="$(var.QEMU_GA_VERSION)"
     Language="1033">
 
+    <Package
+      Manufacturer="$(var.QEMU_GA_MANUFACTURER)"
+      InstallerVersion="500"
+      Languages="1033"
+      Compressed="yes"
+      InstallScope="perMachine"
+      />
+    <Media Id="1" Cabinet="qemu_ga.$(var.QEMU_GA_VERSION).cab" EmbedCab="yes" />
+
     <!-- msiexec installs fine on any 64-bit Windows regardless of CPU
          family, but the service itself is a native ARM64 binary that
          can't execute on x64 hardware - block that mismatch up front with
@@ -39,14 +48,6 @@
       <![CDATA[Installed OR (VersionNT64 AND REGISTRY_PROCESSOR_ARCHITECTURE = "ARM64")]]>
     </Condition>
 
-    <Package
-      Manufacturer="$(var.QEMU_GA_MANUFACTURER)"
-      InstallerVersion="500"
-      Languages="1033"
-      Compressed="yes"
-      InstallScope="perMachine"
-      />
-    <Media Id="1" Cabinet="qemu_ga.$(var.QEMU_GA_VERSION).cab" EmbedCab="yes" />
     <Property Id="ARPNOMODIFY" Value="yes" Secure="yes" />
     <MajorUpgrade
       DowngradeErrorMessage="Error: A newer version of QEMU Guest Agent (arm64) is already installed."
