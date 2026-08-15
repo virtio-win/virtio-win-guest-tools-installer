@@ -9,7 +9,7 @@
                     <Directory Id="BALLOON" Name="Balloon"/>
                     <Directory Id="NETWORK" Name="Network"/>
                     <Directory Id="PVPANIC" Name="Pvpanic"/>
-<?if $(sys.BUILDARCH) <> "arm64" ?>
+<?if NOT ($(sys.BUILDARCH) = "arm64") ?>
                     <!-- fwcfg, qemupciserial and viofs have no ARM64 driver build upstream yet -->
                     <Directory Id="FWCFG" Name="Fwcfg"/>
                     <Directory Id="QEMUPCISERIAL" Name="Qemupciserial"/>
@@ -19,7 +19,7 @@
                     <Directory Id="VIOSCSI" Name="Vioscsi"/>
                     <Directory Id="VIOSERIAL" Name="Vioserial"/>
                     <Directory Id="VIOSTOR" Name="Viostor"/>
-<?if $(sys.BUILDARCH) <> "arm64" ?>
+<?if NOT ($(sys.BUILDARCH) = "arm64") ?>
                     <Directory Id="VIOFS" Name="VioFS"/>
 <?endif ?>
                     <Directory Id="VIOGPUDO" Name="Viogpudo"/>

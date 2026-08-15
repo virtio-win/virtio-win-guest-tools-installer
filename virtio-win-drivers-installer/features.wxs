@@ -16,7 +16,7 @@
                 <ComponentGroupRef Id='CMPG_pvpanic_driver' />
         </Feature>
 
-<?if $(sys.BUILDARCH) <> "arm64" ?>
+<?if NOT ($(sys.BUILDARCH) = "arm64") ?>
         <!-- fwcfg and qemupciserial have no ARM64 driver build upstream yet -->
         <Feature Id='FE_fwcfg_driver' Title='Fwcfg' Level='1'
                 Description='FWCfg device driver'>
@@ -47,7 +47,7 @@
                 Description='Virtio Block driver'>
                 <ComponentGroupRef Id='CMPG_viostor_driver' />
         </Feature>
-<?if $(sys.BUILDARCH) <> "arm64" ?>
+<?if NOT ($(sys.BUILDARCH) = "arm64") ?>
         <!-- viofs has no ARM64 driver build upstream yet -->
         <Feature Id='FE_viofs_driver' Title='Viofs' Level='1'
                 Description='Virtio File System driver'>
