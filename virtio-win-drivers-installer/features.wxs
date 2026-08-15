@@ -11,10 +11,18 @@
                 Description='Paravirtualized network driver provides enhanced performance over emulated devices.'>
                 <ComponentGroupRef Id='CMPG_netkvm_driver' />
         </Feature>
+<?ifndef SKIP_PVPANIC ?>
+        <!-- SKIP_PVPANIC is an opt-in escape hatch for a build whose driver source
+             happens to be missing pvpanic (used by the arm64 CI workflow, since its
+             driver source doesn't currently carry pvpanic for arm64 - see that
+             workflow for why). Not an architecture check: pvpanic has real upstream
+             arm64 driver support, so a real/complete driver source should not define
+             this and will get pvpanic packaged normally. -->
         <Feature Id='FE_pvpanic_driver' Title='Pvpanic' Level='1'
                 Description='QEMU pvpanic device driver'>
                 <ComponentGroupRef Id='CMPG_pvpanic_driver' />
         </Feature>
+<?endif ?>
 
 <?if NOT ($(sys.BUILDARCH) = "arm64") ?>
         <!-- fwcfg and qemupciserial have no ARM64 driver build upstream yet -->

@@ -8,7 +8,11 @@
                 <Directory Id="INSTALLERDIR" Name="Virtio-Win">
                     <Directory Id="BALLOON" Name="Balloon"/>
                     <Directory Id="NETWORK" Name="Network"/>
+<?ifndef SKIP_PVPANIC ?>
+                    <!-- see features.wxs for what SKIP_PVPANIC is and why it isn't an
+                         architecture check -->
                     <Directory Id="PVPANIC" Name="Pvpanic"/>
+<?endif ?>
 <?if NOT ($(sys.BUILDARCH) = "arm64") ?>
                     <!-- fwcfg, qemupciserial and viofs have no ARM64 driver build upstream yet -->
                     <Directory Id="FWCFG" Name="Fwcfg"/>
