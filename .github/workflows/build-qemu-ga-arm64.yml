@@ -113,7 +113,8 @@ jobs:
             # internally (verified: clangarm64/bin/..., clangarm64/lib/...) -
             # extract at / so it lands at /clangarm64/..., not
             # /clangarm64/clangarm64/... from double-prefixing.
-            tar -I zstd -xf "/tmp/$pkg" -C /
+            tar -I zstd -xf "/tmp/$pkg" -C / \
+              --exclude='.BUILDINFO' --exclude='.MTREE' --exclude='.PKGINFO'
           done < packages.txt
           test -f /clangarm64/lib/pkgconfig/glib-2.0.pc || { echo "glib-2.0.pc missing after extraction"; exit 1; }
 
