@@ -58,8 +58,17 @@ jobs:
           # (confirmed 10.0.26100.0 on this runner in an earlier workflow),
           # not whatever the "latest WDK" docs push for VS2026.
           Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2335869" -OutFile "$env:RUNNER_TEMP\wdksetup.exe"
-          Start-Process -FilePath "$env:RUNNER_TEMP\wdksetup.exe" -ArgumentList "/quiet", "/norestart" -Wait -PassThru |
-            Select-Object -ExpandProperty ExitCode
+          $logPath = "$env:RUNNER_TEMP\wdksetup.log"
+          $proc = Start-Process -FilePath "$env:RUNNER_TEMP\wdksetup.exe" `
+            -ArgumentList "/quiet", "/norestart", "/log", $logPath -Wait -PassThru
+          Write-Host "wdksetup.exe exit code: $($proc.ExitCode)"
+          if (Test-Path $logPath) {
+            Write-Host "--- wdksetup.log (last 100 lines) ---"
+            Get-Content $logPath -Tail 100
+          }
+          if ($proc.ExitCode -ne 0) {
+            throw "wdksetup.exe failed with exit code $($proc.ExitCode)"
+          }
 
       - name: Build pvpanic.sln (arm64)
         shell: pwsh
