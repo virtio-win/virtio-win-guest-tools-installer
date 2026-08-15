@@ -41,7 +41,7 @@
 
     <Package
       Manufacturer="$(var.QEMU_GA_MANUFACTURER)"
-      InstallerVersion="200"
+      InstallerVersion="500"
       Languages="1033"
       Compressed="yes"
       InstallScope="perMachine"
@@ -103,7 +103,7 @@
           <Component Id="registry_entries" Guid="{1EA3374E-4A89-41C2-A15F-E810FF95398C}">
             <RegistryKey Root="HKLM"
                          Key="Software\$(var.QEMU_GA_MANUFACTURER)\$(var.QEMU_GA_DISTRO)\Tools\QemuGA">
-              <RegistryValue Type="string" Name="ProductID" Value="fb0a0d66-c7fb-4e2e-a16b-c4a3bfe8d13b" />
+              <RegistryValue Type="string" Name="ProductID" Value="fb0a0d66-c7fb-4e2e-a16b-c4a3bfe8d13b" KeyPath="yes" />
               <RegistryValue Type="string" Name="Version" Value="$(var.QEMU_GA_VERSION)" />
             </RegistryKey>
             <RegistryKey Root="HKLM"
