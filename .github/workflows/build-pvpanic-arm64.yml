@@ -45,6 +45,22 @@ jobs:
           Pop-Location
           Get-ChildItem -Recurse driver-src/pvpanic
 
+      - name: Install the actual WDK (headers/libs, not just the VS extension)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          # windows-latest ships the "WDK Visual Studio Extension" (MSBuild
+          # integration/project templates only) but not the WDK itself -
+          # confirmed by the previous failure: ntddk.h not found even though
+          # the WindowsKernelModeDriver10.0 toolset was found and invoked
+          # fine. Installing build 26100.6584 specifically: the WDK's build
+          # number must match the installed Windows SDK's build number
+          # (confirmed 10.0.26100.0 on this runner in an earlier workflow),
+          # not whatever the "latest WDK" docs push for VS2026.
+          Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2335869" -OutFile "$env:RUNNER_TEMP\wdksetup.exe"
+          Start-Process -FilePath "$env:RUNNER_TEMP\wdksetup.exe" -ArgumentList "/quiet", "/norestart" -Wait -PassThru |
+            Select-Object -ExpandProperty ExitCode
+
       - name: Build pvpanic.sln (arm64)
         shell: pwsh
         working-directory: driver-src/pvpanic
