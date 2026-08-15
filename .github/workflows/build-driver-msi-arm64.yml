@@ -59,6 +59,28 @@ jobs:
           tar -xf "$env:RUNNER_TEMP\virtio-win-arm64.tar.xz" -C "${{ env.DRIVERS_DIR }}"
           Get-ChildItem "${{ env.DRIVERS_DIR }}"
 
+      - name: Stub pvpanic files (test-data gap, not a code gap)
+        shell: pwsh
+        run: |
+          # This qemus/virtiso-arm release (the current "Latest") has no arm64
+          # pvpanic files, even though upstream's filemap.py lists real arm64
+          # support for it - a gap in this third-party repack, not in our WiX
+          # code. Rather than edit production features.wxs to route around a
+          # test-fixture gap, or leave pvpanic's ComponentGroup unresolved,
+          # drop in empty placeholders so light.exe's file-existence check
+          # passes and the packaging/component wiring gets validated for
+          # pvpanic too. These are NOT real driver content - the resulting
+          # pvpanic component in this test MSI is non-functional. This step
+          # exists purely so this workflow smoke-tests all 9 arm64-capable
+          # drivers instead of 8; do not reuse this MSI as real output.
+          foreach ($os in "w10", "w11") {
+            $dir = Join-Path "${{ env.DRIVERS_DIR }}" "pvpanic\$os\ARM64"
+            New-Item -ItemType Directory -Force -Path $dir | Out-Null
+            foreach ($ext in "inf", "cat", "sys") {
+              New-Item -ItemType File -Force -Path (Join-Path $dir "pvpanic.$ext") | Out-Null
+            }
+          }
+
       - name: Generate constants.wxi
         shell: pwsh
         run: |
