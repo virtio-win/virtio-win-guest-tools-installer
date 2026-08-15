@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  MSI for the arm64 build of qemu-ga (see .github/workflows/build-qemu-ga-arm64.yml).
+
+  Not a copy of QEMU's own qga/installer/qemu-ga.wxs: that template assumes a
+  GCC-mingw toolchain (libgcc_s_seh-1.dll, libwinpthread-1.dll, libssp-0.dll,
+  iconv.dll) and offers a VSS-enabled component set. This build uses
+  llvm-mingw/clang against UCRT instead - no GCC runtime DLLs are linked at
+  all (confirmed via strings on the built exe: only libglib-2.0-0.dll plus
+  Windows-provided kernel32/advapi32/api-ms-win-crt-* imports) - and VSS is
+  disabled (-Dqga_vss=disabled, see the build workflow for why). The actual
+  bundled DLL set matches what the workflow verified exists in the MSYS2
+  CLANGARM64 packages glib2 depends on.
+-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product
+    Name="QEMU Guest Agent (arm64)"
+    Id="*"
+    UpgradeCode="{6F1B6E8B-6E27-4A9E-9C2E-2C6E7E9B7B2A}"
+    Manufacturer="$(var.QEMU_GA_MANUFACTURER)"
+    Version="$(var.QEMU_GA_VERSION)"
+    Language="1033">
+
+    <!-- msiexec installs fine on any 64-bit Windows regardless of CPU
+         family, but the service itself is a native ARM64 binary that
+         can't execute on x64 hardware - block that mismatch up front with
+         a clear message rather than a silently-broken service. Same
+         PROCESSOR_ARCHITECTURE registry technique as
+         virtio-win-drivers-installer/properties.wxs, for the same reason:
+         VersionNT64 alone is true on both x64 and arm64 Windows. -->
+    <Property Id="REGISTRY_PROCESSOR_ARCHITECTURE" Secure="yes">
+      <RegistrySearch Id="ProcessorArchitectureSearch"
+          Root="HKLM"
+          Key="SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
+          Name="PROCESSOR_ARCHITECTURE"
+          Type="raw" />
+    </Property>
+    <Condition Message="This is the arm64 build of QEMU Guest Agent; it will not run on this processor architecture.">
+      <![CDATA[Installed OR (VersionNT64 AND REGISTRY_PROCESSOR_ARCHITECTURE = "ARM64")]]>
+    </Condition>
+
+    <Package
+      Manufacturer="$(var.QEMU_GA_MANUFACTURER)"
+      InstallerVersion="200"
+      Languages="1033"
+      Compressed="yes"
+      InstallScope="perMachine"
+      />
+    <Media Id="1" Cabinet="qemu_ga.$(var.QEMU_GA_VERSION).cab" EmbedCab="yes" />
+    <Property Id="ARPNOMODIFY" Value="yes" Secure="yes" />
+    <MajorUpgrade
+      DowngradeErrorMessage="Error: A newer version of QEMU Guest Agent (arm64) is already installed."
+      />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="qemu_ga_directory" Name="Qemu-ga">
+          <Component Id="qemu_ga" Guid="{80F83D1B-8C98-4187-A5D6-B8B674DE4457}">
+            <File Id="qemu_ga.exe" Name="qemu-ga.exe" Source="$(var.BIN_DIR)/qemu-ga.exe" KeyPath="yes" DiskId="1"/>
+            <ServiceInstall
+              Id="ServiceInstaller"
+              Type="ownProcess"
+              Vital="yes"
+              Name="QEMU-GA"
+              DisplayName="QEMU Guest Agent"
+              Description="QEMU Guest Agent"
+              Start="auto"
+              Account="LocalSystem"
+              ErrorControl="ignore"
+              Interactive="no"
+              Arguments="-d --retry-path"
+              >
+            </ServiceInstall>
+            <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="QEMU-GA" Wait="yes" />
+          </Component>
+          <Component Id="gspawn_helper_console" Guid="{D64B0BCA-FE9E-4DE6-B1B5-ABA8EEC6E81B}">
+            <File Id="gspawn_win64_helper_console.exe" Name="gspawn-win64-helper-console.exe" Source="$(var.BIN_DIR)/gspawn-win64-helper-console.exe" KeyPath="yes" DiskId="1"/>
+          </Component>
+          <Component Id="gspawn_helper" Guid="{4D2C7711-44F2-460B-9DCC-7A12B5606631}">
+            <File Id="gspawn_win64_helper.exe" Name="gspawn-win64-helper.exe" Source="$(var.BIN_DIR)/gspawn-win64-helper.exe" KeyPath="yes" DiskId="1"/>
+          </Component>
+          <Component Id="libglib" Guid="{EC510F8D-4875-4EC1-AEAB-39BC15EAA0C9}">
+            <File Id="libglib_2.0_0.dll" Name="libglib-2.0-0.dll" Source="$(var.BIN_DIR)/libglib-2.0-0.dll" KeyPath="yes" DiskId="1"/>
+          </Component>
+          <Component Id="libpcre2" Guid="{75B056B9-6FFC-4502-84A8-A872CDF2C5B2}">
+            <File Id="libpcre2_8_0.dll" Name="libpcre2-8-0.dll" Source="$(var.BIN_DIR)/libpcre2-8-0.dll" KeyPath="yes" DiskId="1"/>
+          </Component>
+          <Component Id="zlib" Guid="{2EEE3C7E-967E-4FEC-82C8-F445C56BDB29}">
+            <File Id="zlib1.dll" Name="zlib1.dll" Source="$(var.BIN_DIR)/zlib1.dll" KeyPath="yes" DiskId="1"/>
+          </Component>
+          <Component Id="libffi" Guid="{A8E59BBE-AB7A-4636-807E-CF99D0F17ED7}">
+            <File Id="libffi_8.dll" Name="libffi-8.dll" Source="$(var.BIN_DIR)/libffi-8.dll" KeyPath="yes" DiskId="1"/>
+          </Component>
+          <Component Id="libintl" Guid="{A2DF7C01-5DBD-49F7-B4BC-FF8BC8A73641}">
+            <File Id="libintl_8.dll" Name="libintl-8.dll" Source="$(var.BIN_DIR)/libintl-8.dll" KeyPath="yes" DiskId="1"/>
+          </Component>
+          <Component Id="libiconv" Guid="{EE079CD5-802B-46B9-BDA7-95B30E878BA7}">
+            <File Id="libiconv_2.dll" Name="libiconv-2.dll" Source="$(var.BIN_DIR)/libiconv-2.dll" KeyPath="yes" DiskId="1"/>
+          </Component>
+          <Component Id="libcharset" Guid="{837DEB54-B132-4B4A-997F-C0D27875BEAC}">
+            <File Id="libcharset_1.dll" Name="libcharset-1.dll" Source="$(var.BIN_DIR)/libcharset-1.dll" KeyPath="yes" DiskId="1"/>
+          </Component>
+          <Component Id="registry_entries" Guid="{1EA3374E-4A89-41C2-A15F-E810FF95398C}">
+            <RegistryKey Root="HKLM"
+                         Key="Software\$(var.QEMU_GA_MANUFACTURER)\$(var.QEMU_GA_DISTRO)\Tools\QemuGA">
+              <RegistryValue Type="string" Name="ProductID" Value="fb0a0d66-c7fb-4e2e-a16b-c4a3bfe8d13b" />
+              <RegistryValue Type="string" Name="Version" Value="$(var.QEMU_GA_VERSION)" />
+            </RegistryKey>
+            <RegistryKey Root="HKLM"
+                         Key="System\CurrentControlSet\Services\EventLog\Application\qemu-ga">
+              <RegistryValue Type="integer" Name="TypesSupported" Value="7" />
+              <RegistryValue Type="string" Name="EventMessageFile" Value="[qemu_ga_directory]qemu-ga.exe" />
+            </RegistryKey>
+          </Component>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Feature Id="QemuGA" Title="QEMU Guest Agent" Level="1">
+      <ComponentRef Id="qemu_ga" />
+      <ComponentRef Id="gspawn_helper_console" />
+      <ComponentRef Id="gspawn_helper" />
+      <ComponentRef Id="libglib" />
+      <ComponentRef Id="libpcre2" />
+      <ComponentRef Id="zlib" />
+      <ComponentRef Id="libffi" />
+      <ComponentRef Id="libintl" />
+      <ComponentRef Id="libiconv" />
+      <ComponentRef Id="libcharset" />
+      <ComponentRef Id="registry_entries" />
+    </Feature>
+  </Product>
+</Wix>

@@ -16,9 +16,11 @@ on:
   push:
     paths:
       - '.github/workflows/build-qemu-ga-arm64.yml'
+      - 'qemu-ga-installer/**'
   pull_request:
     paths:
       - '.github/workflows/build-qemu-ga-arm64.yml'
+      - 'qemu-ga-installer/**'
 
 env:
   LLVM_MINGW_VERSION: '20260616'
@@ -182,8 +184,95 @@ jobs:
           find build -iname 'qemu-ga.exe' -exec cp {} qemu-ga.exe \;
           file qemu-ga.exe
 
+      - name: Collect runtime DLLs
+        run: |
+          set -e
+          # qemu-ga.exe's own import table (checked via strings, since
+          # Debian's objdump doesn't recognize PE-ARM64 at all) only shows
+          # libglib-2.0-0.dll as an external dependency beyond OS-provided
+          # DLLs (kernel32/advapi32/etc.) and the api-ms-win-crt-* UCRT
+          # forwarders, which Windows 10+ ships natively - no GCC-style
+          # libgcc/libwinpthread/libssp runtime needed at all, unlike
+          # QEMU's own GCC-mingw-oriented qga/installer/qemu-ga.wxs
+          # template. glib2 itself is dynamically linked against pcre2,
+          # zlib, libffi and iconv/gettext though (its declared MSYS2
+          # package deps), so bundle those too since a missing one would
+          # only surface as a runtime failure on the actual guest, not a
+          # build-time error here.
+          mkdir -p package
+          cp qemu/qemu-ga.exe package/
+          for dll in \
+            libglib-2.0-0.dll \
+            libpcre2-8-0.dll \
+            zlib1.dll \
+            libffi-8.dll \
+            libintl-8.dll \
+            libiconv-2.dll \
+            libcharset-1.dll \
+          ; do
+            cp "/clangarm64/bin/$dll" package/
+          done
+          # g_spawn_* (used for qemu-ga's guest-exec command) shells out via
+          # these helper binaries rather than CreateProcess directly.
+          cp /clangarm64/bin/gspawn-win64-helper.exe package/
+          cp /clangarm64/bin/gspawn-win64-helper-console.exe package/
+          ls -la package/
+
       - uses: actions/upload-artifact@v4
         with:
-          name: qemu-ga-arm64
-          path: qemu/qemu-ga.exe
+          name: qemu-ga-arm64-bin
+          path: package/
+          if-no-files-found: error
+
+  package-msi:
+    needs: build
+    runs-on: windows-latest
+    env:
+      WIX_DIR: ${{ github.workspace }}\wix314
+      QEMU_GA_VERSION: '0.0.1'
+      QEMU_GA_MANUFACTURER: 'Red Hat, Inc.'
+      QEMU_GA_DISTRO: 'Fedora'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: qemu-ga-arm64-bin
+          path: bin
+
+      - name: Fetch portable WiX Toolset binaries
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Invoke-WebRequest `
+            -Uri "https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip" `
+            -OutFile "$env:RUNNER_TEMP\wix314-binaries.zip"
+          Expand-Archive -Path "$env:RUNNER_TEMP\wix314-binaries.zip" -DestinationPath "${{ env.WIX_DIR }}"
+
+      - name: Compile and link qemu-ga-arm64.msi
+        working-directory: qemu-ga-installer
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          & "${{ env.WIX_DIR }}\candle.exe" `
+            qemu-ga-arm64.wxs `
+            -out qemu-ga-arm64.wixobj `
+            -nologo -pedantic -v -arch arm64 `
+            -dBIN_DIR="${{ github.workspace }}\bin" `
+            -dQEMU_GA_VERSION="${{ env.QEMU_GA_VERSION }}" `
+            -dQEMU_GA_MANUFACTURER="${{ env.QEMU_GA_MANUFACTURER }}" `
+            -dQEMU_GA_DISTRO="${{ env.QEMU_GA_DISTRO }}"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "${{ env.WIX_DIR }}\light.exe" `
+            qemu-ga-arm64.wixobj `
+            -out qemu-ga-arm64.msi `
+            -nologo -pedantic -v `
+            -sval `
+            -cultures:en-us
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: qemu-ga-arm64-msi
+          path: qemu-ga-installer/qemu-ga-arm64.msi
           if-no-files-found: error
