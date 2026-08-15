@@ -58,8 +58,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <!-- v142's ARM64 intrinsics/ATL headers don't line up with current SDKs; v143 does -->
-    <PlatformToolset>v143</PlatformToolset>
+    <!-- No fixed PlatformToolset: v142's ARM64 intrinsics/ATL headers don't line up
+         with current SDKs, and pinning a specific newer moniker (v143, v144, ...)
+         just goes stale as the runner's VS generation moves - let it default to
+         whatever toolset is actually installed. -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -87,8 +89,10 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <!-- v142's ARM64 intrinsics/ATL headers don't line up with current SDKs; v143 does -->
-    <PlatformToolset>v143</PlatformToolset>
+    <!-- No fixed PlatformToolset: v142's ARM64 intrinsics/ATL headers don't line up
+         with current SDKs, and pinning a specific newer moniker (v143, v144, ...)
+         just goes stale as the runner's VS generation moves - let it default to
+         whatever toolset is actually installed. -->
     <UseOfMfc>false</UseOfMfc>
     <CLRSupport>false</CLRSupport>
   </PropertyGroup>
