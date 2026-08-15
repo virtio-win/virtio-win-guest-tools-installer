@@ -8,6 +8,10 @@ name: Build pvpanic for arm64 Windows
 # platform toolset, which windows-latest already has installed - no extra
 # toolchain setup needed, unlike qemu-ga or the DrvInst CA DLL.
 #
+# Builds both Win10 and Win11 configs separately (matrix), matching how real
+# upstream driver packages ship distinct per-OS-version builds rather than
+# reusing one binary for both.
+#
 # Signing: kernel-mode drivers won't load on 64-bit Windows without a valid
 # signature. Real WHQL/attestation signing needs a paid Microsoft Partner
 # Center account and hardware submission - out of reach here. This signs
@@ -18,17 +22,25 @@ name: Build pvpanic for arm64 Windows
 
 on:
   workflow_dispatch:
+  workflow_call:
   push:
     paths:
       - '.github/workflows/build-pvpanic-arm64.yml'
 
 env:
   DRIVER_REF: 'master'
-  CONFIGURATION: 'Win11 Release'
 
 jobs:
   build:
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os_short: w10
+            configuration: 'Win10 Release'
+          - os_short: w11
+            configuration: 'Win11 Release'
     steps:
       - name: Fetch pvpanic driver source
         shell: pwsh
@@ -83,7 +95,7 @@ jobs:
           Install-Bootstrapper "$env:RUNNER_TEMP\sdksetup.exe" "$env:RUNNER_TEMP\sdksetup.log"
           Install-Bootstrapper "$env:RUNNER_TEMP\wdksetup.exe" "$env:RUNNER_TEMP\wdksetup.log"
 
-      - name: Build pvpanic.sln (arm64)
+      - name: Build pvpanic.sln (${{ matrix.configuration }}|arm64)
         shell: pwsh
         working-directory: driver-src/pvpanic
         run: |
@@ -91,28 +103,11 @@ jobs:
           $msbuild = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
             -latest -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
           Write-Host "Using MSBuild: $msbuild"
-          # pvpanic.sys itself compiled fine (real progress - previous
-          # errors were all before ClCompile even ran). This failed one
-          # step later at ApiValidator ("aitstatic" exit code 193) - a
-          # Universal Driver / WHQL API-surface compliance check, not an
-          # indicator the driver itself is broken. Not pursuing
-          # certification here, just a working test-signed driver, so skip
-          # the check rather than debug why aitstatic fails in this
-          # environment.
-          # RunApiValidation was the wrong property name (guessed, unverified -
-          # the check still ran identically). ApiValidator_Enable=false is
-          # confirmed correct from a real driver project's own build script.
-          & $msbuild pvpanic.sln /p:Configuration="${{ env.CONFIGURATION }}" /p:Platform=ARM64 /p:ApiValidator_Enable=false /m
+          # ApiValidator_Enable=false skips a Universal Driver/WHQL
+          # API-surface compliance check (not pursuing certification here,
+          # just a working test-signed driver).
+          & $msbuild pvpanic.sln /p:Configuration="${{ matrix.configuration }}" /p:Platform=ARM64 /p:ApiValidator_Enable=false /m
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-
-      - name: Locate build output
-        id: locate
-        shell: pwsh
-        working-directory: driver-src/pvpanic
-        run: |
-          $ErrorActionPreference = "Stop"
-          Get-ChildItem -Recurse -Include "pvpanic.sys","pvpanic.inf","pvpanic.cat" |
-            ForEach-Object { Write-Host $_.FullName }
 
       - name: Self-sign for test-mode loading
         shell: pwsh
@@ -135,8 +130,12 @@ jobs:
           }
           # Export the test cert too - the target machine needs it in its own
           # Trusted Root/Publisher stores to accept these signatures, on top
-          # of testsigning mode being enabled.
-          Export-Certificate -Cert $cert -FilePath pvpanic-test-cert.cer
+          # of testsigning mode being enabled. w10 and w11 build in separate
+          # matrix jobs, each generating its own independent self-signed
+          # cert (same Subject, different actual key/thumbprint) - name it
+          # per-OS so both can be shipped without colliding, and so it's
+          # obvious which cert matches which .sys.
+          Export-Certificate -Cert $cert -FilePath "pvpanic-test-cert-${{ matrix.os_short }}.cer"
 
       - name: Collect artifacts
         shell: pwsh
@@ -145,11 +144,11 @@ jobs:
           New-Item -ItemType Directory -Force -Path package | Out-Null
           Get-ChildItem -Recurse driver-src/pvpanic -Include "pvpanic.sys","pvpanic.inf","pvpanic.cat" |
             Copy-Item -Destination package
-          Copy-Item driver-src/pvpanic/pvpanic-test-cert.cer package/
+          Copy-Item "driver-src/pvpanic/pvpanic-test-cert-${{ matrix.os_short }}.cer" package/
           Get-ChildItem package
 
       - uses: actions/upload-artifact@v4
         with:
-          name: pvpanic-arm64
+          name: pvpanic-arm64-${{ matrix.os_short }}
           path: package/
           if-no-files-found: error

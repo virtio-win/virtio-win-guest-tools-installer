@@ -53,7 +53,7 @@ jobs:
         run: |
           set -e
           ls -la
-          sha256sum *.msi | tee SHA256SUMS.txt
+          sha256sum *.msi *.cer | tee SHA256SUMS.txt
 
       - name: Create GitHub Release
         env:
@@ -61,7 +61,7 @@ jobs:
         run: |
           set -e
           gh release create "${{ inputs.tag }}" \
-            release/*.msi release/SHA256SUMS.txt \
+            release/*.msi release/*.cer release/SHA256SUMS.txt \
             --repo "${{ github.repository }}" \
             --title "arm64 preview ${{ inputs.version }}" \
             --prerelease \
@@ -69,14 +69,20 @@ jobs:
           Experimental arm64 (aarch64) build - not upstream, not reviewed, not tested on real hardware yet.
 
           **virtio-win-gt-arm64.msi**: drivers built and packaged for Balloon, NetKVM,
-          viogpudo, vioinput, viomem, viorng, vioscsi, vioserial, viostor. pvpanic is
-          NOT included in this build: it has real upstream arm64 driver support, but no
-          accessible source of the actual arm64 driver files could be found (checked
-          fedorapeople.org - blocked by anti-bot protection -, every qemus/virtiso-arm
-          release, Fedora's Koji build system, and kvm-guest-drivers-windows' own
-          releases/CI - none carry it). Will be added once a real source turns up.
-          fwcfg, qemupciserial and viofs are also not included: no arm64 driver build
-          exists upstream yet for those at all.
+          viogpudo, vioinput, viomem, viorng, vioscsi, vioserial, viostor, and pvpanic.
+          fwcfg, qemupciserial and viofs are not included: no arm64 driver build exists
+          upstream for those at all yet.
+
+          pvpanic is built from source (no pre-built arm64 binary is reachable from any
+          source checked) and self-signed with a throwaway certificate - it is NOT
+          WHQL-certified, unlike the other 8 drivers in this MSI, which come from the
+          real upstream driver tree. To load it you must enable test-signing mode on the
+          target machine (`bcdedit /set testsigning on`, then reboot) and trust the
+          matching certificate for your Windows version:
+          pvpanic-test-cert-w10.cer or pvpanic-test-cert-w11.cer (import into both the
+          Trusted Root Certification Authorities and Trusted Publishers stores). Without
+          this, everything else in the MSI installs and works normally; only the pvpanic
+          component will fail to load.
 
           **qemu-ga-arm64.msi**: qemu-ga cross-compiled for aarch64-w64-mingw32 via
           llvm-mingw. VSS (application-consistent snapshot) support is enabled and

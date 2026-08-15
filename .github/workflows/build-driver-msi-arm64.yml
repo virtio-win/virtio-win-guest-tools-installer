@@ -8,6 +8,14 @@ name: Build virtio-win-gt-arm64.msi
 # fedorapeople.org mirror, which is behind Anubis anti-bot protection and
 # blocks scripted fetches. Requires Libraries/arm64/* to already be committed
 # (see build-drvinst-arm64.yml).
+#
+# pvpanic isn't in that driver content tarball at all (no accessible source
+# has it - see build-pvpanic-arm64.yml for what was checked), so this calls
+# that workflow to build it from source instead and slots the result into
+# the same directory layout the fetched content already uses. It's a
+# self-signed test build, not WHQL-certified - see that workflow for the
+# testsigning requirement this implies for whoever installs the resulting
+# MSI.
 
 on:
   workflow_dispatch:
@@ -43,10 +51,24 @@ env:
   MSI_VERSION: ${{ inputs.version || '0.0.1' }}
 
 jobs:
+  pvpanic:
+    uses: ./.github/workflows/build-pvpanic-arm64.yml
+
   build:
+    needs: pvpanic
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: pvpanic-arm64-w10
+          path: pvpanic-w10
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: pvpanic-arm64-w11
+          path: pvpanic-w11
 
       - name: Fetch portable WiX Toolset ${{ env.WIX_VERSION }} binaries
         shell: pwsh
@@ -72,6 +94,26 @@ jobs:
           tar -xf "$env:RUNNER_TEMP\virtio-win-arm64.tar.xz" -C "${{ env.DRIVERS_DIR }}"
           Get-ChildItem "${{ env.DRIVERS_DIR }}"
 
+      - name: Place self-built pvpanic into the driver content tree
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          # This qemus/virtiso-arm release has no arm64 pvpanic files at all
+          # (checked every accessible source - see the pvpanic build
+          # workflow for what was tried). Built it ourselves instead
+          # (build-pvpanic-arm64.yml) and place it into the same
+          # <driver>\<osShort>\ARM64\ layout the fetched driver content
+          # already uses, so it's indistinguishable to the WiX packaging
+          # from a real upstream driver source.
+          foreach ($os in "w10", "w11") {
+            $dest = Join-Path "${{ env.DRIVERS_DIR }}" "pvpanic\$os\ARM64"
+            New-Item -ItemType Directory -Force -Path $dest | Out-Null
+            Copy-Item "pvpanic-$os\pvpanic.inf" $dest
+            Copy-Item "pvpanic-$os\pvpanic.cat" $dest
+            Copy-Item "pvpanic-$os\pvpanic.sys" $dest
+          }
+          Get-ChildItem -Recurse "${{ env.DRIVERS_DIR }}\pvpanic"
+
       - name: Generate constants.wxi
         shell: pwsh
         run: |
@@ -90,6 +132,7 @@ jobs:
             *.wxs `
             Drivers\Balloon\*.wxs `
             Drivers\NetKVM\*.wxs `
+            Drivers\pvpanic\*.wxs `
             Drivers\vioinput\*.wxs `
             Drivers\viorng\*.wxs `
             Drivers\vioscsi\*.wxs `
@@ -99,7 +142,6 @@ jobs:
             Drivers\viomem\*.wxs `
             -out wixobjarm64\ `
             -nologo -pedantic -v -arch arm64 -fips `
-            -dSKIP_PVPANIC=1 `
             -ext "${{ env.WIX_DIR }}\WixUtilExtension.dll" `
             -ext "${{ env.WIX_DIR }}\WixUIExtension.dll" `
             -ext "${{ github.workspace }}\Libraries\arm64\DrvInstExt.dll"
@@ -120,8 +162,22 @@ jobs:
             -cultures:en-us
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Stage pvpanic test-signing certs alongside the MSI
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          # Whoever installs this MSI needs these to trust pvpanic.sys's
+          # signature (on top of enabling testsigning mode) - without them
+          # the pvpanic component specifically will fail to load even
+          # though the rest of the MSI installs fine.
+          Copy-Item pvpanic-w10\pvpanic-test-cert-w10.cer virtio-win-drivers-installer\
+          Copy-Item pvpanic-w11\pvpanic-test-cert-w11.cer virtio-win-drivers-installer\
+
       - uses: actions/upload-artifact@v4
         with:
           name: virtio-win-gt-arm64-msi
-          path: virtio-win-drivers-installer/virtio-win-gt-arm64.msi
+          path: |
+            virtio-win-drivers-installer/virtio-win-gt-arm64.msi
+            virtio-win-drivers-installer/pvpanic-test-cert-w10.cer
+            virtio-win-drivers-installer/pvpanic-test-cert-w11.cer
           if-no-files-found: error
