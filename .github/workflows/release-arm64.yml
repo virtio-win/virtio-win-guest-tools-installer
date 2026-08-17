@@ -19,6 +19,11 @@ on:
         description: 'Git tag for this release (e.g. arm64-preview-0.1.0)'
         type: string
         required: true
+      include_pvpanic:
+        description: 'Include the self-signed, test-only pvpanic driver (fork testing only - excluded by default in the underlying build)'
+        type: boolean
+        required: false
+        default: true
 
 permissions:
   contents: write
@@ -28,6 +33,7 @@ jobs:
     uses: ./.github/workflows/build-driver-msi-arm64.yml
     with:
       version: ${{ inputs.version }}
+      include_pvpanic: ${{ inputs.include_pvpanic }}
 
   qemu-ga-msi:
     uses: ./.github/workflows/build-qemu-ga-arm64.yml
@@ -52,6 +58,7 @@ jobs:
         working-directory: release
         run: |
           set -e
+          shopt -s nullglob
           ls -la
           sha256sum *.msi *.cer | tee SHA256SUMS.txt
 
@@ -60,34 +67,43 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -e
+          if [ "${{ inputs.include_pvpanic }}" = "true" ]; then
+            pvpanic_notes='pvpanic is included, built from source (no pre-built arm64 binary is
+          reachable from any source checked) and self-signed with a throwaway
+          certificate - it is NOT WHQL-certified, unlike the other 8 drivers in this
+          MSI, which come from the real upstream driver tree. To load it you must
+          enable test-signing mode on the target machine (`bcdedit /set testsigning
+          on`, then reboot) and trust the matching certificate for your Windows
+          version: pvpanic-test-cert-w10.cer or pvpanic-test-cert-w11.cer (import into
+          both the Trusted Root Certification Authorities and Trusted Publishers
+          stores). Without this, everything else in the MSI installs and works
+          normally; only the pvpanic component will fail to load. This is a fork-only
+          testing convenience - a real upstream build excludes pvpanic by default until
+          Red Hat'"'"'s own pipeline can build and sign it, at which point it drops
+          into the driver content tree with no installer changes needed.'
+          else
+            pvpanic_notes='pvpanic is excluded from this build (same as fwcfg, qemupciserial and viofs):
+          no signed arm64 binary is published from Red Hat'"'"'s pipeline yet. Unlike
+          those three, pvpanic does have real upstream arm64 project support - the
+          installer will pick it up automatically once a signed binary appears in the
+          driver content tree, no installer changes needed.'
+          fi
           gh release create "${{ inputs.tag }}" \
             release/*.msi release/*.cer release/SHA256SUMS.txt \
             --repo "${{ github.repository }}" \
             --title "arm64 preview ${{ inputs.version }}" \
             --prerelease \
-            --notes "$(cat <<'EOF'
-          Experimental arm64 (aarch64) build - not upstream, not reviewed, not tested on real hardware yet.
+            --notes "Experimental arm64 (aarch64) build - not upstream, not reviewed, not tested on real hardware yet.
 
           **virtio-win-gt-arm64.msi**: drivers built and packaged for Balloon, NetKVM,
-          viogpudo, vioinput, viomem, viorng, vioscsi, vioserial, viostor, and pvpanic.
+          viogpudo, vioinput, viomem, viorng, vioscsi, vioserial, and viostor$( [ "${{ inputs.include_pvpanic }}" = "true" ] && echo ', and pvpanic' ).
           fwcfg, qemupciserial and viofs are not included: no arm64 driver build exists
           upstream for those at all yet.
 
-          pvpanic is built from source (no pre-built arm64 binary is reachable from any
-          source checked) and self-signed with a throwaway certificate - it is NOT
-          WHQL-certified, unlike the other 8 drivers in this MSI, which come from the
-          real upstream driver tree. To load it you must enable test-signing mode on the
-          target machine (`bcdedit /set testsigning on`, then reboot) and trust the
-          matching certificate for your Windows version:
-          pvpanic-test-cert-w10.cer or pvpanic-test-cert-w11.cer (import into both the
-          Trusted Root Certification Authorities and Trusted Publishers stores). Without
-          this, everything else in the MSI installs and works normally; only the pvpanic
-          component will fail to load.
+          $pvpanic_notes
 
           **qemu-ga-arm64.msi**: qemu-ga cross-compiled for aarch64-w64-mingw32 via
           llvm-mingw. VSS (application-consistent snapshot) support is enabled and
           included (qga-vss.dll + its COM registration).
 
-          Verify SHA256SUMS.txt against the checksums below before installing.
-          EOF
-          )"
+          Verify SHA256SUMS.txt against the checksums below before installing."

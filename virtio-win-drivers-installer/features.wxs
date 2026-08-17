@@ -11,17 +11,29 @@
                 Description='Paravirtualized network driver provides enhanced performance over emulated devices.'>
                 <ComponentGroupRef Id='CMPG_netkvm_driver' />
         </Feature>
-<?ifndef SKIP_PVPANIC ?>
-        <!-- SKIP_PVPANIC is an opt-in escape hatch for a build whose driver source
-             happens to be missing pvpanic (used by the arm64 CI workflow, since its
-             driver source doesn't currently carry pvpanic for arm64 - see that
-             workflow for why). Not an architecture check: pvpanic has real upstream
-             arm64 driver support, so a real/complete driver source should not define
-             this and will get pvpanic packaged normally. -->
+<?if NOT ($(sys.BUILDARCH) = "arm64") ?>
         <Feature Id='FE_pvpanic_driver' Title='Pvpanic' Level='1'
                 Description='QEMU pvpanic device driver'>
                 <ComponentGroupRef Id='CMPG_pvpanic_driver' />
         </Feature>
+<?else ?>
+    <?ifdef INCLUDE_SELF_SIGNED_PVPANIC_ARM64 ?>
+        <!-- INCLUDE_SELF_SIGNED_PVPANIC_ARM64 is a fork-only test flag (set by
+             build-pvpanic-arm64.yml), not something a real driver source build should
+             ever define. pvpanic has real upstream arm64 project support (Win10/Win11
+             Release|ARM64 configs already exist in kvm-guest-drivers-windows) but no
+             accessible pre-built, signed arm64 binary from Red Hat's official pipeline
+             exists yet - unlike fwcfg/qemupciserial/viofs, which have no arm64 support
+             upstream at all, this is purely a "nobody has published a signed binary"
+             gap. Excluded by default so the driver content tree drives inclusion the
+             same way it already does for the other 9 drivers: the moment Red Hat's
+             pipeline starts producing Drivers\pvpanic\<w10|w11>\ARM64\ content, this
+             condition should be dropped entirely rather than flipped on. -->
+        <Feature Id='FE_pvpanic_driver' Title='Pvpanic' Level='1'
+                Description='QEMU pvpanic device driver'>
+                <ComponentGroupRef Id='CMPG_pvpanic_driver' />
+        </Feature>
+    <?endif ?>
 <?endif ?>
 
 <?if NOT ($(sys.BUILDARCH) = "arm64") ?>

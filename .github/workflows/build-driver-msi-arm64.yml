@@ -10,12 +10,17 @@ name: Build virtio-win-gt-arm64.msi
 # (see build-drvinst-arm64.yml).
 #
 # pvpanic isn't in that driver content tarball at all (no accessible source
-# has it - see build-pvpanic-arm64.yml for what was checked), so this calls
-# that workflow to build it from source instead and slots the result into
-# the same directory layout the fetched content already uses. It's a
-# self-signed test build, not WHQL-certified - see that workflow for the
-# testsigning requirement this implies for whoever installs the resulting
-# MSI.
+# has it - see build-pvpanic-arm64.yml for what was checked). It's excluded
+# by default here, same as fwcfg/qemupciserial/viofs which have no arm64
+# driver support upstream at all - unlike those three, pvpanic does have
+# real upstream arm64 project support, it's purely that no signed binary is
+# published yet. Set include_pvpanic to build it from source and slot it
+# into the same directory layout the fetched content already uses - it's a
+# self-signed test build, not WHQL-certified, and is for local testing only
+# (see build-pvpanic-arm64.yml for the testsigning requirement this implies
+# for whoever installs the resulting MSI). This is deliberately not the
+# default so a plain arm64 build - and what a reviewer sees in a diff -
+# doesn't ship an unsigned driver.
 
 on:
   workflow_dispatch:
@@ -25,6 +30,11 @@ on:
         type: string
         required: false
         default: '0.0.1'
+      include_pvpanic:
+        description: 'Build a self-signed, test-only pvpanic driver from source and include it (not for real releases)'
+        type: boolean
+        required: false
+        default: false
   workflow_call:
     inputs:
       version:
@@ -32,6 +42,11 @@ on:
         type: string
         required: false
         default: '0.0.1'
+      include_pvpanic:
+        description: 'Build a self-signed, test-only pvpanic driver from source and include it (not for real releases)'
+        type: boolean
+        required: false
+        default: false
   push:
     paths:
       - 'virtio-win-drivers-installer/**'
@@ -52,20 +67,29 @@ env:
 
 jobs:
   pvpanic:
+    if: inputs.include_pvpanic
     uses: ./.github/workflows/build-pvpanic-arm64.yml
 
   build:
     needs: pvpanic
+    # pvpanic is skipped entirely (not failed) when include_pvpanic is false - a
+    # skipped dependency still needs an explicit pass-through here, or the default
+    # implicit success() check would skip this job too.
+    if: always() && (needs.pvpanic.result == 'success' || needs.pvpanic.result == 'skipped')
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
+      - name: Download self-built pvpanic (w10)
+        if: inputs.include_pvpanic
+        uses: actions/download-artifact@v4
         with:
           name: pvpanic-arm64-w10
           path: pvpanic-w10
 
-      - uses: actions/download-artifact@v4
+      - name: Download self-built pvpanic (w11)
+        if: inputs.include_pvpanic
+        uses: actions/download-artifact@v4
         with:
           name: pvpanic-arm64-w11
           path: pvpanic-w11
@@ -95,6 +119,7 @@ jobs:
           Get-ChildItem "${{ env.DRIVERS_DIR }}"
 
       - name: Place self-built pvpanic into the driver content tree
+        if: inputs.include_pvpanic
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
@@ -128,23 +153,31 @@ jobs:
         working-directory: virtio-win-drivers-installer
         run: |
           $ErrorActionPreference = "Stop"
+          $wxsFiles = @(
+            "*.wxs",
+            "Drivers\Balloon\*.wxs",
+            "Drivers\NetKVM\*.wxs",
+            "Drivers\vioinput\*.wxs",
+            "Drivers\viorng\*.wxs",
+            "Drivers\vioscsi\*.wxs",
+            "Drivers\vioserial\*.wxs",
+            "Drivers\viostor\*.wxs",
+            "Drivers\viogpudo\*.wxs",
+            "Drivers\viomem\*.wxs"
+          )
+          $defines = @()
+          if ("${{ inputs.include_pvpanic }}" -eq "true") {
+            $wxsFiles += "Drivers\pvpanic\*.wxs"
+            $defines += "-dINCLUDE_SELF_SIGNED_PVPANIC_ARM64=1"
+          }
           & "${{ env.WIX_DIR }}\candle.exe" `
-            *.wxs `
-            Drivers\Balloon\*.wxs `
-            Drivers\NetKVM\*.wxs `
-            Drivers\pvpanic\*.wxs `
-            Drivers\vioinput\*.wxs `
-            Drivers\viorng\*.wxs `
-            Drivers\vioscsi\*.wxs `
-            Drivers\vioserial\*.wxs `
-            Drivers\viostor\*.wxs `
-            Drivers\viogpudo\*.wxs `
-            Drivers\viomem\*.wxs `
+            @wxsFiles `
             -out wixobjarm64\ `
             -nologo -pedantic -v -arch arm64 -fips `
             -ext "${{ env.WIX_DIR }}\WixUtilExtension.dll" `
             -ext "${{ env.WIX_DIR }}\WixUIExtension.dll" `
-            -ext "${{ github.workspace }}\Libraries\arm64\DrvInstExt.dll"
+            -ext "${{ github.workspace }}\Libraries\arm64\DrvInstExt.dll" `
+            @defines
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Link (light.exe)
@@ -163,6 +196,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Stage pvpanic test-signing certs alongside the MSI
+        if: inputs.include_pvpanic
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
@@ -176,8 +210,10 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: virtio-win-gt-arm64-msi
+          # The cert glob only matches anything when include_pvpanic staged them
+          # above - ignore is safe here since a genuinely missing MSI would already
+          # have failed the build at the light.exe step, not silently skipped here.
           path: |
             virtio-win-drivers-installer/virtio-win-gt-arm64.msi
-            virtio-win-drivers-installer/pvpanic-test-cert-w10.cer
-            virtio-win-drivers-installer/pvpanic-test-cert-w11.cer
-          if-no-files-found: error
+            virtio-win-drivers-installer/pvpanic-test-cert-*.cer
+          if-no-files-found: ignore
