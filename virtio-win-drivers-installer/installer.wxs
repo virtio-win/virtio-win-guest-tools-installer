@@ -16,6 +16,16 @@
                   InstallScope="perMachine"
                   Description="Virtio-win installer for drivers"/>
             <PropertyRef Id="$(var.LaunchCondition)" />
+            <!-- arm64_Validation's and x64_Validation's Condition CDATA reference
+                 REGISTRY_PROCESSOR_ARCHITECTURE by name, but that's just text to the linker -
+                 it creates no link-time dependency, so the Fragment that actually defines the
+                 property via RegistrySearch has to be pulled in explicitly or it's silently
+                 dropped and the property is empty at runtime. Confirmed via a real install log
+                 on Windows 11 ARM64: REGISTRY_PROCESSOR_ARCHITECTURE was entirely absent from
+                 the final property dump, so arm64_Validation's "= ARM64" check always failed
+                 even though the registry itself was correct - x64_Validation's "<> ARM64" check
+                 masked the same gap by degrading to true on an empty property. -->
+            <PropertyRef Id="Set_ProcessorArchitecture" />
             <PropertyRef Id="LaunchConditionsSupportedOS" />
             <PropertyRef Id="Set_ProductName" />
             <PropertyRef Id="Set_CurrentBuildNumber" />
