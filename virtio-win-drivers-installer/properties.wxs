@@ -36,8 +36,13 @@
     <!-- Launch Condition to disable launch on arch arm64 -->
     <Fragment>
         <Property Id="arm64_Validation" Value="1" />
+        <!-- No VersionNT = VersionNT64 clause here (unlike x64_Validation above): confirmed on
+             real Windows 11 ARM64 hardware that VersionNT64 doesn't reliably match VersionNT the
+             way it does on x64, which was blocking install with a false "non-arm64" error even
+             though REGISTRY_PROCESSOR_ARCHITECTURE correctly read "ARM64". That property alone
+             is sufficient to identify a genuine arm64 OS. -->
         <Condition Message= "Detected non-arm64 Windows version, please use the matching installer">
-                <![CDATA[VersionNT = VersionNT64 AND "$(sys.BUILDARCH)" = "arm64" AND REGISTRY_PROCESSOR_ARCHITECTURE = "ARM64"]]>
+                <![CDATA["$(sys.BUILDARCH)" = "arm64" AND REGISTRY_PROCESSOR_ARCHITECTURE = "ARM64"]]>
         </Condition>
     </Fragment>
     <!-- Query the ProductName registry value to detect os version -->
