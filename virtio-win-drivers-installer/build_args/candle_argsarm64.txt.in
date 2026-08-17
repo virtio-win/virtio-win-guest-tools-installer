@@ -1,7 +1,6 @@
 @@INSTALLER_PATH@@\*.wxs
 @@INSTALLER_PATH@@\Drivers\Balloon\*.wxs
 @@INSTALLER_PATH@@\Drivers\NetKVM\*.wxs
-@@INSTALLER_PATH@@\Drivers\pvpanic\*.wxs
 @@INSTALLER_PATH@@\Drivers\vioinput\*.wxs
 @@INSTALLER_PATH@@\Drivers\viorng\*.wxs
 @@INSTALLER_PATH@@\Drivers\vioscsi\*.wxs
