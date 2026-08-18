@@ -26,7 +26,7 @@
     <ProjectGuid>{a35efd9e-4e2d-43de-a380-2b3b068c4e8f}</ProjectGuid>
     <Keyword>x86Proj</Keyword>
     <RootNamespace>DrvInstCA</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>DrvInstCA</ProjectName>
     <InstallRoot>$(SolutionDir)Install</InstallRoot>
   </PropertyGroup>
@@ -56,13 +56,13 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>WindowsApplicationForDrivers10.0</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>WindowsApplicationForDrivers10.0</PlatformToolset>
     <VCToolsVersion>
     </VCToolsVersion>
     <UseOfMfc>false</UseOfMfc>
