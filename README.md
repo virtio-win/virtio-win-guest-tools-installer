@@ -95,7 +95,7 @@ You can get it by:
 
 5. The MSI output will be in `virtio-win-drivers-installer\bin\<platform>\<configuration>\`.
 
-6. The Bundle (.exe) requires additional MSI paths for Spice and QEMU Guest Agent. Edit the default paths in `virtio-win-installers-bundler\virtio-win-installers-bundler.wixproj` or pass them via command line using `msbuild /p:SpiceDriver64MsiPath=... /p:QemuGa64MsiPath=...` etc. **Note:** To build the Bundle, you must build the solution for both x64 and x86 platforms first, as the bundle includes both installers.
+6. The Bundle (.exe) requires additional MSI paths for Spice and QEMU Guest Agent. Edit the default paths in `virtio-win-installers-bundler\virtio-win-installers-bundler.wixproj` or pass them via command line using `msbuild /p:SpiceDriver64MsiPath=... /p:QemuGa64MsiPath=...` etc. The bundle project builds both x64 and x86 virtio-win driver MSIs automatically. To use prebuilt driver MSIs instead, set `VirtioWinGtX64MsiPath`, `VirtioWinGtX86MsiPath`, and `/p:BuildBundledDriverMsis=false`.
 
 #### Build outputs:
 
