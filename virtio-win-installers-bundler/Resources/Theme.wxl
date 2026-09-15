@@ -8,12 +8,7 @@
   <String Id="ConfirmCancelMessage" Value="Are you sure you want to cancel?" />
   <String Id="ExecuteUpgradeRelatedBundleMessage" Value="Previous version" />
   <String Id="HelpHeader" Value="Setup Help" />
-  <String Id="HelpText" Value="/install | /repair | /uninstall | /layout [directory] - installs, repairs, uninstalls or creates a complete local copy of the bundle in directory. Install is the default.
-
-/passive | /quiet -  displays minimal UI with no prompts or displays no UI and no prompts. By default UI and all prompts are displayed.
-
-/norestart   - suppress any attempts to restart. By default UI will prompt before restart.
-/log log.txt - logs to a specific file. By default a log file is created in %TEMP%." />
+  <String Id="HelpText" Value="/install | /repair | /uninstall | /layout [directory] - installs, repairs, uninstalls or creates a complete local copy of the bundle in directory. Install is the default.&#xA;&#xA;/passive | /quiet -  displays minimal UI with no prompts or displays no UI and no prompts. By default UI and all prompts are displayed.&#xA;&#xA;/norestart   - suppress any attempts to restart. By default UI will prompt before restart.&#xA;/log log.txt - logs to a specific file. By default a log file is created in %TEMP%." />
   <String Id="HelpCloseButton" Value="&amp;Close" />
   <String Id="InstallAcceptCheckbox" Value="I &amp;agree to the license terms and conditions" />
   <String Id="InstallInstallButton" Value="&amp;Install" />
@@ -42,11 +37,13 @@
   <String Id="FailureRestartText" Value="You must restart your computer to complete the rollback of the software." />
   <String Id="FailureRestartButton" Value="&amp;Restart" />
   <String Id="FailureCloseButton" Value="&amp;Close" />
-  <String Id="FilesInUseHeader" Value="Files In Use" />
+  <String Id="FilesInUseTitle" Value="[WixBundleName] Setup" />
   <String Id="FilesInUseLabel" Value="The following applications are using files that need to be updated:" />
   <String Id="FilesInUseCloseRadioButton" Value="Close the &amp;applications and attempt to restart them." />
   <String Id="FilesInUseDontCloseRadioButton" Value="&amp;Do not close applications. A reboot will be required." />
-  <String Id="FilesInUseOkButton" Value="&amp;OK" />
-  <String Id="FilesInUseCancelButton" Value="&amp;Cancel" />
+  <String Id="FilesInUseRetryButton" Value="&amp;Retry" />
+  <String Id="FilesInUseIgnoreButton" Value="&amp;Ignore" />
+  <String Id="FilesInUseExitButton" Value="E&amp;xit" />
+  <String Id="FilesInUseNetfxCloseRadioButton" Value="Close the &amp;applications and attempt to restart them." />
   <String Id="ErrorFailNoActionReboot" Value="No action was taken as a system reboot is required." />
 </WixLocalization>
