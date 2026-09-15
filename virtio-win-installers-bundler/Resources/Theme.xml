@@ -14,14 +14,20 @@
         <Page Name="Help">
             <Label X="175" Y="80" Width="-11" Height="30" FontId="2" DisablePrefix="yes">#(loc.HelpHeader)</Label>
             <Label X="175" Y="130" Width="-11" Height="-35" FontId="3" DisablePrefix="yes">#(loc.HelpText)</Label>
-            <Button Name="HelpCancelButton" X="-11" Y="-11" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.HelpCloseButton)</Button>
+            <Button Name="HelpCancelButton" X="-11" Y="-11" Width="75" Height="23" TabStop="yes" FontId="0">
+                <Text>#(loc.HelpCloseButton)</Text>
+                <CloseWindowAction />
+            </Button>
         </Page>
         <Page Name="Install">
             <Label X="175" Y="10" Width="300" Height="80" FontId="1" Visible="yes" DisablePrefix="yes">#(loc.WelcomeTitle)</Label>
             <Richedit Name="EulaRichedit" X="175" Y="100" Width="300" Height="-100" TabStop="yes" FontId="0" HexStyle="0x800000" />
             <Checkbox Name="EulaAcceptCheckbox" X="175" Y="-70" Width="300" Height="20" TabStop="yes" FontId="3" HideWhenDisabled="yes">#(loc.InstallAcceptCheckbox)</Checkbox>
             <Button Name="InstallButton" X="-100" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.InstallInstallButton)</Button>
-            <Button Name="WelcomeCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.InstallCloseButton)</Button>
+            <Button Name="WelcomeCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">
+                <Text>#(loc.InstallCloseButton)</Text>
+                <CloseWindowAction />
+            </Button>
         </Page>
         <Page Name="FilesInUse">
             <Label X="175" Y="80" Width="-11" Height="30" FontId="2" DisablePrefix="yes">#(loc.FilesInUseHeader)</Label>
@@ -43,7 +49,10 @@
             <Label X="175" Y="80" Width="-11" Height="30" FontId="2" DisablePrefix="yes">#(loc.ModifyHeader)</Label>
             <Button Name="RepairButton" X="-190" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes">#(loc.ModifyRepairButton)</Button>
             <Button Name="UninstallButton" X="-100" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.ModifyUninstallButton)</Button>
-            <Button Name="ModifyCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.ModifyCloseButton)</Button>
+            <Button Name="ModifyCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">
+                <Text>#(loc.ModifyCloseButton)</Text>
+                <CloseWindowAction />
+            </Button>
         </Page>
         <Page Name="Success">
             <Label X="175" Y="80" Width="-11" Height="80" FontId="2" DisablePrefix="yes">
@@ -54,7 +63,10 @@
             </Label>
             <Label Name="SuccessRestartText" X="175" Y="165" Width="-11" Height="34" FontId="3" HideWhenDisabled="yes" DisablePrefix="yes">#(loc.SuccessRestartText)</Label>
             <Button Name="SuccessRestartButton" X="-100" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes">#(loc.SuccessRestartButton)</Button>
-            <Button Name="SuccessCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.SuccessCloseButton)</Button>
+            <Button Name="SuccessCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">
+                <Text>#(loc.SuccessCloseButton)</Text>
+                <CloseWindowAction />
+            </Button>
         </Page>
         <Page Name="Failure">
             <Label X="175" Y="40" Width="-11" Height="80" FontId="2" DisablePrefix="yes">
@@ -65,7 +77,10 @@
             </Label>
             <Hypertext Name="FailureLogFileLink" X="175" Y="125" Width="-11" Height="42" FontId="3" TabStop="yes" HideWhenDisabled="yes">#(loc.FailureHyperlinkLogText)</Hypertext>
             <Hypertext Name="FailureMessageText" X="175" Y="170" Width="-11" Height="100" FontId="3" TabStop="yes" HideWhenDisabled="yes" />
-            <Button Name="FailureCloseButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.FailureCloseButton)</Button>
+            <Button Name="FailureCloseButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">
+                <Text>#(loc.FailureCloseButton)</Text>
+                <CloseWindowAction />
+            </Button>
         </Page>
     </Window>
 </Theme>
