@@ -12,6 +12,7 @@
   -->
   <PropertyGroup>
     <InstallerVersion Condition=" '$(InstallerVersion)' == '' ">0.1.0</InstallerVersion>
+    <BuildBundledDriverMsis Condition=" '$(BuildBundledDriverMsis)' == '' ">true</BuildBundledDriverMsis>
     <SpiceDriver64MsiPath Condition=" '$(SpiceDriver64MsiPath)' == '' ">C:\msi\spice-driver-x64.msi</SpiceDriver64MsiPath>
     <SpiceDriver86MsiPath Condition=" '$(SpiceDriver86MsiPath)' == '' ">C:\msi\spice-driver-x86.msi</SpiceDriver86MsiPath>
     <SpiceVdagent64MsiPath Condition=" '$(SpiceVdagent64MsiPath)' == '' ">C:\msi\spice-vdagent-x64.msi</SpiceVdagent64MsiPath>
@@ -47,4 +48,14 @@
   <ItemGroup>
     <PackageReference Include="WixToolset.Bal.wixext" Version="6.0.2" />
   </ItemGroup>
+  <Target Name="BuildBundledDriverMsis"
+          BeforeTargets="CoreCompile"
+          Condition=" '$(BuildBundledDriverMsis)' == 'true' and '$(DesignTimeBuild)' != 'true' ">
+    <MSBuild Projects="$(MSBuildThisFileDirectory)..\virtio-win-drivers-installer\virtio-win-drivers-installer.wixproj"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);Platform=x64;InstallerVersion=$(InstallerVersion)" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)..\virtio-win-drivers-installer\virtio-win-drivers-installer.wixproj"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);Platform=x86;InstallerVersion=$(InstallerVersion)" />
+  </Target>
 </Project>
