@@ -1,0 +1,40 @@
+<Project Sdk="WixToolset.Sdk/6.0.2">
+  <PropertyGroup>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <OutputName>virtio-win-gt-$(Platform)</OutputName>
+    <Cultures>en-us</Cultures>
+    <SuppressValidation>true</SuppressValidation>
+  </PropertyGroup>
+  <!--
+    Configurable properties - override at build time:
+      msbuild /p:InstallerVersion=1.2.3 /p:VirtioWinDriversPath=C:\path\to\drivers
+    Or edit the defaults below for local development.
+  -->
+  <PropertyGroup>
+    <InstallerVersion Condition=" '$(InstallerVersion)' == '' ">0.1.0</InstallerVersion>
+    <VirtioWinDriversPath Condition=" '$(VirtioWinDriversPath)' == '' ">C:\virtio-win-drivers</VirtioWinDriversPath>
+    <DefineConstants>Version=$(InstallerVersion);virtio_path=$(VirtioWinDriversPath)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="6.0.2" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="6.0.2" />
+  </ItemGroup>
+</Project>

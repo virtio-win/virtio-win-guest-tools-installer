@@ -1,0 +1,61 @@
+<Project Sdk="WixToolset.Sdk/6.0.2">
+  <PropertyGroup>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <OutputName>virtio-win-guest-tools</OutputName>
+    <OutputType>Bundle</OutputType>
+    <SuppressValidation>true</SuppressValidation>
+  </PropertyGroup>
+  <!--
+    Configurable properties - override at build time:
+      msbuild /p:InstallerVersion=1.2.3 /p:SpiceDriver64MsiPath=C:\path\to\spice-driver-x64.msi ...
+    Or edit the defaults below for local development.
+  -->
+  <PropertyGroup>
+    <InstallerVersion Condition=" '$(InstallerVersion)' == '' ">0.1.0</InstallerVersion>
+    <BuildBundledDriverMsis Condition=" '$(BuildBundledDriverMsis)' == '' ">true</BuildBundledDriverMsis>
+    <SpiceDriver64MsiPath Condition=" '$(SpiceDriver64MsiPath)' == '' ">C:\msi\spice-driver-x64.msi</SpiceDriver64MsiPath>
+    <SpiceDriver86MsiPath Condition=" '$(SpiceDriver86MsiPath)' == '' ">C:\msi\spice-driver-x86.msi</SpiceDriver86MsiPath>
+    <SpiceVdagent64MsiPath Condition=" '$(SpiceVdagent64MsiPath)' == '' ">C:\msi\spice-vdagent-x64.msi</SpiceVdagent64MsiPath>
+    <SpiceVdagent86MsiPath Condition=" '$(SpiceVdagent86MsiPath)' == '' ">C:\msi\spice-vdagent-x86.msi</SpiceVdagent86MsiPath>
+    <QemuGa64MsiPath Condition=" '$(QemuGa64MsiPath)' == '' ">C:\msi\qemu-ga-x64.msi</QemuGa64MsiPath>
+    <QemuGa86MsiPath Condition=" '$(QemuGa86MsiPath)' == '' ">C:\msi\qemu-ga-x86.msi</QemuGa86MsiPath>
+    <VirtioWinGtX64MsiPath Condition=" '$(VirtioWinGtX64MsiPath)' == '' ">$(MSBuildThisFileDirectory)..\virtio-win-drivers-installer\bin\x64\$(Configuration)\virtio-win-gt-x64.msi</VirtioWinGtX64MsiPath>
+    <VirtioWinGtX86MsiPath Condition=" '$(VirtioWinGtX86MsiPath)' == '' ">$(MSBuildThisFileDirectory)..\virtio-win-drivers-installer\bin\x86\$(Configuration)\virtio-win-gt-x86.msi</VirtioWinGtX86MsiPath>
+    <DefineConstants>Version=$(InstallerVersion);VirtioWinGtX64MsiPath=$(VirtioWinGtX64MsiPath);VirtioWinGtX86MsiPath=$(VirtioWinGtX86MsiPath);SpiceDriver64MsiPath=$(SpiceDriver64MsiPath);SpiceDriver86MsiPath=$(SpiceDriver86MsiPath);SpiceVdagent64MsiPath=$(SpiceVdagent64MsiPath);SpiceVdagent86MsiPath=$(SpiceVdagent86MsiPath);QemuGa64MsiPath=$(QemuGa64MsiPath);QemuGa86MsiPath=$(QemuGa86MsiPath)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Resources\Theme.xml" />
+    <Content Include="Resources\Theme.wxl" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Bal.wixext" Version="6.0.2" />
+  </ItemGroup>
+  <Target Name="BuildBundledDriverMsis"
+          BeforeTargets="CoreCompile"
+          Condition=" '$(BuildBundledDriverMsis)' == 'true' and '$(DesignTimeBuild)' != 'true' ">
+    <MSBuild Projects="$(MSBuildThisFileDirectory)..\virtio-win-drivers-installer\virtio-win-drivers-installer.wixproj"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);Platform=x64;InstallerVersion=$(InstallerVersion)" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)..\virtio-win-drivers-installer\virtio-win-drivers-installer.wixproj"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);Platform=x86;InstallerVersion=$(InstallerVersion)" />
+  </Target>
+</Project>

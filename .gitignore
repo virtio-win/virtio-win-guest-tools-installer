@@ -13,3 +13,12 @@ vwi/
 spice/
 qemu-ga/
 */__pycache__
+
+# Visual Studio build artifacts
+bin/
+obj/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vs/

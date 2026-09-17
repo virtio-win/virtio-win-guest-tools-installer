@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
-<Include xmlns:dins='http://www.redhat.com/DrvInstExt'>
+<Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
     <Fragment>
         <ComponentGroup
             Id="CMPG_$(var.osFullName)_$(var.driverName)"
@@ -9,8 +9,8 @@
                 Guid='$(var.guid)'
                 Transitive='no'
                 Permanent='$(var.permanent)'
-                Win64='$(var.Win64)'>
-                <Condition><![CDATA[$(var.condition)]]></Condition>
+                Bitness="$(var.RegistryBitness)"
+                Condition="$(var.condition)">
                 <File Id='FILE_$(var.driverName)_$(var.osShort)_$(var.ISA).inf'
                     Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\$(var.driverName).inf' 
                     KeyPath='yes'/>
@@ -22,11 +22,20 @@
                     Source='$(var.virtio_path)\$(var.srcDirName)\$(var.osShort)\$(var.ISA)\$(var.driverName).sys'
                     CompanionFile='FILE_$(var.driverName)_$(var.osShort)_$(var.ISA).inf'/>
                 <?endif?>
-                <dins:DriverInstall FileName = '$(var.driverName).inf' Directory = '$(var.destDirName)' Flags = '$(var.flags)' Sequence = '$(var.sequence)'/>
             </Component>
             <?if $(var.extra_components) = "true" ?>
             <?include ../$(var.srcDirName)/$(var.driverName)_extras.wxi ?>
             <?endif?>
         </ComponentGroup>
+
+        <CustomTableRef Id="DriverInstallTable">
+            <Row>
+                <Data Column="Component" Value="CMP_$(var.osFullName)_$(var.driverName)" />
+                <Data Column="FileName" Value="$(var.driverName).inf" />
+                <Data Column="Directory" Value="$(var.destDirName)" />
+                <Data Column="Flags" Value="$(var.flags)" />
+                <Data Column="Sequence" Value="$(var.sequence)" />
+            </Row>
+        </CustomTableRef>
     </Fragment>
 </Include>
