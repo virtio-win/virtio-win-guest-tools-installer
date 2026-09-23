@@ -69,6 +69,27 @@
 <?undef netkvm_netkvmco_guid?>
 <?undef netkvm_readme_guid?>
 <?undef guid?>
+<?elseif $(sys.BUILDARCH) = "arm64" ?>
+<!-- w10arm64 -->
+<?define guid = "9287351C-4530-4E3A-9925-8DB1B3F59A29"?>
+<?define netkvm_netkvmp_guid = "52AE076A-B925-4554-AE83-CF900CC21D4A"?>
+<?define netkvm_netkvmco_guid = "30DF0666-DF7A-4650-A86C-5A7F93C3830F"?>
+<?define netkvm_readme_guid = "EDEE3B26-10E9-4653-8C4A-63C7DB974229"?>
+<?include ../GenericWindowsComponets/w10arm64.wxi ?>
+<?undef netkvm_netkvmp_guid?>
+<?undef netkvm_netkvmco_guid?>
+<?undef netkvm_readme_guid?>
+<?undef guid?>
+<!-- w11arm64 -->
+<?define guid = "F7C567A5-3E01-4E37-8ED3-A63C610F4035"?>
+<?define netkvm_netkvmp_guid = "2E18F43B-0E11-4B52-8385-4F10E7A0F0C2"?>
+<?define netkvm_netkvmco_guid = "20ECCCF1-33CF-459E-AC6F-1A45380D84E9"?>
+<?define netkvm_readme_guid = "C173058C-15D0-48CA-8661-71CE76BD6910"?>
+<?include ../GenericWindowsComponets/w11arm64.wxi ?>
+<?undef netkvm_netkvmp_guid?>
+<?undef netkvm_netkvmco_guid?>
+<?undef netkvm_readme_guid?>
+<?undef guid?>
 <?else ?>
 <!-- w10x86 -->
 <?define guid = "51E576FD-C649-4D6C-B30D-8FD5807318C1"?>

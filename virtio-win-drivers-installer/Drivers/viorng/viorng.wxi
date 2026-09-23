@@ -45,6 +45,19 @@
 <?include ../GenericWindowsComponets/w11x64.wxi ?>
 <?undef viorng_viorngum_guid?>
 <?undef guid?>
+<?elseif $(sys.BUILDARCH) = "arm64" ?>
+<!-- w10arm64 -->
+<?define guid = "5E0C1423-CE6A-42BF-9C53-F733A3820B7F"?>
+<?define viorng_viorngum_guid = "BD33708E-ADB1-41B0-AD34-D847FE83385F"?>
+<?include ../GenericWindowsComponets/w10arm64.wxi ?>
+<?undef viorng_viorngum_guid?>
+<?undef guid?>
+<!-- w11arm64 -->
+<?define guid = "1B05B7FD-7E74-472F-AD1B-EDFE09830288"?>
+<?define viorng_viorngum_guid = "023A6BCC-E1BE-42F5-B5B7-DB646FAFFEBB"?>
+<?include ../GenericWindowsComponets/w11arm64.wxi ?>
+<?undef viorng_viorngum_guid?>
+<?undef guid?>
 <?else ?>
 <!-- w10x86 -->
 <?define guid = "8702F843-FC88-4810-9BB4-E28560187290"?>

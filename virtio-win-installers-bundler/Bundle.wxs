@@ -17,14 +17,34 @@
         ThemeFile="Resources/Theme.xml"
         LocalizationFile="Resources/Theme.wxl"/>
     </BootstrapperApplication>
+    <!--
+      VersionNT64 is set on both x64 and arm64 Windows, so it cannot tell them apart; and when this
+      bundle runs as an x64 process on arm64 Windows (emulated), ProcessorArchitecture reports x64.
+      NativeMachine is the built-in Burn variable that reports the real machine type
+      (IMAGE_FILE_MACHINE_ARM64 = 0xAA64 = 43620). It is only set on Windows 10 1511 and later, so on
+      anything older the "NOT (NativeMachine = 43620)" tests below evaluate true, which is correct
+      there as arm64 Windows did not exist yet.
+
+      The arm64 packages are only included when IncludeArm64 is defined (see the .wixproj).
+      Spice has no arm64 build, so no Spice packages are installed on arm64.
+    -->
     <Chain>
       <MsiPackage
          SourceFile="$(var.VirtioWinGtX64MsiPath)"
-         InstallCondition="VersionNT64"
+         InstallCondition="VersionNT64 AND NOT (NativeMachine = 43620)"
          EnableFeatureSelection="yes"
          bal:DisplayInternalUICondition="WixBundleAction = 6"
          DisplayName="virtio-win-drivers"
          Description="MSI to install virtio-win drivers for x64 systems"/>
+<?ifdef IncludeArm64 ?>
+      <MsiPackage
+         SourceFile="$(var.VirtioWinGtArm64MsiPath)"
+         InstallCondition="NativeMachine = 43620"
+         EnableFeatureSelection="yes"
+         bal:DisplayInternalUICondition="WixBundleAction = 6"
+         DisplayName="virtio-win-drivers"
+         Description="MSI to install virtio-win drivers for arm64 systems"/>
+<?endif ?>
       <MsiPackage
          SourceFile="$(var.VirtioWinGtX86MsiPath)"
          InstallCondition="NOT VersionNT64"
@@ -33,20 +53,25 @@
          DisplayName="virtio-win-drivers"
          Description="MSI to install virtio-win drivers for x86 systems"/>
       <MsiPackage SourceFile="$(var.SpiceDriver64MsiPath)"
-         InstallCondition="VersionNT64 AND VersionNT64 > v8"
+         InstallCondition="VersionNT64 AND VersionNT64 > v8 AND NOT (NativeMachine = 43620)"
          DisplayName="spice-driver"/>
       <MsiPackage SourceFile="$(var.SpiceDriver86MsiPath)"
          InstallCondition="NOT VersionNT64 AND VersionNT > v8"
          DisplayName="spice-driver"/>
       <MsiPackage SourceFile="$(var.SpiceVdagent64MsiPath)"
-         InstallCondition="VersionNT64"
+         InstallCondition="VersionNT64 AND NOT (NativeMachine = 43620)"
          DisplayName="spice-guest-agent"/>
       <MsiPackage SourceFile="$(var.SpiceVdagent86MsiPath)"
          InstallCondition="NOT VersionNT64"
          DisplayName="spice-guest-agent"/>
       <MsiPackage SourceFile="$(var.QemuGa64MsiPath)"
-         InstallCondition="VersionNT64"
+         InstallCondition="VersionNT64 AND NOT (NativeMachine = 43620)"
          DisplayName="qemu-guest-agent"/>
+<?ifdef QemuGaArm64MsiPath ?>
+      <MsiPackage SourceFile="$(var.QemuGaArm64MsiPath)"
+         InstallCondition="NativeMachine = 43620"
+         DisplayName="qemu-guest-agent"/>
+<?endif ?>
       <MsiPackage SourceFile="$(var.QemuGa86MsiPath)"
          InstallCondition="NOT VersionNT64"
          DisplayName="qemu-guest-agent"/>

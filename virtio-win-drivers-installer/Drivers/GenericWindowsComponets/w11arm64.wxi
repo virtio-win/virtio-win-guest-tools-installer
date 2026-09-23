@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
+<?define osFullName = "Win11arm64" ?>
+<?define osShort = "w11" ?>
+<?define ISA = "ARM64" ?>
+<?define RegistryBitness = "always64" ?>
+<?define condition = "$(var.condition_w11arm64)" ?>
+<?include ./template.wxi ?>
+<?undef osFullName?>
+<?undef osShort?>
+<?undef ISA?>
+<?undef RegistryBitness?>
+<?undef condition?>
+</Include>
