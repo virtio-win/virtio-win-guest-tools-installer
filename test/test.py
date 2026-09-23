@@ -5,6 +5,7 @@ import msi_values
 
 MSIx64_PATH = "../tmp/virtio-win-drivers-installer/virtio-win-gt-x64.msi"
 MSIx86_PATH = "../tmp/virtio-win-drivers-installer/virtio-win-gt-x86.msi"
+MSIarm64_PATH = "../tmp/virtio-win-drivers-installer/virtio-win-gt-arm64.msi"
 
 
 def run_command(command):
@@ -75,7 +76,12 @@ class MSI(object):
 
 @pytest.fixture(scope="session")
 def get_msis():
-    return [MSI(MSIx64_PATH, "x64"), MSI(MSIx86_PATH, "x86")]
+    msis = [MSI(MSIx64_PATH, "x64"), MSI(MSIx86_PATH, "x86")]
+    # arm64 needs Libraries/arm64/DrvInstCA.dll to have been built, so it is only
+    # checked when its MSI is there. x64 and x86 stay mandatory.
+    if os.path.exists(MSIarm64_PATH):
+        msis.append(MSI(MSIarm64_PATH, "arm64"))
+    return msis
 
 
 def _generic_msi_value_test(msis, table, expected):
