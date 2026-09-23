@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
-<Include>
+<Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
     <Fragment>
         <ComponentGroup
             Id="CMPG_$(var.osFullName)_viogpudo_service"
@@ -8,8 +8,8 @@
             <Component Id='CMP_vgpusrv_$(var.osShort)_$(var.ISA)'
                 Guid='$(var.viogpudo_vgpusrv_guid)'
                 Transitive='no'
-                Win64='$(var.Win64)'>
-                <Condition><![CDATA[$(var.condition)]]></Condition>
+                Bitness="$(var.RegistryBitness)"
+                Condition="$(var.condition)">
                 <File Id='FILE_vgpusrv_$(var.osShort)_$(var.ISA)'
                     Source='$(var.virtio_path)\viogpudo\$(var.osShort)\$(var.ISA)\vgpusrv.exe'
                     KeyPath='yes'/>
@@ -33,8 +33,8 @@
             <Component Id='CMP_viogpuap_$(var.osShort)_$(var.ISA)'
                 Guid='$(var.viogpudo_viogpuap_guid)'
                 Transitive='no'
-                Win64='$(var.Win64)'>
-                <Condition><![CDATA[$(var.condition)]]></Condition>
+                Bitness="$(var.RegistryBitness)"
+                Condition="$(var.condition)">
                 <File Id='FILE_viogpuap_$(var.osShort)_$(var.ISA)'
                     Source='$(var.virtio_path)\viogpudo\$(var.osShort)\$(var.ISA)\viogpuap.exe'
                     KeyPath='yes'/>
