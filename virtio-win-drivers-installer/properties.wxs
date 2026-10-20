@@ -20,12 +20,12 @@
     <!-- Launch Condition to disable launch on arch x86-->
     <Fragment>
         <Property Id="x86_Validation" Value="1" />
-        <Launch Condition="VersionNT &lt;&gt; VersionNT64 AND &quot;$(sys.BUILDARCH)&quot; = &quot;x86&quot;" Message="Detected x64 Windows version, please use a x64 installer" />
+        <Launch Condition="VersionNT &lt;&gt; VersionNT64 AND &quot;$(sys.BUILDARCH)&quot; = &quot;x86&quot;" Message="Detected x64 Windows version, please use an x64 installer" />
     </Fragment>
     <!-- Launch Condition to disable launch on arch x64 -->
     <Fragment>
         <Property Id="x64_Validation" Value="1" />
-        <Launch Condition="VersionNT = VersionNT64 AND &quot;$(sys.BUILDARCH)&quot; = &quot;x64&quot;" Message="Detected x86 Windows version, please use a x86 installer" />
+        <Launch Condition="VersionNT = VersionNT64 AND &quot;$(sys.BUILDARCH)&quot; = &quot;x64&quot;" Message="Detected x86 Windows version, please use an x86 installer" />
     </Fragment>
     <!-- Query the ProductName registry value to detect os version -->
     <Fragment>
@@ -60,12 +60,12 @@
                 Name="UninstallString"
                 Bitness="$(var.RegistryBitness)"/>
         </Property>
-        <CustomAction 
+        <CustomAction
             Id="CA_InvokeUninstallWGT"
             Directory="TARGETDIR"
             ExeCommand='cmd.exe /c [REGISTRYSEARCH_OLD_WGT_UNINSTALL_PATH]'/>
         <CustomAction
-            Id="CA_OldInstallerError" 
+            Id="CA_OldInstallerError"
             Error="An old version of WGT has been detected please uninstall it and try again"/>
     </Fragment>
     <!-- This Properties are for back up and update static IP logic -->
