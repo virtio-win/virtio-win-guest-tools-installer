@@ -113,6 +113,7 @@ struct AdapterConfig
     std::wstring srvc_name;
     std::wstring dns_host_name;
     std::wstring net_conn_id;
+    std::wstring setting_id;
     std::wstring ipv4_addr_prim;
     std::wstring ipv4_subnet_prim;
 

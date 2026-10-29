@@ -83,7 +83,18 @@ bool WriteConnectionName(const std::wstring& guid, const std::wstring& name)
     return (rc == ERROR_SUCCESS);
 }
 
-// Read primary stored IP/mask for adapter GUID from SYSTEM\ControlSetNN\Services\Tcpip\Parameters\Interfaces\{GUID}
+std::wstring ReadManualDNS(const std::wstring& guid)
+{
+    if (guid.empty())
+        return std::wstring();
+
+    std::wstring path = L"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces\\" + guid;
+    std::vector<std::wstring> vals = ReadRegStrings(HKEY_LOCAL_MACHINE, path, L"NameServer");
+    if (!vals.empty() && !vals[0].empty())
+        return vals[0];
+    return std::wstring();
+}
+
 bool ReadStaticIPOrder(std::wstring& ipaddr, std::wstring& subnet, const std::wstring& guid)
 {
     ipaddr.clear();

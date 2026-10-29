@@ -89,23 +89,41 @@ bool ConfigWrite::Run()
         while (nac->MoveNext())
         {
             std::wstring srvname = nac->GetStringProperty(SRVSNAME);
-            if (nac->GetBoolProperty(IPEN) &&
-                !nac->GetBoolProperty(DHCPEN) &&
-                (srvname.compare(NETKVM)) == 0)
+            if (srvname.compare(NETKVM) != 0)
+                continue;
+
+            bool ip_enabled = nac->GetBoolProperty(IPEN);
+            bool dhcp_enabled = nac->GetBoolProperty(DHCPEN);
+
+            LogReport(S_OK, L"srvname = %ws, ip_en = %d, dhcp_en = %d",
+                     srvname.c_str(), ip_enabled, dhcp_enabled);
+
+            cf->WriteLine(STRING_FORMAT, MACADDR, VT_BSTR, nac->GetStringProperty(MACADDR).c_str());
+            cf->WriteLine(STRING_FORMAT, DESCR, VT_BSTR, nac->GetStringProperty(DESCR).c_str());
+
+            std::wstring setting_id = nac->GetStringProperty(SETTINGID);
+
+            std::wstring conn_name = ReadConnectionName(setting_id);
+            if (!conn_name.empty())
             {
-                LogReport(S_OK, L"srvmane = %ws", srvname.c_str());
+                LogReport(S_OK, L"conn_name = %ws", conn_name.c_str());
+                cf->WriteLine(STRING_FORMAT, NETCONNID, VT_BSTR, conn_name.c_str());
+            }
 
-                cf->WriteLine(STRING_FORMAT, MACADDR, VT_BSTR, nac->GetStringProperty(MACADDR).c_str());
-                cf->WriteLine(STRING_FORMAT, DESCR, VT_BSTR, nac->GetStringProperty(DESCR).c_str());
-//                cf->WriteLine(INTEGER_FORMAT, DHCPEN, VT_BOOL, nac->GetBoolProperty(DHCPEN));
-                std::wstring setting_id = nac->GetStringProperty(SETTINGID);
-
-                std::wstring conn_name = ReadConnectionName(setting_id);
-                if (!conn_name.empty())
+            if (ip_enabled && dhcp_enabled)
+            {
+                std::wstring manual_dns = ReadManualDNS(setting_id);
+                if (!manual_dns.empty())
                 {
-                    LogReport(S_OK, L"conn_name = %ws", conn_name.c_str());
-                    cf->WriteLine(STRING_FORMAT, NETCONNID, VT_BSTR, conn_name.c_str());
+                    LogReport(S_OK, L"manual_dns = %ws", manual_dns.c_str());
+                    cf->WriteLine(STRING_FORMAT, DNSSRCHORD, VT_ARRAY | VT_BSTR,
+                                 nac->GetSafeArrayProperty(DNSSRCHORD).c_str());
                 }
+            }
+
+            if (ip_enabled && !dhcp_enabled)
+            {
+                cf->WriteLine(INTEGER_FORMAT, DHCPEN, VT_BOOL, dhcp_enabled);
 
                 std::wstring ipaddr = nac->GetSafeArrayProperty(IPADDR).c_str();
                 std::wstring subnet = nac->GetSafeArrayProperty(IPSUBNET).c_str();
@@ -128,7 +146,6 @@ bool ConfigWrite::Run()
 
                 cf->WriteLine(INTEGER_FORMAT, IPCONMET, VT_I4, nac->GetIntProperty(IPCONMET));
                 cf->WriteLine(STRING_FORMAT, DNSDOM, VT_BSTR, nac->GetStringProperty(DNSDOM).c_str());
-//                cf->WriteLine(INTEGER_FORMAT, IPEN, VT_BOOL, nac->GetBoolProperty(IPEN));
                 cf->WriteLine(STRING_FORMAT, DEFIPGW, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(DEFIPGW).c_str());
                 cf->WriteLine(INTEGER_FORMAT, IPFLTSECEN, VT_BOOL, nac->GetBoolProperty(IPFLTSECEN));
                 cf->WriteLine(STRING_FORMAT, DNSDMSUFSRCHORD, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(DNSDMSUFSRCHORD).c_str());
@@ -136,10 +153,11 @@ bool ConfigWrite::Run()
                 cf->WriteLine(INTEGER_FORMAT, DNSWINSRES, VT_BOOL, nac->GetBoolProperty(DNSWINSRES));
                 cf->WriteLine(STRING_FORMAT, DNSSRCHORD, VT_ARRAY | VT_BSTR, nac->GetSafeArrayProperty(DNSSRCHORD).c_str());
                 cf->WriteLine(INTEGER_FORMAT, INDX, VT_I4, nac->GetIntProperty(INDX));
-                // ServiceName must be last: ConfigRead::Run() uses it as the adapter block boundary
-                cf->WriteLine(STRING_FORMAT, SRVSNAME, VT_BSTR, srvname.c_str());
-                cf->WriteLine(STRING_FORMAT, SETTINGID, VT_BSTR, setting_id.c_str());
             }
+
+            cf->WriteLine(STRING_FORMAT, SETTINGID, VT_BSTR, setting_id.c_str());
+            // ServiceName must be last: ConfigRead::Run() uses it as the adapter block boundary
+            cf->WriteLine(STRING_FORMAT, SRVSNAME, VT_BSTR, srvname.c_str());
         }
     }
 
@@ -230,6 +248,10 @@ bool ConfigRead::ProcessString(std::vector<std::wstring>& vector)
     {
         cur.net_conn_id = vector[2].c_str();
     }
+    else if (method == SETTINGID)
+    {
+        cur.setting_id = vector[2].c_str();
+    }
     else if (method == IPADDRPRIM)
     {
         cur.ipv4_addr_prim = vector[2].c_str();
@@ -306,7 +328,7 @@ bool ConfigRead::ProcessArrayOfStrings(std::vector<std::wstring>& vector)
         return false;
     }
 
-    return false;
+    return true;
 }
 
 bool ConfigRead::ProcessParametesAsVector(std::vector<std::wstring>& vector)
@@ -569,25 +591,45 @@ bool ConfigRead::SetGateWays(AdapterConfig const& cfg, bool ipv4)
 
 bool ConfigRead::ApplyAdapterConfig(AdapterConfig const& cfg)
 {
+    bool result = true;
+
     if (!cfg.ipv4_addr.empty() && !EnableStatic(cfg, true))
+    {
         LogReport(S_OK, L"EnableStatic IPv4 failed");
+        result = false;
+    }
 
     if (!cfg.ipv6_addr.empty() && !EnableStatic(cfg, false))
+    {
         LogReport(S_OK, L"EnableStatic IPv6 failed");
+        result = false;
+    }
 
     if (!cfg.dns_serv_srch_ord.empty() && !SetDNSServer(cfg))
+    {
         LogReport(S_OK, L"SetDNSServer failed");
+        result = false;
+    }
 
     if (!cfg.ipv4_def_gw.empty() && !SetGateWays(cfg, true))
+    {
         LogReport(S_OK, L"SetGateWays IPv4 failed");
+        result = false;
+    }
 
     if (!cfg.ipv6_def_gw.empty() && !SetGateWays(cfg, false))
+    {
         LogReport(S_OK, L"SetGateWays IPv6 failed");
+        result = false;
+    }
 
     if (!cfg.dns_serv_srch_ord.empty() && !cfg.dns_dom_suff_srch_ord.empty() && !EnableDNS(cfg))
+    {
         LogReport(S_OK, L"EnableDNS failed");
+        result = false;
+    }
 
-    return true;
+    return result;
 }
 
 bool ConfigRead::Run()
@@ -639,24 +681,27 @@ bool ConfigRead::Run()
                 {
                     LogReport(S_OK, L"Restoring adapter mac=%ws (attempt %d)",
                              mac.c_str(), attempt);
-                    if (ApplyAdapterConfig(adapters[i]))
+
+                    bool config_ok = ApplyAdapterConfig(adapters[i]);
+
+                    if (!adapters[i].net_conn_id.empty())
                     {
-                        if (!adapters[i].net_conn_id.empty())
+                        std::wstring cur_guid = nac->GetStringProperty(SETTINGID);
+                        if (WriteConnectionName(cur_guid, adapters[i].net_conn_id))
                         {
-                            std::wstring cur_guid = nac->GetStringProperty(SETTINGID);
-                            if (WriteConnectionName(cur_guid, adapters[i].net_conn_id))
-                            {
-                                LogReport(S_OK, L"Restored connection name '%ws' for adapter %ws",
-                                         adapters[i].net_conn_id.c_str(), mac.c_str());
-                            }
-                            else
-                            {
-                                LogReport(S_OK, L"Failed to restore connection name '%ws' for adapter %ws",
-                                         adapters[i].net_conn_id.c_str(), mac.c_str());
-                            }
+                            LogReport(S_OK, L"Restored connection name '%ws' for adapter %ws",
+                                     adapters[i].net_conn_id.c_str(), mac.c_str());
                         }
-                        restored.insert(i);
+                        else
+                        {
+                            LogReport(S_OK, L"Failed to restore connection name '%ws' for adapter %ws",
+                                     adapters[i].net_conn_id.c_str(), mac.c_str());
+                        }
                     }
+
+                    if (config_ok)
+                        restored.insert(i);
+
                     break;
                 }
             }
