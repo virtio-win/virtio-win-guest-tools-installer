@@ -33,6 +33,15 @@
 <?define guid = "B465A5A3-25A9-4924-9F6F-79BFE5066DC3"?>
 <?include ../GenericWindowsComponets/w11x64.wxi ?>
 <?undef guid?>
+<?elseif $(sys.BUILDARCH) = "arm64" ?>
+<!-- w10arm64 -->
+<?define guid = "4FD4CA63-0121-4F87-BF52-AA7230258AA4"?>
+<?include ../GenericWindowsComponets/w10arm64.wxi ?>
+<?undef guid?>
+<!-- w11arm64 -->
+<?define guid = "92BD2994-96F9-4641-B387-BE3F63D46950"?>
+<?include ../GenericWindowsComponets/w11arm64.wxi ?>
+<?undef guid?>
 <?else ?>
 <!-- w10x86 -->
 <?define guid = "EFC3F660-58A8-44EE-AACD-4C04FD4B4C7D"?>

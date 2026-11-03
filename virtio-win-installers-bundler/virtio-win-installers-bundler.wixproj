@@ -23,6 +23,23 @@
     <VirtioWinGtX86MsiPath Condition=" '$(VirtioWinGtX86MsiPath)' == '' ">$(MSBuildThisFileDirectory)..\virtio-win-drivers-installer\bin\x86\$(Configuration)\virtio-win-gt-x86.msi</VirtioWinGtX86MsiPath>
     <DefineConstants>Version=$(InstallerVersion);VirtioWinGtX64MsiPath=$(VirtioWinGtX64MsiPath);VirtioWinGtX86MsiPath=$(VirtioWinGtX86MsiPath);SpiceDriver64MsiPath=$(SpiceDriver64MsiPath);SpiceDriver86MsiPath=$(SpiceDriver86MsiPath);SpiceVdagent64MsiPath=$(SpiceVdagent64MsiPath);SpiceVdagent86MsiPath=$(SpiceVdagent86MsiPath);QemuGa64MsiPath=$(QemuGa64MsiPath);QemuGa86MsiPath=$(QemuGa86MsiPath)</DefineConstants>
   </PropertyGroup>
+  <!--
+    ARM64 support. IncludeArm64 defaults to true when the arm64 custom action library has been built
+    (Libraries\arm64\DrvInstCA.dll exists) and false otherwise, so a tree without it still builds as before.
+    Override with /p:IncludeArm64=true|false. QemuGaArm64MsiPath is optional: the arm64 qemu-guest-agent MSI is
+    only added to the bundle when it is set. Spice has no arm64 build, so nothing is added for it.
+  -->
+  <PropertyGroup>
+    <IncludeArm64 Condition=" '$(IncludeArm64)' == '' and Exists('$(MSBuildThisFileDirectory)..\Libraries\arm64\DrvInstCA.dll') ">true</IncludeArm64>
+    <IncludeArm64 Condition=" '$(IncludeArm64)' == '' ">false</IncludeArm64>
+    <VirtioWinGtArm64MsiPath Condition=" '$(VirtioWinGtArm64MsiPath)' == '' ">$(MSBuildThisFileDirectory)..\virtio-win-drivers-installer\bin\arm64\$(Configuration)\virtio-win-gt-arm64.msi</VirtioWinGtArm64MsiPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(IncludeArm64)' == 'true' ">
+    <DefineConstants>$(DefineConstants);IncludeArm64=1;VirtioWinGtArm64MsiPath=$(VirtioWinGtArm64MsiPath)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(QemuGaArm64MsiPath)' != '' ">
+    <DefineConstants>$(DefineConstants);QemuGaArm64MsiPath=$(QemuGaArm64MsiPath)</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
@@ -38,6 +55,15 @@
     <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|arm64' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|arm64' ">
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
@@ -57,5 +83,9 @@
     <MSBuild Projects="$(MSBuildThisFileDirectory)..\virtio-win-drivers-installer\virtio-win-drivers-installer.wixproj"
              Targets="Build"
              Properties="Configuration=$(Configuration);Platform=x86;InstallerVersion=$(InstallerVersion)" />
+    <MSBuild Condition=" '$(IncludeArm64)' == 'true' "
+             Projects="$(MSBuildThisFileDirectory)..\virtio-win-drivers-installer\virtio-win-drivers-installer.wixproj"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);Platform=arm64;InstallerVersion=$(InstallerVersion)" />
   </Target>
 </Project>

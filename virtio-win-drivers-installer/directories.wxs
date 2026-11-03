@@ -7,17 +7,28 @@
                 <Directory Id="INSTALLERDIR" Name="Virtio-Win">
                     <Directory Id="BALLOON" Name="Balloon"/>
                     <Directory Id="NETWORK" Name="Network"/>
+<?if NOT ($(sys.BUILDARCH) = "arm64") ?>
+                    <!-- pvpanic has arm64 configurations in the driver source, but no arm64 build
+                         of it is published in the virtio-win driver tree yet. Remove this guard
+                         (and the matching one in features.wxs) once one is. -->
                     <Directory Id="PVPANIC" Name="Pvpanic"/>
+<?endif ?>
+<?if NOT ($(sys.BUILDARCH) = "arm64") ?>
+                    <!-- fwcfg, qemupciserial and viofs have no arm64 driver build at all yet -->
                     <Directory Id="FWCFG" Name="Fwcfg"/>
                     <Directory Id="QEMUPCISERIAL" Name="Qemupciserial"/>
+<?endif ?>
                     <Directory Id="VIOINPUT" Name="Vioinput"/>
                     <Directory Id="VIORNG" Name="Viorng"/>
                     <Directory Id="VIOSCSI" Name="Vioscsi"/>
                     <Directory Id="VIOSERIAL" Name="Vioserial"/>
                     <Directory Id="VIOSTOR" Name="Viostor"/>
+<?if NOT ($(sys.BUILDARCH) = "arm64") ?>
+                    <!-- no arm64 build of viofs exists yet -->
                     <Directory Id="VIOFS" Name="VioFS"/>
+<?endif ?>
                     <Directory Id="VIOGPUDO" Name="Viogpudo"/>
-<?if $(sys.BUILDARCH) = "x64" ?>
+<?if $(sys.BUILDARCH) = "x64" OR $(sys.BUILDARCH) = "arm64" ?>
                     <Directory Id="VIOMEM" Name="Viomem"/>
 <?endif ?>
                 </Directory>
