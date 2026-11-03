@@ -17,6 +17,15 @@
         ThemeFile="Resources/Theme.xml"
         LocalizationFile="Resources/Theme.wxl"/>
     </BootstrapperApplication>
+<?ifndef IncludeArm64 ?>
+    <!--
+      Without the arm64 packages, every package in the chain has a false InstallCondition on arm64
+      Windows, so the bundle would report success having installed nothing. Refuse to start there instead.
+    -->
+    <bal:Condition
+      Condition="NOT (NativeMachine = 43620)"
+      Message="This build of Virtio-win-guest-tools does not include the ARM64 drivers, so it cannot be installed on ARM64 Windows."/>
+<?endif ?>
     <!--
       VersionNT64 is set on both x64 and arm64 Windows, so it cannot tell them apart; and when this
       bundle runs as an x64 process on arm64 Windows (emulated), ProcessorArchitecture reports x64.
