@@ -623,12 +623,6 @@ bool ConfigRead::ApplyAdapterConfig(AdapterConfig const& cfg)
         result = false;
     }
 
-    if (!cfg.dns_serv_srch_ord.empty() && !cfg.dns_dom_suff_srch_ord.empty() && !EnableDNS(cfg))
-    {
-        LogReport(S_OK, L"EnableDNS failed");
-        result = false;
-    }
-
     return result;
 }
 
