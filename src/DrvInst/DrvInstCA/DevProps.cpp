@@ -778,7 +778,10 @@ bool DevDriver::Install()
         }
         FindStrongName();
         SetComponentRegKey();
-        RemovePreviousVersions();
+        if (!m_bRebootNeeded)
+        {
+            RemovePreviousVersions();
+        }
         return true;
     }
 
