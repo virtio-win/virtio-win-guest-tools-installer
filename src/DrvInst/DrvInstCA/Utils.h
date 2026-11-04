@@ -2,6 +2,7 @@
 
 #include <string>
 bool ReadStaticIPOrder(std::wstring& ipaddr, std::wstring& subnet, const std::wstring& guid);
+bool ReadAllStaticIPs(std::wstring& ipaddrs, std::wstring& subnets, const std::wstring& guid);
 std::wstring ReadConnectionName(const std::wstring& guid);
 bool WriteConnectionName(const std::wstring& guid, const std::wstring& name);
 std::wstring ReadManualDNS(const std::wstring& guid);

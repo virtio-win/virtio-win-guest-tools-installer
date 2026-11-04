@@ -95,15 +95,14 @@ std::wstring ReadManualDNS(const std::wstring& guid)
     return std::wstring();
 }
 
-bool ReadStaticIPOrder(std::wstring& ipaddr, std::wstring& subnet, const std::wstring& guid)
+static bool ReadRegistryIPs(std::vector<std::wstring>& ips, std::vector<std::wstring>& masks, const std::wstring& guid)
 {
-    ipaddr.clear();
-    subnet.clear();
+    ips.clear();
+    masks.clear();
 
     if (guid.empty())
         return false;
 
-    // Determine active ControlSet
     HKEY hKey = NULL;
     DWORD current = 0;
     DWORD size = sizeof(current);
@@ -124,25 +123,51 @@ bool ReadStaticIPOrder(std::wstring& ipaddr, std::wstring& subnet, const std::ws
 
     std::wstring controlSet(controlSetBuf);
 
-    // Build registry path using the computed control set
     std::wstring path = L"SYSTEM\\" + controlSet + L"\\Services\\Tcpip\\Parameters\\Interfaces\\" + guid;
 
-    // Read IPAddress entries
-    std::vector<std::wstring> ips = ReadRegStrings(HKEY_LOCAL_MACHINE, path, L"IPAddress");
-    // Read SubnetMask entries (common name). Fall back to "IPMask" if not present.
-    std::vector<std::wstring> masks = ReadRegStrings(HKEY_LOCAL_MACHINE, path, L"SubnetMask");
+    ips = ReadRegStrings(HKEY_LOCAL_MACHINE, path, L"IPAddress");
+    masks = ReadRegStrings(HKEY_LOCAL_MACHINE, path, L"SubnetMask");
     if (masks.empty())
         masks = ReadRegStrings(HKEY_LOCAL_MACHINE, path, L"IPMask");
 
-    if (ips.empty())
+    return !ips.empty();
+}
+
+bool ReadStaticIPOrder(std::wstring& ipaddr, std::wstring& subnet, const std::wstring& guid)
+{
+    ipaddr.clear();
+    subnet.clear();
+
+    std::vector<std::wstring> ips, masks;
+    if (!ReadRegistryIPs(ips, masks, guid))
         return false;
 
-    // Use the first stored entry as the primary
     ipaddr = ips[0];
     if (!masks.empty())
         subnet = masks[0];
-    else
-        subnet.clear();
+
+    return true;
+}
+
+bool ReadAllStaticIPs(std::wstring& ipaddrs, std::wstring& subnets, const std::wstring& guid)
+{
+    ipaddrs.clear();
+    subnets.clear();
+
+    std::vector<std::wstring> ips, masks;
+    if (!ReadRegistryIPs(ips, masks, guid))
+        return false;
+
+    for (size_t i = 0; i < ips.size(); ++i)
+    {
+        if (i > 0) ipaddrs += L";";
+        ipaddrs += ips[i];
+    }
+    for (size_t i = 0; i < masks.size(); ++i)
+    {
+        if (i > 0) subnets += L";";
+        subnets += masks[i];
+    }
 
     return true;
 }

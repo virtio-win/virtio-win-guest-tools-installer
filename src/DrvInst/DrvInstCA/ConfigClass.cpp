@@ -125,8 +125,12 @@ bool ConfigWrite::Run()
             {
                 cf->WriteLine(INTEGER_FORMAT, DHCPEN, VT_BOOL, dhcp_enabled);
 
-                std::wstring ipaddr = nac->GetSafeArrayProperty(IPADDR).c_str();
-                std::wstring subnet = nac->GetSafeArrayProperty(IPSUBNET).c_str();
+                std::wstring ipaddr, subnet;
+                if (!ReadAllStaticIPs(ipaddr, subnet, setting_id))
+                {
+                    ipaddr = nac->GetSafeArrayProperty(IPADDR);
+                    subnet = nac->GetSafeArrayProperty(IPSUBNET);
+                }
 
                 LogReport(S_OK, L"ipaddr = %ws", ipaddr.c_str());
                 LogReport(S_OK, L"subnet = %ws", subnet.c_str());
