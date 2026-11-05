@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "ConfigClass.h"
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -160,12 +161,12 @@ bool ReadAllStaticIPs(std::wstring& ipaddrs, std::wstring& subnets, const std::w
 
     for (size_t i = 0; i < ips.size(); ++i)
     {
-        if (i > 0) ipaddrs += L";";
+        if (i > 0) ipaddrs += STRING_DELIM;
         ipaddrs += ips[i];
     }
     for (size_t i = 0; i < masks.size(); ++i)
     {
-        if (i > 0) subnets += L";";
+        if (i > 0) subnets += STRING_DELIM;
         subnets += masks[i];
     }
 
