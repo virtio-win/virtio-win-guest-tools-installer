@@ -274,6 +274,7 @@
     <ClCompile Include="ConfigFile.cpp" />
     <ClCompile Include="CustomAction.cpp" />
     <ClCompile Include="DevProps.cpp" />
+    <ClCompile Include="DriverTransaction.cpp" />
     <ClCompile Include="LogReport.cpp" />
     <ClCompile Include="ManagementClass.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -292,6 +293,7 @@
     <ClInclude Include="ConfigClass.h" />
     <ClInclude Include="ConfigFile.h" />
     <ClInclude Include="DevProps.h" />
+    <ClInclude Include="DriverTransaction.h" />
     <ClInclude Include="ManagementClass.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>

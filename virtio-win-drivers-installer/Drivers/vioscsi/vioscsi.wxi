@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 <?define driverName = "vioscsi" ?>
+<?define driverKey = "VIOSCSI" ?>
 <?define srcDirName = "vioscsi" ?>
 <?define destDirName = "VIOSCSI" ?>
 <?define with_sys = "true"?>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 <?define driverName = "viomem" ?>
+<?define driverKey = "VIOMEM" ?>
 <?define srcDirName = "viomem" ?>
 <?define destDirName = "VIOMEM" ?>
 <?define with_sys = "true"?>

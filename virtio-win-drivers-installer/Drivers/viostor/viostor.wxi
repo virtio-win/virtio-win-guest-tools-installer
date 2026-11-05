@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 <?define driverName = "viostor" ?>
+<?define driverKey = "VIOSTOR" ?>
 <?define srcDirName = "viostor" ?>
 <?define destDirName = "VIOSTOR" ?>
 <?define with_sys = "true"?>

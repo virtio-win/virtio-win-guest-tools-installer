@@ -4,8 +4,10 @@
 <?define osShort = "w11" ?>
 <?define ISA = "amd64" ?>
 <?define RegistryBitness = "always64" ?>
-<?define condition = "$(var.condition_w11x64)" ?>
+<?define condition = "(($(var.condition_w10x64)) OR ($(var.condition_w11x64))) AND ((($(var.condition_w11x64)) AND NOT INSTALLED_W10X64_$(var.driverKey)) OR INSTALLED_W11X64_$(var.driverKey))" ?>
+<?define variantKey = "W11X64" ?>
 <?include ./template.wxi ?>
+<?undef variantKey?>
 <?undef osFullName?>
 <?undef osShort?>
 <?undef ISA?>

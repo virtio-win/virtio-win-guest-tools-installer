@@ -11,7 +11,7 @@
                 KeyPath='yes'/>
             <ServiceInstall
                 Id="VirtioFsSvc_$(var.osShort)_$(var.ISA)"
-                Name="VirtioFsSvc"
+                Name="[VIOFS_SERVICE_NAME]"
                 DisplayName="VirtIO-FS Service"
                 Description="Enables Windows virtual machines to access directories on the host that have been shared with them using virtiofs."
                 Start="demand"
@@ -24,5 +24,13 @@
                 Stop="both"
                 Remove="uninstall"
                 Wait="yes" />
+            <!-- Older releases used a different service name with the same component identity.
+                 Keep that identity and do not wait on their old binary during an upgrade. -->
+            <ServiceControl
+                Id="sc_LegacyVirtioFsSvc_$(var.osShort)_$(var.ISA)"
+                Name="VirtIO-FS Service"
+                Stop="both"
+                Remove="uninstall"
+                Wait="no" />
         </Component>
 </Include>

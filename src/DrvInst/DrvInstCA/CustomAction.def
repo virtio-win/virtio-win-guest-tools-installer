@@ -1,7 +1,12 @@
 LIBRARY "DrvInstCA"
 
 EXPORTS
+    CheckLegacyDriverOwnership
+    ProcessUninstallPackages
     ProcessPackages
+    BeginDriverPackages
+    RollbackDriverPackages
+    CleanupDriverPackages
     InstallPackages
     UninstallPackages
     SaveSettings

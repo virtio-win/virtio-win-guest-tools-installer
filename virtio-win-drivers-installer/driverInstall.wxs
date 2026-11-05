@@ -23,15 +23,27 @@
         <Binary Id="DrvInstallDll" SourceFile="../Libraries/x86/DrvInstCA.dll" />
 <?endif ?>
 
+        <CustomAction Id="CheckLegacyDriverOwnership"
+                      BinaryRef="DrvInstallDll" DllEntry="CheckLegacyDriverOwnership"
+                      Execute="immediate" Return="check" />
+        <CustomAction Id="ProcessDriverUninstallPackages"
+                      BinaryRef="DrvInstallDll" DllEntry="ProcessUninstallPackages"
+                      Execute="immediate" Return="check" />
         <CustomAction Id="ProcessDriverPackages"
                       BinaryRef="DrvInstallDll" DllEntry="ProcessPackages"
                       SuppressModularization="yes" Execute="immediate" />
+        <CustomAction Id="BeginDriverTransaction"
+                      BinaryRef="DrvInstallDll" DllEntry="BeginDriverPackages"
+                      Execute="deferred" Impersonate="no" Return="check" />
+        <CustomAction Id="CleanupDriverTransactions"
+                      BinaryRef="DrvInstallDll" DllEntry="CleanupDriverPackages"
+                      Execute="immediate" Return="check" />
         <CustomAction Id="InstallDriverPackages"
                       BinaryRef="DrvInstallDll" DllEntry="InstallPackages"
                       SuppressModularization="yes" Execute="deferred"
                       Impersonate="no" Return="check" />
         <CustomAction Id="RollbackInstall"
-                      BinaryRef="DrvInstallDll" DllEntry="UninstallPackages"
+                      BinaryRef="DrvInstallDll" DllEntry="RollbackDriverPackages"
                       SuppressModularization="yes" Execute="rollback"
                       Impersonate="no" />
         <CustomAction Id="UninstallDriverPackages"
@@ -39,12 +51,18 @@
                       SuppressModularization="yes" Execute="deferred"
                       Impersonate="no" Return="check" />
         <CustomAction Id="RollbackUninstall"
-                      BinaryRef="DrvInstallDll" DllEntry="InstallPackages"
+                      BinaryRef="DrvInstallDll" DllEntry="RollbackDriverPackages"
                       SuppressModularization="yes" Execute="rollback"
                       Impersonate="no" />
 
         <InstallExecuteSequence>
+            <Custom Action="CheckLegacyDriverOwnership" After="InstallValidate"
+                    Condition="VersionNT &gt;= 603" />
+            <Custom Action="ProcessDriverUninstallPackages" Before="RemoveFiles"
+                    Condition="VersionNT &gt;= 603" />
             <Custom Action="ProcessDriverPackages" After="InstallFiles"
+                    Condition="VersionNT &gt;= 603" />
+            <Custom Action="CleanupDriverTransactions" After="InstallFinalize"
                     Condition="VersionNT &gt;= 603" />
         </InstallExecuteSequence>
 

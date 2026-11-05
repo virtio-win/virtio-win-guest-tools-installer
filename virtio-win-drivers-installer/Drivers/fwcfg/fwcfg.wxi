@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 <?define driverName = "fwcfg" ?>
+<?define driverKey = "FWCFG" ?>
 <?define srcDirName = "fwcfg" ?>
 <?define destDirName = "FWCFG" ?>
 <?define with_sys = "true"?>

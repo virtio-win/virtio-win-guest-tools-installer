@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 <?define driverName = "pvpanic" ?>
+<?define driverKey = "PVPANIC" ?>
 <?define srcDirName = "pvpanic" ?>
 <?define destDirName = "PVPANIC" ?>
 <?define with_sys = "true"?>

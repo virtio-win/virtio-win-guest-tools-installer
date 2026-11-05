@@ -89,6 +89,7 @@ private:
 protected:
     bool SetComponentRegKey(void);
     bool GetComponentRegKey(void);
+    DWORD DeleteComponentRegKey(void);
     bool FindStrongName(void);
     bool FindOemFile();
 
@@ -104,35 +105,4 @@ private:
     std::vector<std::wstring> m_HWID;
     std::vector<std::wstring> m_SrcFiles;
     DRV_VERSION m_DriverVersion;
-};
-
-typedef BOOL(WINAPI* DiUninstallDriverProto)(
-    _In_opt_  HWND hwndParent,
-    _In_      LPCWSTR InfPath,
-    _In_      DWORD Flags,
-    _Out_opt_ PBOOL NeedReboot);
-
-class DevDriver : public DevProps
-{
-public:
-    DevDriver(const PCWSTR inf_name);
-    bool Install();
-    bool UnInstall();
-    ~DevDriver() {};
-    bool IsRebootNeeded(void) { return m_bRebootNeeded; }
-    static bool ScanForHardwareChanges(void);
-private:
-    DWORD InstallOEMInf();
-    DWORD UnInstallOEMInf();
-    DWORD UpdateDriver();
-    HDEVINFO FindNonPresentDevices();
-    VOID MarkDevicesAsNeedReinstall(
-        _In_ HDEVINFO DeviceInfoSet
-    );
-
-    bool RemoveDevices(void);
-    void FindFunctions(void);
-private:
-    BOOL m_bRebootNeeded;
-    DiUninstallDriverProto m_pDiUninstallDriver;
 };
