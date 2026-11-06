@@ -8,20 +8,32 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $installer = New-Object -ComObject WindowsInstaller.Installer
-$inputs = [ordered]@{ Full64=$Full64; Full86=$Full86; NoVss64=$NoVss64; NoVss86=$NoVss86 }
+$inputs = [ordered]@{
+    Full64 = @{ Path=$Full64; Platform='x64' }
+    Full86 = @{ Path=$Full86; Platform='Intel' }
+    NoVss64 = @{ Path=$NoVss64; Platform='x64' }
+    NoVss86 = @{ Path=$NoVss86; Platform='Intel' }
+}
 $packages = [ordered]@{}
 foreach ($entry in $inputs.GetEnumerator()) {
-    if (-not (Test-Path -LiteralPath $entry.Value -PathType Leaf)) {
-        throw "QGA MSI input is missing: $($entry.Value)"
+    $path = $entry.Value.Path
+    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+        throw "QGA MSI input is missing: $path"
     }
     # Read the supplied media MSI only; never open an installed/cached package for writing.
-    $database = $installer.OpenDatabase([IO.Path]::GetFullPath($entry.Value), 0)
+    $database = $installer.OpenDatabase([IO.Path]::GetFullPath($path), 0)
+    # Template Summary property 7 declares platform; do not infer it from the file name.
+    $summary = $database.SummaryInformation(0)
+    $platform = ([string]$summary.Property(7)).Split(';')[0].Trim()
+    if ($platform -ne $entry.Value.Platform) {
+        throw "QGA MSI $($entry.Key) requires platform '$($entry.Value.Platform)', found '$platform': $path"
+    }
     $properties = @{}
     foreach ($name in 'ProductCode','UpgradeCode','ProductVersion') {
         $view = $database.OpenView("SELECT ``Value`` FROM ``Property`` WHERE ``Property``='$name'")
         $view.Execute()
         $record = $view.Fetch()
-        if (-not $record) { throw "QGA MSI has no $name`: $($entry.Value)" }
+        if (-not $record) { throw "QGA MSI has no $name`: $path" }
         $value = [string]$record.StringData(1)
         $properties[$name] = if ($name -eq 'ProductVersion') {
             # MSI compares the first three ProductVersion fields.
@@ -37,7 +49,7 @@ foreach ($entry in $inputs.GetEnumerator()) {
         $view.Execute()
         while ($record = $view.Fetch()) {
             $name = ([string]$record.StringData(1)).Split('|')[-1]
-            if ($name -in 'qga-vss.dll','qga-vss.tlb') { throw "No-VSS input contains $name`: $($entry.Value)" }
+            if ($name -in 'qga-vss.dll','qga-vss.tlb') { throw "No-VSS input contains $name`: $path" }
         }
         $view.Close()
     }

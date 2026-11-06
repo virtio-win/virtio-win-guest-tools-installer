@@ -30,6 +30,7 @@ struct Policy
     LONGLONG target = -1;
     bool switching = false;
 
+    /// Retain the engine and original entry intent before StdBA maps maintenance actions.
     Policy(const BA_FUNCTIONS_CREATE_ARGS* args) : engine(args->pEngine),
         original(args->pCommand->action), display(args->pCommand->display),
         activeResume(args->pCommand->resumeType == BOOTSTRAPPER_RESUME_TYPE_INTERRUPTED ||
@@ -46,18 +47,21 @@ struct Policy
         engine->Log(BOOTSTRAPPER_LOG_LEVEL_ERROR, message);
         engine->SetVariableString(L"QgaLifecycleError", message, FALSE);
     }
+    /// Read a numeric variable; a read failure latches policy failure rather than a default.
     bool Number(LPCWSTR name, LONGLONG& value)
     {
         if (SUCCEEDED(engine->GetVariableNumeric(name, &value))) return true;
         Fail(L"Cannot read a QGA lifecycle variable. No packages will be applied.");
         return false;
     }
+    /// Record engine state and latch failure if the operation's intent cannot be written.
     bool Set(LPCWSTR name, LONGLONG value)
     {
         if (SUCCEEDED(engine->SetVariableNumeric(name, value))) return true;
         Fail(L"Cannot save QGA lifecycle intent. No packages will be applied.");
         return false;
     }
+    /// Evaluate a predicate without treating an evaluation error as permission to proceed.
     bool Test(LPCWSTR expression, BOOL& value)
     {
         if (SUCCEEDED(engine->EvaluateCondition(expression, &value))) return true;
@@ -70,6 +74,7 @@ struct Policy
         Set(L"QgaPendingSource", -1);
         Set(L"QgaPendingTarget", -1);
     }
+    /// Admit pending intent only for a matching active continuation, never ordinary maintenance.
     void Initialize()
     {
         Number(L"QgaVssEnabled", raw);
@@ -97,6 +102,7 @@ struct Policy
 
     // Use only public MSI APIs and read-only cached metadata. Family search alone
     // selects the highest version and cannot reject duplicate or per-user products.
+    /// Accept at most one machine-context MSI per family, with readable matching cached metadata.
     bool Inventory(LPCWSTR variable, bool expected, bool& present)
     {
         WCHAR family[40] = {};
@@ -134,6 +140,7 @@ struct Policy
             present = true;
         }
     }
+    /// Reconcile searches and MSI inventory once, before StdBA evaluates the detected page.
     void Detect()
     {
         if (failed) return;
@@ -190,6 +197,7 @@ struct Policy
             name, reason, error);
         Fail(message);
     }
+    /// Traverse actual SCM configuration with bounds; never activate or reconfigure services.
     bool ServiceDependencies(SC_HANDLE manager, LPCWSTR name, DWORD depth, DWORD& remaining)
     {
         // Bound invalid/custom dependency graphs without starting or reconfiguring services.
@@ -233,6 +241,7 @@ struct Policy
         CloseServiceHandle(service);
         return usable;
     }
+    /// Gate operations touching full QGA; Agent-only operations otherwise need no VSS services.
     bool Dependencies()
     {
         if (target != 1 && actual != 1 && actual != -2) return true;
@@ -249,6 +258,7 @@ struct Policy
         CloseServiceHandle(manager);
         return usable;
     }
+    /// Read the established plan action while preserving the narrower original-entry authorization.
     void Plan()
     {
         if (ready || failed) return;
@@ -284,6 +294,7 @@ struct Policy
 };
 Policy* policy = nullptr;
 
+/// Limit requested-state and file-versioning overrides to the four authored QGA package IDs.
 bool QgaPackage(LPCWSTR id, int& flavor, bool& x64)
 {
     if (!wcscmp(id, L"QgaFull64")) { flavor = 1; x64 = true; }
@@ -293,6 +304,7 @@ bool QgaPackage(LPCWSTR id, int& flavor, bool& x64)
     else return false;
     return true;
 }
+/// Apply policy at supported SDK events; all unhandled events retain StdBA's behavior.
 HRESULT WINAPI Dispatch(BA_FUNCTIONS_MESSAGE message, const LPVOID args, LPVOID results, LPVOID context)
 {
     Policy& p = *static_cast<Policy*>(context);
@@ -370,6 +382,7 @@ HRESULT WINAPI Dispatch(BA_FUNCTIONS_MESSAGE message, const LPVOID args, LPVOID 
 }
 }
 
+/// Validate the SDK ABI before publishing the single policy context and event dispatcher.
 extern "C" HRESULT WINAPI BAFunctionsCreate(const BA_FUNCTIONS_CREATE_ARGS* args, BA_FUNCTIONS_CREATE_RESULTS* results)
 {
     const DWORD64 version = (DWORD64(2024) << 48) | (DWORD64(1) << 32) | (DWORD64(1) << 16);
