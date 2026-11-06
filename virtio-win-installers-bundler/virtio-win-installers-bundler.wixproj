@@ -23,8 +23,11 @@
     <QemuGaNoVss86MsiPath Condition=" '$(QemuGaNoVss86MsiPath)' == '' ">C:\msi\qemu-ga-i386-no-vss.msi</QemuGaNoVss86MsiPath>
     <VirtioWinGtX64MsiPath Condition=" '$(VirtioWinGtX64MsiPath)' == '' ">$(MSBuildThisFileDirectory)..\virtio-win-drivers-installer\bin\x64\$(Configuration)\virtio-win-gt-x64.msi</VirtioWinGtX64MsiPath>
     <VirtioWinGtX86MsiPath Condition=" '$(VirtioWinGtX86MsiPath)' == '' ">$(MSBuildThisFileDirectory)..\virtio-win-drivers-installer\bin\x86\$(Configuration)\virtio-win-gt-x86.msi</VirtioWinGtX86MsiPath>
+    <QgaBAFunctionsPlatform Condition="'$(Platform)' == 'x86'">Win32</QgaBAFunctionsPlatform>
+    <QgaBAFunctionsPlatform Condition="'$(Platform)' == 'x64'">x64</QgaBAFunctionsPlatform>
+    <QgaBAFunctionsPath>$(MSBuildThisFileDirectory)QgaBAFunctions\bin\$(Platform)\$(Configuration)\QgaBAFunctions.dll</QgaBAFunctionsPath>
     <QgaPackageMetadataPath>$(MSBuildThisFileDirectory)obj\$(Platform)\$(Configuration)\QgaPackageMetadata.wxi</QgaPackageMetadataPath>
-    <DefineConstants>Version=$(InstallerVersion);QgaPackageMetadataPath=$(QgaPackageMetadataPath);VirtioWinGtX64MsiPath=$(VirtioWinGtX64MsiPath);VirtioWinGtX86MsiPath=$(VirtioWinGtX86MsiPath);SpiceDriver64MsiPath=$(SpiceDriver64MsiPath);SpiceDriver86MsiPath=$(SpiceDriver86MsiPath);SpiceVdagent64MsiPath=$(SpiceVdagent64MsiPath);SpiceVdagent86MsiPath=$(SpiceVdagent86MsiPath);QemuGa64MsiPath=$(QemuGa64MsiPath);QemuGa86MsiPath=$(QemuGa86MsiPath);QemuGaNoVss64MsiPath=$(QemuGaNoVss64MsiPath);QemuGaNoVss86MsiPath=$(QemuGaNoVss86MsiPath)</DefineConstants>
+    <DefineConstants>QgaBAFunctionsPath=$(QgaBAFunctionsPath);Version=$(InstallerVersion);QgaPackageMetadataPath=$(QgaPackageMetadataPath);VirtioWinGtX64MsiPath=$(VirtioWinGtX64MsiPath);VirtioWinGtX86MsiPath=$(VirtioWinGtX86MsiPath);SpiceDriver64MsiPath=$(SpiceDriver64MsiPath);SpiceDriver86MsiPath=$(SpiceDriver86MsiPath);SpiceVdagent64MsiPath=$(SpiceVdagent64MsiPath);SpiceVdagent86MsiPath=$(SpiceVdagent86MsiPath);QemuGa64MsiPath=$(QemuGa64MsiPath);QemuGa86MsiPath=$(QemuGa86MsiPath);QemuGaNoVss64MsiPath=$(QemuGaNoVss64MsiPath);QemuGaNoVss86MsiPath=$(QemuGaNoVss86MsiPath)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
@@ -52,6 +55,21 @@
     <PackageReference Include="WixToolset.Bal.wixext" Version="6.0.2" />
     <PackageReference Include="WixToolset.Util.wixext" Version="6.0.2" />
   </ItemGroup>
+  <!-- Native SDK targets require the Visual Studio MSBuild host, not dotnet build. -->
+  <ItemGroup>
+    <ProjectReference Include="QgaBAFunctions\QgaBAFunctions.vcxproj">
+      <SetPlatform>Platform=$(QgaBAFunctionsPlatform)</SetPlatform>
+      <GlobalPropertiesToRemove>PlatformTarget;TargetFramework;RuntimeIdentifier</GlobalPropertiesToRemove>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+
+  <Target Name="ValidateQgaNativeBuild" BeforeTargets="ResolveProjectReferences"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <Error Condition="'$(MSBuildRuntimeType)' == 'Core'"
+           Text="Build this bundle with Visual Studio MSBuild.exe and C++ v143/Windows SDK installed; QgaBAFunctions is native." />
+    <Error Condition="'$(QgaBAFunctionsPlatform)' == ''" Text="QgaBAFunctions supports bundle Platform=x86 or x64." />
+  </Target>
   <Target Name="ReadQgaPackageMetadata"
           BeforeTargets="CoreCompile"
           Condition=" '$(DesignTimeBuild)' != 'true' ">

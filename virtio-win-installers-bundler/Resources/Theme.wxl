@@ -8,7 +8,7 @@
   <String Id="ConfirmCancelMessage" Value="Are you sure you want to cancel?" />
   <String Id="ExecuteUpgradeRelatedBundleMessage" Value="Previous version" />
   <String Id="HelpHeader" Value="Setup Help" />
-  <String Id="HelpText" Value="/install | /repair | /uninstall | /layout [directory] - installs, repairs, uninstalls or creates a complete local copy of the bundle in directory. Install is the default.&#xA;&#xA;/passive | /quiet -  displays minimal UI with no prompts or displays no UI and no prompts. By default UI and all prompts are displayed.&#xA;&#xA;/norestart   - suppress any attempts to restart. By default UI will prompt before restart.&#xA;/log log.txt - logs to a specific file. By default a log file is created in %TEMP%.&#xA;&#xA;QgaVssEnabled=0 - installs the QEMU Guest Agent without VSS. QgaVssEnabled=1 requests VSS and requires SENS not to be disabled. The choice is saved for this bundle; changing an installed variant is not supported by this bundle." />
+  <String Id="HelpText" Value="/install | /modify | /repair | /uninstall | /layout [directory] - installs, modifies, repairs, uninstalls or creates a complete local copy of the bundle in directory. Install is the default.&#xA;&#xA;/passive | /quiet -  displays minimal UI with no prompts or displays no UI and no prompts. By default UI and all prompts are displayed.&#xA;&#xA;/norestart   - suppress any attempts to restart. By default UI will prompt before restart.&#xA;/log log.txt - logs to a specific file. By default a log file is created in %TEMP%.&#xA;&#xA;QgaVssEnabled=0 - installs the QEMU Guest Agent without VSS. QgaVssEnabled=1 requests VSS and requires SENS not to be disabled. QgaVssEnabled=-1 selects automatically. Upgrades and Repair preserve the installed variant. Use Modify on the installed bundle to change it." />
   <String Id="HelpCloseButton" Value="&amp;Close" />
   <String Id="InstallAcceptCheckbox" Value="I &amp;agree to the license terms and conditions" />
   <String Id="InstallInstallButton" Value="&amp;Install" />
@@ -46,9 +46,10 @@
   <String Id="FilesInUseExitButton" Value="E&amp;xit" />
   <String Id="FilesInUseNetfxCloseRadioButton" Value="Close the &amp;applications and attempt to restart them." />
   <String Id="ErrorFailNoActionReboot" Value="No action was taken as a system reboot is required." />
+  <String Id="QgaApplyChangesButton" Value="&amp;Apply changes" />
   <String Id="QgaVssCheckbox" Value="Install QEMU Guest Agent &amp;VSS support" />
   <String Id="QgaVssDescription" Value="The Agent-only option does not include Windows filesystem freezing." />
   <String Id="QgaVssUnavailable" Value="VSS cannot be installed while SENS is disabled or unreadable. Uncheck VSS to continue with the Agent only." />
   <String Id="QgaVssFullDependency" Value="The installed VSS component needs SENS for repair or removal. Enable SENS before continuing; this bundle will not change its policy." />
-  <String Id="QgaVssMigrationPending" Value="This bundle does not switch installed QGA variants. Uninstall the current Agent with its original installer before changing this selection." />
+  <String Id="QgaVssMigrationPending" Value="Apply changes to switch the QGA variant. Full VSS installation or removal requires SENS; this bundle will not change its policy." />
 </WixLocalization>

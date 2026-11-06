@@ -32,19 +32,18 @@
         <Page Name="Install">
             <Label X="175" Y="10" Width="300" Height="80" FontId="1" Visible="yes" DisablePrefix="yes">#(loc.WelcomeTitle)</Label>
             <Richedit Name="EulaRichedit" X="175" Y="100" Width="300" Height="-170" TabStop="yes" FontId="0" HexStyle="0x800000" />
-            <Checkbox Name="QgaVssEnabled" X="175" Y="225" Width="300" Height="20" TabStop="yes" FontId="3">#(loc.QgaVssCheckbox)</Checkbox>
+            <Checkbox Name="QgaVssTarget" X="175" Y="225" Width="300" Height="20" TabStop="yes" FontId="3"
+                      EnableCondition="QgaCanModify = 1 OR (QgaFullInstalled = 0 AND QgaNoVssInstalled = 0)">#(loc.QgaVssCheckbox)</Checkbox>
             <Label X="175" Y="250" Width="300" Height="48" FontId="3" DisablePrefix="yes">
                 <Text>#(loc.QgaVssDescription)</Text>
                 <Text Condition="QgaFullInstalled = 1 AND (SensStart &lt; 0 OR SensStart &gt;= 4)">#(loc.QgaVssFullDependency)</Text>
-                <Text Condition="((QgaFullInstalled = 1 AND QgaVssEnabled = 0) OR (QgaNoVssInstalled = 1 AND QgaVssEnabled = 1)) AND (QgaFullInstalled = 0 OR (SensStart &gt;= 0 AND SensStart &lt; 4))">#(loc.QgaVssMigrationPending)</Text>
-                <Text Condition="QgaFullInstalled = 0 AND QgaNoVssInstalled = 0 AND QgaVssEnabled = 1 AND (SensStart &lt; 0 OR SensStart &gt;= 4)">#(loc.QgaVssUnavailable)</Text>
+                <Text Condition="((QgaFullInstalled = 1 AND QgaVssTarget = 0) OR (QgaNoVssInstalled = 1 AND QgaVssTarget = 1)) AND (QgaFullInstalled = 0 OR (SensStart &gt;= 0 AND SensStart &lt; 4))">#(loc.QgaVssMigrationPending)</Text>
+                <Text Condition="QgaFullInstalled = 0 AND QgaNoVssInstalled = 0 AND QgaVssTarget = 1 AND (SensStart &lt; 0 OR SensStart &gt;= 4)">#(loc.QgaVssUnavailable)</Text>
+                <Text Condition="QgaLifecycleError">[QgaLifecycleError]</Text>
             </Label>
             <Checkbox Name="EulaAcceptCheckbox" X="175" Y="-70" Width="300" Height="20" TabStop="yes" FontId="3" HideWhenDisabled="yes">#(loc.InstallAcceptCheckbox)</Checkbox>
-            <!-- The native button retains StdBA's EULA gate; its nonreserved parent gates the QGA choice. -->
-            <Panel Name="QgaInstallGate" X="-100" Y="-10" Width="75" Height="23"
-                   VisibleCondition="(QgaFullInstalled = 0 OR QgaVssEnabled = 1) AND (QgaNoVssInstalled = 0 OR QgaVssEnabled = 0) AND (QgaVssEnabled = 0 OR (SensStart &gt;= 0 AND SensStart &lt; 4))">
-                <Button Name="InstallButton" X="0" Y="0" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.InstallInstallButton)</Button>
-            </Panel>
+            <!-- StdBA owns the reserved buttons and EULA gate; native policy validates QGA before Apply. -->
+            <Button Name="InstallButton" X="-100" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.InstallInstallButton)</Button>
             <Button Name="InstallCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">
                 <Text>#(loc.InstallCloseButton)</Text>
                 <CloseWindowAction />
@@ -59,21 +58,20 @@
         </Page>
         <Page Name="Modify">
             <Label X="175" Y="80" Width="-11" Height="30" FontId="2" DisablePrefix="yes">#(loc.ModifyHeader)</Label>
-            <Checkbox Name="QgaVssEnabled" X="175" Y="130" Width="300" Height="20" TabStop="yes" FontId="3">#(loc.QgaVssCheckbox)</Checkbox>
+            <Checkbox Name="QgaVssTarget" X="175" Y="130" Width="300" Height="20" TabStop="yes" FontId="3"
+                      EnableCondition="QgaCanModify = 1">#(loc.QgaVssCheckbox)</Checkbox>
             <Label X="175" Y="165" Width="300" Height="70" FontId="3" DisablePrefix="yes">
                 <Text>#(loc.QgaVssDescription)</Text>
                 <Text Condition="QgaFullInstalled = 1 AND (SensStart &lt; 0 OR SensStart &gt;= 4)">#(loc.QgaVssFullDependency)</Text>
-                <Text Condition="((QgaFullInstalled = 1 AND QgaVssEnabled = 0) OR (QgaNoVssInstalled = 1 AND QgaVssEnabled = 1)) AND (QgaFullInstalled = 0 OR (SensStart &gt;= 0 AND SensStart &lt; 4))">#(loc.QgaVssMigrationPending)</Text>
-                <Text Condition="QgaFullInstalled = 0 AND QgaNoVssInstalled = 0 AND QgaVssEnabled = 1 AND (SensStart &lt; 0 OR SensStart &gt;= 4)">#(loc.QgaVssUnavailable)</Text>
+                <Text Condition="((QgaFullInstalled = 1 AND QgaVssTarget = 0) OR (QgaNoVssInstalled = 1 AND QgaVssTarget = 1)) AND (QgaFullInstalled = 0 OR (SensStart &gt;= 0 AND SensStart &lt; 4))">#(loc.QgaVssMigrationPending)</Text>
+                <Text Condition="QgaFullInstalled = 0 AND QgaNoVssInstalled = 0 AND QgaVssTarget = 1 AND (SensStart &lt; 0 OR SensStart &gt;= 4)">#(loc.QgaVssUnavailable)</Text>
+                <Text Condition="QgaLifecycleError">[QgaLifecycleError]</Text>
             </Label>
-            <Panel Name="QgaRepairGate" X="-190" Y="-10" Width="75" Height="23"
-                   VisibleCondition="(QgaFullInstalled = 0 OR QgaVssEnabled = 1) AND (QgaNoVssInstalled = 0 OR QgaVssEnabled = 0) AND (QgaVssEnabled = 0 OR (SensStart &gt;= 0 AND SensStart &lt; 4))">
-                <Button Name="RepairButton" X="0" Y="0" Width="75" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes">#(loc.ModifyRepairButton)</Button>
-            </Panel>
-            <Panel Name="QgaUninstallGate" X="-100" Y="-10" Width="75" Height="23"
-                   VisibleCondition="QgaFullInstalled = 0 OR (SensStart &gt;= 0 AND SensStart &lt; 4)">
-                <Button Name="UninstallButton" X="0" Y="0" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.ModifyUninstallButton)</Button>
-            </Panel>
+            <Button Name="RepairButton" X="-190" Y="-10" Width="110" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes">
+                <Text>#(loc.ModifyRepairButton)</Text>
+                <Text Condition="QgaCanModify = 1">#(loc.QgaApplyChangesButton)</Text>
+            </Button>
+            <Button Name="UninstallButton" X="-100" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.ModifyUninstallButton)</Button>
             <Button Name="ModifyCancelButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">
                 <Text>#(loc.ModifyCloseButton)</Text>
                 <CloseWindowAction />
@@ -101,7 +99,10 @@
                 <Text Condition="WixBundleAction = 4">#(loc.FailureUninstallHeader)</Text>
             </Label>
             <Hypertext Name="FailureLogFileLink" X="175" Y="125" Width="-11" Height="42" FontId="3" TabStop="yes" HideWhenDisabled="yes">#(loc.FailureHyperlinkLogText)</Hypertext>
-            <Hypertext Name="FailureMessageText" X="175" Y="170" Width="-11" Height="100" FontId="3" TabStop="yes" HideWhenDisabled="yes" />
+            <Panel Name="QgaNativeFailureMessage" X="175" Y="170" Width="300" Height="100" VisibleCondition="NOT QgaLifecycleError">
+                <Hypertext Name="FailureMessageText" X="0" Y="0" Width="300" Height="100" FontId="3" TabStop="yes" HideWhenDisabled="yes" />
+            </Panel>
+            <Label X="175" Y="170" Width="300" Height="100" FontId="3" DisablePrefix="yes" VisibleCondition="QgaLifecycleError">[QgaLifecycleError]</Label>
             <Label X="175" Y="-51" Width="-11" Height="34" FontId="3" DisablePrefix="yes" VisibleCondition="WixStdBARestartRequired">#(loc.FailureRestartText)</Label>
             <Button Name="FailureRestartButton" X="-100" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes">#(loc.FailureRestartButton)</Button>
             <Button Name="FailureCloseButton" X="-10" Y="-10" Width="75" Height="23" TabStop="yes" FontId="0">

@@ -8,33 +8,31 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $installer = New-Object -ComObject WindowsInstaller.Installer
-$inputs = [ordered]@{
-    QgaFull64ProductCode = $Full64
-    QgaFull86ProductCode = $Full86
-    QgaNoVss64ProductCode = $NoVss64
-    QgaNoVss86ProductCode = $NoVss86
-}
-$codes = [ordered]@{}
-$upgradeCodes = @()
+$inputs = [ordered]@{ Full64=$Full64; Full86=$Full86; NoVss64=$NoVss64; NoVss86=$NoVss86 }
+$packages = [ordered]@{}
 foreach ($entry in $inputs.GetEnumerator()) {
     if (-not (Test-Path -LiteralPath $entry.Value -PathType Leaf)) {
         throw "QGA MSI input is missing: $($entry.Value)"
     }
     # Read the supplied media MSI only; never open an installed/cached package for writing.
     $database = $installer.OpenDatabase([IO.Path]::GetFullPath($entry.Value), 0)
-    $view = $database.OpenView('SELECT `Value` FROM `Property` WHERE `Property`=''ProductCode''')
-    $view.Execute()
-    $record = $view.Fetch()
-    if (-not $record) { throw "QGA MSI has no ProductCode: $($entry.Value)" }
-    $codes[$entry.Key] = ([guid]$record.StringData(1)).ToString('B').ToUpperInvariant()
-    $view.Close()
-    $view = $database.OpenView('SELECT `Value` FROM `Property` WHERE `Property`=''UpgradeCode''')
-    $view.Execute()
-    $record = $view.Fetch()
-    if (-not $record) { throw "QGA MSI has no UpgradeCode: $($entry.Value)" }
-    $upgradeCodes += ([guid]$record.StringData(1)).ToString('B').ToUpperInvariant()
-    $view.Close()
-    if ($entry.Key -like 'QgaNoVss*') {
+    $properties = @{}
+    foreach ($name in 'ProductCode','UpgradeCode','ProductVersion') {
+        $view = $database.OpenView("SELECT ``Value`` FROM ``Property`` WHERE ``Property``='$name'")
+        $view.Execute()
+        $record = $view.Fetch()
+        if (-not $record) { throw "QGA MSI has no $name`: $($entry.Value)" }
+        $value = [string]$record.StringData(1)
+        $properties[$name] = if ($name -eq 'ProductVersion') {
+            # MSI compares the first three ProductVersion fields.
+            ([version]$value).ToString(3)
+        } else {
+            ([guid]$value).ToString('B').ToUpperInvariant()
+        }
+        $view.Close()
+    }
+    $packages[$entry.Key] = $properties
+    if ($entry.Key -like 'NoVss*') {
         $view = $database.OpenView('SELECT `FileName` FROM `File`')
         $view.Execute()
         while ($record = $view.Fetch()) {
@@ -44,18 +42,29 @@ foreach ($entry in $inputs.GetEnumerator()) {
         $view.Close()
     }
 }
-if (@($codes.Values | Select-Object -Unique).Count -ne 4) {
+if (@($packages.Values | ForEach-Object { $_.ProductCode } | Select-Object -Unique).Count -ne 4) {
     throw 'Full and no-VSS QGA inputs must have distinct ProductCodes. Do not relabel a full MSI as no-VSS.'
 }
-
-$families = @($upgradeCodes | Select-Object -Unique)
-if ($families.Count -ne 1) {
-    throw 'This build requires one shared QGA UpgradeCode family for its related-registration guard.'
+if ($packages.Full64.UpgradeCode -ne $packages.Full86.UpgradeCode -or
+    $packages.NoVss64.UpgradeCode -ne $packages.NoVss86.UpgradeCode) {
+    throw 'Each QGA variant must use one stable UpgradeCode family for both architectures.'
 }
-$codes['QgaUpgradeCode'] = $families[0]
-
+if ($packages.Full64.UpgradeCode -eq $packages.NoVss64.UpgradeCode) {
+    throw 'Full and no-VSS QGA must have distinct stable UpgradeCodes so upgrades retain the installed variant.'
+}
+foreach ($arch in '64','86') {
+    if ($packages["Full$arch"].ProductVersion -ne $packages["NoVss$arch"].ProductVersion) {
+        throw "Full and no-VSS QGA payload versions must match for architecture $arch."
+    }
+}
+$metadata = [ordered]@{
+    QgaFullUpgradeCode = $packages.Full64.UpgradeCode
+    QgaNoVssUpgradeCode = $packages.NoVss64.UpgradeCode
+    Qga64Version = $packages.Full64.ProductVersion
+    Qga86Version = $packages.Full86.ProductVersion
+}
 $lines = @('<?xml version="1.0" encoding="utf-8"?>', '<Include xmlns="http://wixtoolset.org/schemas/v4/wxs">')
-foreach ($entry in $codes.GetEnumerator()) {
+foreach ($entry in $metadata.GetEnumerator()) {
     $lines += '  <?define ' + $entry.Key + ' = "' + $entry.Value + '" ?>'
 }
 $lines += '</Include>'

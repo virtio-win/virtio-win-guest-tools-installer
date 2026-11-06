@@ -1,0 +1,4 @@
+LIBRARY QgaBAFunctions
+EXPORTS
+    BAFunctionsCreate
+    BAFunctionsDestroy

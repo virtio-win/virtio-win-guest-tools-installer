@@ -18,63 +18,73 @@
         LogoFile="Resources/Logo.png"
         ThemeFile="Resources/Theme.xml"
         LocalizationFile="Resources/Theme.wxl"/>
+      <Payload SourceFile="$(var.QgaBAFunctionsPath)" bal:BAFunctions="yes" />
     </BootstrapperApplication>
 
-    <!-- Only the choice is saved/overridable. Searches must not overwrite a saved or explicit choice. -->
-    <Variable Name="QgaVssEnabled" Type="numeric" Value="-1" Persisted="yes" bal:Overridable="yes" />
+    <!-- Raw CLI request, UI choice, validated plan and pending operation are separate. -->
+    <Variable Name="QgaVssEnabled" Type="numeric" Value="-1" bal:Overridable="yes" />
+    <Variable Name="QgaVssTarget" Type="numeric" Value="1" />
+    <Variable Name="QgaVssEffective" Type="numeric" Value="1" />
+    <Variable Name="QgaCanModify" Type="numeric" Value="0" />
+    <Variable Name="QgaResumeAllowed" Type="numeric" Value="0" />
+    <Variable Name="QgaLifecycleError" Type="string" Value="" />
+    <Variable Name="QgaFullFamily" Type="string" Value="$(var.QgaFullUpgradeCode)" />
+    <Variable Name="QgaNoVssFamily" Type="string" Value="$(var.QgaNoVssUpgradeCode)" />
+    <Variable Name="QgaPendingKind" Type="numeric" Value="0" Persisted="yes" />
+    <Variable Name="QgaPendingSource" Type="numeric" Value="-1" Persisted="yes" />
+    <Variable Name="QgaPendingTarget" Type="numeric" Value="-1" Persisted="yes" />
     <Variable Name="SensStart" Type="numeric" Value="-1" />
     <Variable Name="QgaServicePresent" Type="numeric" Value="0" />
-    <Variable Name="QgaFull64State" Type="numeric" Value="0" />
-    <Variable Name="QgaFull86State" Type="numeric" Value="0" />
-    <Variable Name="QgaNoVss64State" Type="numeric" Value="0" />
-    <Variable Name="QgaNoVss86State" Type="numeric" Value="0" />
+    <Variable Name="QgaFullState" Type="numeric" Value="2" />
+    <Variable Name="QgaNoVssState" Type="numeric" Value="2" />
+    <Variable Name="QgaFullVersion" Type="version" Value="0.0.0" />
+    <Variable Name="QgaNoVssVersion" Type="version" Value="0.0.0" />
+    <Variable Name="QgaPayloadVersion" Type="version" Value="0.0.0" />
     <Variable Name="QgaFullInstalled" Type="numeric" Value="0" />
     <Variable Name="QgaNoVssInstalled" Type="numeric" Value="0" />
-    <Variable Name="QgaRelatedState" Type="numeric" Value="2" />
     <SetVariable Id="ResetSensStart" Variable="SensStart" Type="numeric" Value="-1" />
     <util:RegistrySearch Id="FindSensStart" Variable="SensStart" Root="HKLM"
         Key="SYSTEM\CurrentControlSet\Services\SENS" Value="Start" Result="value" Bitness="always32" After="ResetSensStart" />
-    <util:ProductSearch Id="FindQgaFull64" Variable="QgaFull64State"
-        ProductCode="$(var.QgaFull64ProductCode)" Result="state" After="FindSensStart" />
-    <util:ProductSearch Id="FindQgaFull86" Variable="QgaFull86State"
-        ProductCode="$(var.QgaFull86ProductCode)" Result="state" After="FindQgaFull64" />
-    <util:ProductSearch Id="FindQgaNoVss64" Variable="QgaNoVss64State"
-        ProductCode="$(var.QgaNoVss64ProductCode)" Result="state" After="FindQgaFull86" />
-    <util:ProductSearch Id="FindQgaNoVss86" Variable="QgaNoVss86State"
-        ProductCode="$(var.QgaNoVss86ProductCode)" Result="state" After="FindQgaNoVss64" />
-    <!-- A related MSI registration can survive loss of the Agent service. Absent is state 2. -->
-    <util:ProductSearch Id="FindQgaRelated" Variable="QgaRelatedState"
-        UpgradeCode="$(var.QgaUpgradeCode)" Result="state" After="FindQgaNoVss86" />
+    <!-- State 5 is installed; state 2 is absent. Registration survives a missing service or key file. -->
+    <util:ProductSearch Id="FindQgaFull" Variable="QgaFullState"
+        UpgradeCode="$(var.QgaFullUpgradeCode)" Result="state" After="FindSensStart" />
+    <SetVariable Id="ResetQgaFullVersion" Variable="QgaFullVersion" Type="version" Value="0.0.0" After="FindQgaFull" />
+    <util:ProductSearch Id="FindQgaFullVersion" Variable="QgaFullVersion"
+        UpgradeCode="$(var.QgaFullUpgradeCode)" Result="version" Condition="QgaFullState = 5" After="ResetQgaFullVersion" />
+    <util:ProductSearch Id="FindQgaNoVss" Variable="QgaNoVssState"
+        UpgradeCode="$(var.QgaNoVssUpgradeCode)" Result="state" After="FindQgaFullVersion" />
+    <SetVariable Id="ResetQgaNoVssVersion" Variable="QgaNoVssVersion" Type="version" Value="0.0.0" After="FindQgaNoVss" />
+    <util:ProductSearch Id="FindQgaNoVssVersion" Variable="QgaNoVssVersion"
+        UpgradeCode="$(var.QgaNoVssUpgradeCode)" Result="version" Condition="QgaNoVssState = 5" After="ResetQgaNoVssVersion" />
+    <SetVariable Id="SelectQga64Version" Variable="QgaPayloadVersion" Type="version" Value="$(var.Qga64Version)"
+        Condition="VersionNT64" After="FindQgaNoVssVersion" />
+    <SetVariable Id="SelectQga86Version" Variable="QgaPayloadVersion" Type="version" Value="$(var.Qga86Version)"
+        Condition="NOT VersionNT64" After="SelectQga64Version" />
     <util:RegistrySearch Id="FindQgaService" Variable="QgaServicePresent" Root="HKLM"
         Key="SYSTEM\CurrentControlSet\Services\QEMU-GA" Value="ImagePath" Result="exists"
-        Bitness="always32" After="FindQgaRelated" />
-    <SetVariable Id="InferQgaNoVssChoice" Variable="QgaVssEnabled" Type="numeric" Value="0"
-        After="FindQgaService" Condition="QgaVssEnabled = -1 AND (QgaNoVss64State = 5 OR QgaNoVss86State = 5)" />
-    <SetVariable Id="DefaultQgaVssChoice" Variable="QgaVssEnabled" Type="numeric" Value="1"
-        After="InferQgaNoVssChoice" Condition="QgaVssEnabled = -1" />
-    <SetVariable Id="ResetQgaFull" Variable="QgaFullInstalled" Type="numeric" Value="0" After="DefaultQgaVssChoice" />
+        Bitness="always32" After="SelectQga86Version" />
+    <SetVariable Id="ResetQgaFull" Variable="QgaFullInstalled" Type="numeric" Value="0" After="FindQgaService" />
     <SetVariable Id="DetectQgaFull" Variable="QgaFullInstalled" Type="numeric" Value="1"
-        After="ResetQgaFull" Condition="QgaFull64State = 5 OR QgaFull86State = 5" />
+        After="ResetQgaFull" Condition="QgaFullState = 5" />
     <SetVariable Id="ResetQgaNoVss" Variable="QgaNoVssInstalled" Type="numeric" Value="0" After="DetectQgaFull" />
     <SetVariable Id="DetectQgaNoVss" Variable="QgaNoVssInstalled" Type="numeric" Value="1"
-        After="ResetQgaNoVss" Condition="QgaNoVss64State = 5 OR QgaNoVss86State = 5" />
+        After="ResetQgaNoVss" Condition="QgaNoVssState = 5" />
 
     <bal:Condition
-        Condition="NOT (WixBundleCommandLineAction = 4 OR WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR NOT (QgaFullInstalled = 1 AND QgaNoVssInstalled = 1)"
+        Condition="NOT (WixBundleCommandLineAction = 4 OR WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR QgaResumeAllowed = 1 OR NOT (QgaFullInstalled = 1 AND QgaNoVssInstalled = 1)"
         Message="Both QGA variants are installed. Resolve the conflicting installations before using this experimental bundle." />
     <bal:Condition
-        Condition="NOT (WixBundleCommandLineAction = 4 OR WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR (QgaServicePresent = 0 AND QgaRelatedState = 2) OR QgaFullInstalled = 1 OR QgaNoVssInstalled = 1"
+        Condition="NOT (WixBundleCommandLineAction = 4 OR WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR ((QgaFullState = 2 OR QgaFullState = 5) AND (QgaNoVssState = 2 OR QgaNoVssState = 5) AND (QgaServicePresent = 0 OR QgaFullInstalled = 1 OR QgaNoVssInstalled = 1))"
         Message="This experimental bundle cannot identify the existing QGA installation. Use its original installer to remove it before continuing." />
     <bal:Condition
-        Condition="NOT (WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR QgaVssEnabled = 0 OR QgaVssEnabled = 1"
-        Message="QgaVssEnabled must be 0 (Agent only) or 1 (Agent with VSS)." />
-    <!-- Full UI may correct the choice; noninteractive operation must reject it before any package runs. -->
+        Condition="NOT (WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR QgaVssEnabled = -1 OR QgaVssEnabled = 0 OR QgaVssEnabled = 1"
+        Message="QgaVssEnabled must be -1 (automatic), 0 (Agent only), or 1 (Agent with VSS)." />
+    <!-- Native planning rejects conflicting upgrade/Repair requests, including full UI. -->
     <bal:Condition
-        Condition="NOT (WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR WixBundleUILevel = 4 OR ((QgaFullInstalled = 0 OR QgaVssEnabled = 1) AND (QgaNoVssInstalled = 0 OR QgaVssEnabled = 0))"
-        Message="Switching an existing QGA installation between variants is not supported by this bundle. Remove it with its original installer first." />
-    <bal:Condition
-        Condition="NOT (WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR WixBundleUILevel = 4 OR QgaVssEnabled = 0 OR (SensStart &gt;= 0 AND SensStart &lt; 4)"
-        Message="VSS requires SENS not to be disabled. Enable SENS or rerun with QgaVssEnabled=0 to install only the Agent." />
+        Condition="NOT (WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR (QgaFullVersion &lt;= QgaPayloadVersion AND QgaNoVssVersion &lt;= QgaPayloadVersion)"
+        Message="A newer QGA version is installed. Use an installer with matching or newer QGA payloads to upgrade or repair it." />
+    <!-- The native plan callback revalidates SENS after the UI target is chosen. -->
+    <bal:Condition Condition="NOT QgaLifecycleError" Message="[QgaLifecycleError]" />
     <bal:Condition
         Condition="WixBundleCommandLineAction &lt;&gt; 4 OR QgaFullInstalled = 0 OR (SensStart &gt;= 0 AND SensStart &lt; 4)"
         Message="Removing the installed QGA VSS component requires SENS. Enable SENS before uninstalling; this bundle will not change the service policy." />
@@ -107,16 +117,16 @@
          InstallCondition="NOT VersionNT64"
          DisplayName="spice-guest-agent"/>
       <MsiPackage Id="QgaFull64" SourceFile="$(var.QemuGa64MsiPath)"
-         InstallCondition="VersionNT64 AND QgaVssEnabled = 1"
+         InstallCondition="VersionNT64 AND QgaVssEffective = 1"
          DisplayName="qemu-guest-agent (with VSS)"/>
       <MsiPackage Id="QgaFull86" SourceFile="$(var.QemuGa86MsiPath)"
-         InstallCondition="NOT VersionNT64 AND QgaVssEnabled = 1"
+         InstallCondition="NOT VersionNT64 AND QgaVssEffective = 1"
          DisplayName="qemu-guest-agent (with VSS)"/>
       <MsiPackage Id="QgaNoVss64" SourceFile="$(var.QemuGaNoVss64MsiPath)"
-         InstallCondition="VersionNT64 AND QgaVssEnabled = 0"
+         InstallCondition="VersionNT64 AND QgaVssEffective = 0"
          DisplayName="qemu-guest-agent (no VSS)"/>
       <MsiPackage Id="QgaNoVss86" SourceFile="$(var.QemuGaNoVss86MsiPath)"
-         InstallCondition="NOT VersionNT64 AND QgaVssEnabled = 0"
+         InstallCondition="NOT VersionNT64 AND QgaVssEffective = 0"
          DisplayName="qemu-guest-agent (no VSS)"/>
     </Chain>
   </Bundle>
