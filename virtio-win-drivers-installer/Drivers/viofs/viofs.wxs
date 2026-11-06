@@ -27,5 +27,34 @@
                     Type="string" />
             </Component>
         </ComponentGroup>
+
+        <!-- ServiceInstall resets VirtioFsSvc to demand start on upgrade and repair; keep an existing
+             automatic, delayed automatic or disabled start type. AppSearch runs before the old service is touched. -->
+        <Property Id="VIOFSSVC_START" Secure="yes">
+            <RegistrySearch Id="VirtioFsSvcStartSearch" Root="HKLM"
+                Key="SYSTEM\CurrentControlSet\Services\VirtioFsSvc" Name="Start" Type="raw" />
+        </Property>
+        <Property Id="VIOFSSVC_DELAYED" Secure="yes">
+            <RegistrySearch Id="VirtioFsSvcDelayedSearch" Root="HKLM"
+                Key="SYSTEM\CurrentControlSet\Services\VirtioFsSvc" Name="DelayedAutostart" Type="raw" />
+        </Property>
+        <CustomAction Id="CA_SetVirtioFsSvcAuto" Property="CA_RestoreVirtioFsSvcStart"
+            Value='"[SystemFolder]sc.exe" config VirtioFsSvc start= auto' />
+        <CustomAction Id="CA_SetVirtioFsSvcDelayed" Property="CA_RestoreVirtioFsSvcStart"
+            Value='"[SystemFolder]sc.exe" config VirtioFsSvc start= delayed-auto' />
+        <CustomAction Id="CA_SetVirtioFsSvcDisabled" Property="CA_RestoreVirtioFsSvcStart"
+            Value='"[SystemFolder]sc.exe" config VirtioFsSvc start= disabled' />
+        <CustomAction Id="CA_RestoreVirtioFsSvcStart" BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)"
+            DllEntry="WixQuietExec" Execute="deferred" Impersonate="no" Return="check" />
+        <InstallExecuteSequence>
+            <Custom Action="CA_SetVirtioFsSvcAuto" Before="CA_RestoreVirtioFsSvcStart"
+                Condition='VIOFSSVC_START="#2" AND VIOFSSVC_DELAYED&lt;&gt;"#1"' />
+            <Custom Action="CA_SetVirtioFsSvcDelayed" Before="CA_RestoreVirtioFsSvcStart"
+                Condition='VIOFSSVC_START="#2" AND VIOFSSVC_DELAYED="#1"' />
+            <Custom Action="CA_SetVirtioFsSvcDisabled" Before="CA_RestoreVirtioFsSvcStart"
+                Condition='VIOFSSVC_START="#4"' />
+            <Custom Action="CA_RestoreVirtioFsSvcStart" After="InstallServices"
+                Condition='CA_RestoreVirtioFsSvcStart AND (&amp;FE_viofs_driver=3 OR (!FE_viofs_driver=3 AND &amp;FE_viofs_driver&lt;&gt;2))' />
+        </InstallExecuteSequence>
     </Fragment>
 </Wix>
