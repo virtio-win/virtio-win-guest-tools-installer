@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?define UpgradeCode = "{418D4443-48DC-4FCF-BA11-29D5E241B7D1}" ?>
+<?include $(var.QgaPackageMetadataPath) ?>
 
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
-     xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
+     xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal"
+     xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
   <Bundle
     Name="Virtio-win-guest-tools"
     Version="$(var.Version)"
@@ -17,6 +19,66 @@
         ThemeFile="Resources/Theme.xml"
         LocalizationFile="Resources/Theme.wxl"/>
     </BootstrapperApplication>
+
+    <!-- Only the choice is saved/overridable. Searches must not overwrite a saved or explicit choice. -->
+    <Variable Name="QgaVssEnabled" Type="numeric" Value="-1" Persisted="yes" bal:Overridable="yes" />
+    <Variable Name="SensStart" Type="numeric" Value="-1" />
+    <Variable Name="QgaServicePresent" Type="numeric" Value="0" />
+    <Variable Name="QgaFull64State" Type="numeric" Value="0" />
+    <Variable Name="QgaFull86State" Type="numeric" Value="0" />
+    <Variable Name="QgaNoVss64State" Type="numeric" Value="0" />
+    <Variable Name="QgaNoVss86State" Type="numeric" Value="0" />
+    <Variable Name="QgaFullInstalled" Type="numeric" Value="0" />
+    <Variable Name="QgaNoVssInstalled" Type="numeric" Value="0" />
+    <Variable Name="QgaRelatedState" Type="numeric" Value="2" />
+    <SetVariable Id="ResetSensStart" Variable="SensStart" Type="numeric" Value="-1" />
+    <util:RegistrySearch Id="FindSensStart" Variable="SensStart" Root="HKLM"
+        Key="SYSTEM\CurrentControlSet\Services\SENS" Value="Start" Result="value" Bitness="always32" After="ResetSensStart" />
+    <util:ProductSearch Id="FindQgaFull64" Variable="QgaFull64State"
+        ProductCode="$(var.QgaFull64ProductCode)" Result="state" After="FindSensStart" />
+    <util:ProductSearch Id="FindQgaFull86" Variable="QgaFull86State"
+        ProductCode="$(var.QgaFull86ProductCode)" Result="state" After="FindQgaFull64" />
+    <util:ProductSearch Id="FindQgaNoVss64" Variable="QgaNoVss64State"
+        ProductCode="$(var.QgaNoVss64ProductCode)" Result="state" After="FindQgaFull86" />
+    <util:ProductSearch Id="FindQgaNoVss86" Variable="QgaNoVss86State"
+        ProductCode="$(var.QgaNoVss86ProductCode)" Result="state" After="FindQgaNoVss64" />
+    <!-- A related MSI registration can survive loss of the Agent service. Absent is state 2. -->
+    <util:ProductSearch Id="FindQgaRelated" Variable="QgaRelatedState"
+        UpgradeCode="$(var.QgaUpgradeCode)" Result="state" After="FindQgaNoVss86" />
+    <util:RegistrySearch Id="FindQgaService" Variable="QgaServicePresent" Root="HKLM"
+        Key="SYSTEM\CurrentControlSet\Services\QEMU-GA" Value="ImagePath" Result="exists"
+        Bitness="always32" After="FindQgaRelated" />
+    <SetVariable Id="InferQgaNoVssChoice" Variable="QgaVssEnabled" Type="numeric" Value="0"
+        After="FindQgaService" Condition="QgaVssEnabled = -1 AND (QgaNoVss64State = 5 OR QgaNoVss86State = 5)" />
+    <SetVariable Id="DefaultQgaVssChoice" Variable="QgaVssEnabled" Type="numeric" Value="1"
+        After="InferQgaNoVssChoice" Condition="QgaVssEnabled = -1" />
+    <SetVariable Id="ResetQgaFull" Variable="QgaFullInstalled" Type="numeric" Value="0" After="DefaultQgaVssChoice" />
+    <SetVariable Id="DetectQgaFull" Variable="QgaFullInstalled" Type="numeric" Value="1"
+        After="ResetQgaFull" Condition="QgaFull64State = 5 OR QgaFull86State = 5" />
+    <SetVariable Id="ResetQgaNoVss" Variable="QgaNoVssInstalled" Type="numeric" Value="0" After="DetectQgaFull" />
+    <SetVariable Id="DetectQgaNoVss" Variable="QgaNoVssInstalled" Type="numeric" Value="1"
+        After="ResetQgaNoVss" Condition="QgaNoVss64State = 5 OR QgaNoVss86State = 5" />
+
+    <bal:Condition
+        Condition="NOT (WixBundleCommandLineAction = 4 OR WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR NOT (QgaFullInstalled = 1 AND QgaNoVssInstalled = 1)"
+        Message="Both QGA variants are installed. Resolve the conflicting installations before using this experimental bundle." />
+    <bal:Condition
+        Condition="NOT (WixBundleCommandLineAction = 4 OR WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR (QgaServicePresent = 0 AND QgaRelatedState = 2) OR QgaFullInstalled = 1 OR QgaNoVssInstalled = 1"
+        Message="This experimental bundle cannot identify the existing QGA installation. Use its original installer to remove it before continuing." />
+    <bal:Condition
+        Condition="NOT (WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR QgaVssEnabled = 0 OR QgaVssEnabled = 1"
+        Message="QgaVssEnabled must be 0 (Agent only) or 1 (Agent with VSS)." />
+    <!-- Full UI may correct the choice; noninteractive operation must reject it before any package runs. -->
+    <bal:Condition
+        Condition="NOT (WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR WixBundleUILevel = 4 OR ((QgaFullInstalled = 0 OR QgaVssEnabled = 1) AND (QgaNoVssInstalled = 0 OR QgaVssEnabled = 0))"
+        Message="Switching an existing QGA installation between variants is not supported by this draft. Remove it with its original installer first." />
+    <bal:Condition
+        Condition="NOT (WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR WixBundleUILevel = 4 OR QgaVssEnabled = 0 OR (SensStart &gt;= 0 AND SensStart &lt; 4)"
+        Message="VSS requires SENS not to be disabled. Enable SENS or rerun with QgaVssEnabled=0 to install only the Agent." />
+    <bal:Condition
+        Condition="WixBundleCommandLineAction &lt;&gt; 4 OR QgaFullInstalled = 0 OR (SensStart &gt;= 0 AND SensStart &lt; 4)"
+        Message="Removing the installed QGA VSS component requires SENS. Enable SENS before uninstalling; this bundle will not change the service policy." />
+
     <Chain>
       <MsiPackage
          SourceFile="$(var.VirtioWinGtX64MsiPath)"
@@ -33,10 +95,10 @@
          DisplayName="virtio-win-drivers"
          Description="MSI to install virtio-win drivers for x86 systems"/>
       <MsiPackage SourceFile="$(var.SpiceDriver64MsiPath)"
-         InstallCondition="VersionNT64 AND VersionNT64 > v8"
+         InstallCondition="VersionNT64 AND VersionNT64 &gt; v8"
          DisplayName="spice-driver"/>
       <MsiPackage SourceFile="$(var.SpiceDriver86MsiPath)"
-         InstallCondition="NOT VersionNT64 AND VersionNT > v8"
+         InstallCondition="NOT VersionNT64 AND VersionNT &gt; v8"
          DisplayName="spice-driver"/>
       <MsiPackage SourceFile="$(var.SpiceVdagent64MsiPath)"
          InstallCondition="VersionNT64"
@@ -44,12 +106,18 @@
       <MsiPackage SourceFile="$(var.SpiceVdagent86MsiPath)"
          InstallCondition="NOT VersionNT64"
          DisplayName="spice-guest-agent"/>
-      <MsiPackage SourceFile="$(var.QemuGa64MsiPath)"
-         InstallCondition="VersionNT64"
-         DisplayName="qemu-guest-agent"/>
-      <MsiPackage SourceFile="$(var.QemuGa86MsiPath)"
-         InstallCondition="NOT VersionNT64"
-         DisplayName="qemu-guest-agent"/>
+      <MsiPackage Id="QgaFull64" SourceFile="$(var.QemuGa64MsiPath)"
+         InstallCondition="VersionNT64 AND QgaVssEnabled = 1"
+         DisplayName="qemu-guest-agent (with VSS)"/>
+      <MsiPackage Id="QgaFull86" SourceFile="$(var.QemuGa86MsiPath)"
+         InstallCondition="NOT VersionNT64 AND QgaVssEnabled = 1"
+         DisplayName="qemu-guest-agent (with VSS)"/>
+      <MsiPackage Id="QgaNoVss64" SourceFile="$(var.QemuGaNoVss64MsiPath)"
+         InstallCondition="VersionNT64 AND QgaVssEnabled = 0"
+         DisplayName="qemu-guest-agent (no VSS)"/>
+      <MsiPackage Id="QgaNoVss86" SourceFile="$(var.QemuGaNoVss86MsiPath)"
+         InstallCondition="NOT VersionNT64 AND QgaVssEnabled = 0"
+         DisplayName="qemu-guest-agent (no VSS)"/>
     </Chain>
   </Bundle>
 </Wix>
