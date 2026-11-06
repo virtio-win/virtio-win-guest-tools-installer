@@ -50,7 +50,7 @@ if (@($codes.Values | Select-Object -Unique).Count -ne 4) {
 
 $families = @($upgradeCodes | Select-Object -Unique)
 if ($families.Count -ne 1) {
-    throw 'This draft requires one shared QGA UpgradeCode family for its related-registration guard.'
+    throw 'This build requires one shared QGA UpgradeCode family for its related-registration guard.'
 }
 $codes['QgaUpgradeCode'] = $families[0]
 

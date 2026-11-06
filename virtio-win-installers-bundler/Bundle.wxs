@@ -71,7 +71,7 @@
     <!-- Full UI may correct the choice; noninteractive operation must reject it before any package runs. -->
     <bal:Condition
         Condition="NOT (WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR WixBundleUILevel = 4 OR ((QgaFullInstalled = 0 OR QgaVssEnabled = 1) AND (QgaNoVssInstalled = 0 OR QgaVssEnabled = 0))"
-        Message="Switching an existing QGA installation between variants is not supported by this draft. Remove it with its original installer first." />
+        Message="Switching an existing QGA installation between variants is not supported by this bundle. Remove it with its original installer first." />
     <bal:Condition
         Condition="NOT (WixBundleCommandLineAction = 6 OR WixBundleCommandLineAction = 7 OR WixBundleCommandLineAction = 8) OR WixBundleUILevel = 4 OR QgaVssEnabled = 0 OR (SensStart &gt;= 0 AND SensStart &lt; 4)"
         Message="VSS requires SENS not to be disabled. Enable SENS or rerun with QgaVssEnabled=0 to install only the Agent." />
