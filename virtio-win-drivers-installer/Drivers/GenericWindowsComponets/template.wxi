@@ -36,8 +36,8 @@
         </Property>
         <?endif?>
         <?if $(var.osShort) = "w11" ?>
-        <Launch Condition="NOT (INSTALLED_W10X64_$(var.driverKey) AND INSTALLED_W11X64_$(var.driverKey))"
-            Message="Both Windows client variants of $(var.driverName) are registered. Repair the existing installation before upgrading." />
+        <Launch Condition='(Installed AND REMOVE~="ALL") OR NOT (INSTALLED_W10X64_$(var.driverKey) AND INSTALLED_W11X64_$(var.driverKey))'
+            Message="Both Windows client variants of $(var.driverName) are registered. Fully uninstall the existing product with msiexec /x and its ProductCode before retrying. Repair and Modify are not supported in this state." />
         <?endif?>
 
         <CustomTableRef Id="DriverInstallTable">
