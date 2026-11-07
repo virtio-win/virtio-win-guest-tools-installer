@@ -45,6 +45,7 @@ struct DriverServiceConfig
 {
     std::wstring name, imagePath, loadOrderGroup;
     unsigned type = 0, start = 0, error = 0;
+    std::vector<std::wstring> dependencies;
 };
 
 // Compare only a successfully API-resolved actual section, never a driver's undecorated Models entry.
@@ -65,6 +66,7 @@ struct DriverUndoRecord
     std::vector<DriverBinding> bindings;
     std::vector<DriverServiceConfig> services;
     bool removeOwnedPackage = false;
+    bool stageIntent = false;
     bool stageKnown = false;
     bool packageCreated = false;
     bool removalAttempted = false;
@@ -107,6 +109,8 @@ inline void EncodeDriverSnapshot(const DriverUndoRecord& r, std::vector<std::wst
         fields.push_back(std::to_wstring(s.type));
         fields.push_back(std::to_wstring(s.start));
         fields.push_back(std::to_wstring(s.error));
+        fields.push_back(std::to_wstring(s.dependencies.size()));
+        fields.insert(fields.end(), s.dependencies.begin(), s.dependencies.end());
     }
 }
 
@@ -166,17 +170,26 @@ inline bool DecodeDriverSnapshot(const std::vector<std::wstring>& f, DriverUndoR
         r.bindings.push_back(b);
     }
     unsigned services;
-    if (at >= f.size() || !DriverStateNumber(f[at++], services) || services > (f.size() - at) / 6 ||
-        f.size() - at != static_cast<size_t>(services) * 6) return false;
+    if (at >= f.size() || !DriverStateNumber(f[at++], services) || services > (f.size() - at) / 7) return false;
     for (unsigned i = 0; i < services; ++i)
     {
+        if (f.size() - at < 7) return false;
         DriverServiceConfig s;
         s.name = f[at++]; s.imagePath = f[at++]; s.loadOrderGroup = f[at++];
         if (s.name.empty() || s.imagePath.empty() || !DriverStateNumber(f[at++], s.type) ||
             !DriverStateNumber(f[at++], s.start) || !DriverStateNumber(f[at++], s.error)) return false;
+        unsigned dependencies;
+        if (!DriverStateNumber(f[at++], dependencies) || dependencies > f.size() - at) return false;
+        for (unsigned n = 0; n < dependencies; ++n)
+        {
+            const auto& dependency = f[at++];
+            if (dependency.empty() || dependency.find(L'\0') != std::wstring::npos ||
+                dependency.find(static_cast<wchar_t>(128)) != std::wstring::npos) return false;
+            s.dependencies.push_back(dependency);
+        }
         r.services.push_back(s);
     }
-    return !r.sourceInf.empty() && !r.component.empty() && !r.metadataKey.empty() &&
+    return at == f.size() && !r.sourceInf.empty() && !r.component.empty() && !r.metadataKey.empty() &&
         !r.sourcePackage.infHash.empty() && !r.sourcePackage.catalogHash.empty();
 }
 
@@ -188,6 +201,38 @@ inline bool RecordDriverStage(DriverUndoRecord& r, bool created,
     r.stageKnown = true; r.packageCreated = created; r.stagedPackage = package;
     r.publishedInf = published;
     return true;
+}
+
+// A written intent records a possible copy, not proof that this transaction created a package.
+inline bool DriverStageIntentIncomplete(const DriverUndoRecord& record)
+{
+    return record.stageIntent && !record.stageKnown;
+}
+
+// Write the intent before the API call; a failed completion record must remain visible to rollback.
+template<class StagePackage, class AppendEvent, class RemoveCreatedPackage>
+std::int32_t StageDriverPackageWithIntent(DriverUndoRecord& record, unsigned index,
+    StagePackage stage, AppendEvent append, RemoveCreatedPackage remove)
+{
+    if (record.stageIntent || record.stageKnown) return static_cast<std::int32_t>(0x8007000d);
+    std::int32_t error = append({ L"stage-intent", std::to_wstring(index) });
+    if (error < 0) return error;
+    record.stageIntent = true;
+    DriverPackageIdentity staged;
+    std::wstring published;
+    bool created = false;
+    error = stage(staged, published, created);
+    if (error >= 0)
+        error = append({ L"stage", std::to_wstring(index), created ? L"1" : L"0",
+            published, staged.storeInf, staged.infHash, staged.catalogHash });
+    if (error < 0)
+    {
+        // Only the live API result proves this call created this exact published package.
+        if (created && !published.empty()) remove(published);
+        return error;
+    }
+    return RecordDriverStage(record, created, staged, published) ? 0 :
+        static_cast<std::int32_t>(0x8007000d);
 }
 
 // Only a non-present devnode whose named package is absent from the store (not-found class errors) is NULL-driver.
@@ -285,7 +330,7 @@ std::uint32_t CheckRetainedDriverMetadataHash(const DriverPackageIdentity& expec
             if (!((c >= L'0' && c <= L'9') || (c >= L'a' && c <= L'f'))) return 13;
     }
     known = !missing;
-    if (!known || !SameDriverPackage(identity, expected)) unshared();
+    if (known && !SameDriverPackage(identity, expected)) unshared();
     return 0;
 }
 
@@ -323,7 +368,7 @@ DriverResolution ResolveDriverPackageIdentity(const DriverPackageIdentity& expec
 
 struct DriverPlanEntry { std::wstring source, component; unsigned flags = 0; bool soleOwner = false; };
 struct DriverPlan { std::wstring key, product; bool installing = false; std::vector<DriverPlanEntry> entries; };
-static constexpr wchar_t DriverJournalSchema[] = L"VirtioDriverTransaction4";
+static constexpr wchar_t DriverJournalSchema[] = L"VirtioDriverTransaction6";
 
 inline std::wstring DriverMetadataKey(const std::wstring& component)
 {
@@ -416,7 +461,10 @@ inline bool ParseDriverJournal(const DriverPlan& plan, const std::wstring& text,
         else if (event.size() >= 2 && DriverStateNumber(event[1], index) && index < records.size() && index+1 == records.size())
         {
             auto& record = records[index];
-            if (event[0] == L"stage" && plan.installing && event.size() == 7 && (event[2] == L"0" || event[2] == L"1"))
+            if (event[0] == L"stage-intent" && plan.installing && event.size() == 2 &&
+                !record.stageIntent && !record.stageKnown)
+            { record.stageIntent = true; valid = true; }
+            else if (event[0] == L"stage" && plan.installing && record.stageIntent && event.size() == 7 && (event[2] == L"0" || event[2] == L"1"))
                 valid = RecordDriverStage(record, event[2] == L"1", { event[4], event[5], event[6] }, event[3]);
             else if (event[0] == L"bind" && plan.installing && record.stageKnown && !record.metadataAttempted &&
                 event.size() == 3 && DriverStateNumber(event[2], binding) && binding < record.bindings.size() && !record.bindings[binding].attempted)

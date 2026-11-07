@@ -483,6 +483,9 @@ static HRESULT QueryDriverService(SC_HANDLE service, DriverServiceConfig& config
     config.imagePath = query->lpBinaryPathName ? query->lpBinaryPathName : L"";
     config.loadOrderGroup = query->lpLoadOrderGroup ? query->lpLoadOrderGroup : L"";
     config.type = query->dwServiceType; config.start = query->dwStartType; config.error = query->dwErrorControl;
+    config.dependencies.clear();
+    for (PCWSTR dependency = query->lpDependencies; dependency && *dependency; dependency += wcslen(dependency) + 1)
+        config.dependencies.push_back(dependency);
     return S_OK;
 }
 
@@ -497,8 +500,97 @@ static HRESULT OpenDriverService(PCWSTR name, DWORD access, DriverService& scm, 
     return S_OK;
 }
 
-// Existing services named by AddService in any install section this INF offers the device. Services the
-// install would newly create are not captured: removing a service is not a safe inverse (documented limit).
+static bool DriverInfNamePresent(const std::vector<std::wstring>& names, const std::wstring& name)
+{
+    return std::any_of(names.begin(), names.end(),
+        [&](const std::wstring& prior) { return _wcsicmp(prior.c_str(), name.c_str()) == 0; });
+}
+
+static HRESULT ReadDriverServiceDirective(HINF inf, PCWSTR section, PCWSTR key, bool allFields,
+    std::vector<std::wstring>& values)
+{
+    INFCONTEXT line;
+    SetLastError(ERROR_SUCCESS);
+    BOOL found = SetupFindFirstLineW(inf, section, key, &line);
+    while (found)
+    {
+        DWORD fields = SetupGetFieldCount(&line);
+        if (!fields) return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
+        for (DWORD field = 1; field <= (allFields ? fields : 1); ++field)
+        {
+            wchar_t value[MAX_PATH];
+            if (!SetupGetStringFieldW(&line, field, value, _countof(value), NULL)) return DriverLastError();
+            if (!*value || values.size() >= 1024) return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
+            values.push_back(value);
+        }
+        SetLastError(ERROR_SUCCESS);
+        found = SetupFindNextMatchLineW(&line, key, &line);
+    }
+    DWORD error = GetLastError();
+    if (error == ERROR_LINE_NOT_FOUND || error == ERROR_NO_MORE_ITEMS) return S_OK;
+    return HRESULT_FROM_WIN32(error ? error : ERROR_GEN_FAILURE);
+}
+
+// SetupAPI searches appended inbox INFs as one handle. Needs names are explicit service-section names.
+static HRESULT CollectDriverServiceSection(HINF inf, const std::wstring& section,
+    std::vector<std::wstring>& included, std::vector<std::wstring>& active,
+    std::vector<std::wstring>& complete, std::vector<std::wstring>& names)
+{
+    if (DriverInfNamePresent(active, section)) return HRESULT_FROM_WIN32(ERROR_CIRCULAR_DEPENDENCY);
+    if (DriverInfNamePresent(complete, section)) return S_OK;
+    if (section.empty() || section.size() >= MAX_PATH || active.size() >= 32 || active.size() + complete.size() >= 256)
+        return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
+    if (SetupGetLineCountW(inf, section.c_str()) < 0) return HRESULT_FROM_WIN32(ERROR_SECTION_NOT_FOUND);
+    active.push_back(section);
+    std::vector<std::wstring> files;
+    DRIVER_TRY(ReadDriverServiceDirective(inf, section.c_str(), L"Include", true, files));
+    for (const auto& file : files)
+    {
+        // DDInstall.Services Include names system-supplied INFs; do not invent a relative-path search.
+        if (file.find_first_of(L"\\/:") != std::wstring::npos) return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+        if (DriverInfNamePresent(included, file)) continue;
+        if (included.size() >= 64) return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
+        if (!SetupOpenAppendInfFileW(file.c_str(), inf, NULL)) return DriverLastError();
+        included.push_back(file);
+    }
+    std::vector<std::wstring> removed, needed;
+    DRIVER_TRY(ReadDriverServiceDirective(inf, section.c_str(), L"DelService", false, removed));
+    // Service deletion has no configuration-only inverse; refuse it before touching the device.
+    if (!removed.empty()) return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+    DRIVER_TRY(ReadDriverServiceDirective(inf, section.c_str(), L"Needs", true, needed));
+    for (const auto& dependency : needed)
+        DRIVER_TRY(CollectDriverServiceSection(inf, dependency, included, active, complete, names));
+    DRIVER_TRY(ReadDriverServiceDirective(inf, section.c_str(), L"AddService", false, names));
+    active.pop_back();
+    complete.push_back(section);
+    return S_OK;
+}
+
+static HRESULT CaptureDriverServiceNames(PCWSTR path, const std::wstring& section,
+    std::vector<std::wstring>& names)
+{
+    HINF inf = SetupOpenInfFileW(path, NULL, INF_STYLE_WIN4, NULL);
+    if (inf == INVALID_HANDLE_VALUE) return DriverLastError();
+    HRESULT hr = S_OK;
+    if (SetupGetLineCountW(inf, section.c_str()) >= 0)
+    {
+        std::vector<std::wstring> included, active, complete;
+        size_t priorIncludes;
+        do
+        {
+            priorIncludes = included.size();
+            active.clear(); complete.clear(); names.clear();
+            hr = CollectDriverServiceSection(inf, section, included, active, complete, names);
+            // New appended files can add directives to an earlier section; capture only the stable view.
+        } while (SUCCEEDED(hr) && included.size() != priorIncludes);
+    }
+    else if (GetLastError() != ERROR_SECTION_NOT_FOUND) hr = DriverLastError();
+    SetupCloseInfFile(inf);
+    return hr;
+}
+
+// Existing services named by AddService in any install section this INF offers the device, including
+// services reached through Include/Needs. New service creation has no safe deletion inverse (limit).
 static HRESULT CaptureTargetServices(HDEVINFO set, SP_DEVINFO_DATA& device, DriverUndoRecord& record)
 {
     for (DWORD index = 0;; ++index)
@@ -515,21 +607,8 @@ static HRESULT CaptureTargetServices(HDEVINFO set, SP_DEVINFO_DATA& device, Driv
         if (!SetupDiGetDriverInfoDetailW(set, &device, &candidate, detail, needed, NULL)) return DriverLastError();
         std::wstring actual;
         DRIVER_TRY(ActualDriverSection(record.sourceInf.c_str(), detail->SectionName, actual));
-        HINF inf = SetupOpenInfFileW(record.sourceInf.c_str(), NULL, INF_STYLE_WIN4, NULL);
-        if (inf == INVALID_HANDLE_VALUE) return DriverLastError();
         std::vector<std::wstring> names;
-        INFCONTEXT line;
-        std::wstring section = actual + L".Services";
-        HRESULT hr = S_OK;
-        for (BOOL found = SetupFindFirstLineW(inf, section.c_str(), L"AddService", &line); found;
-            found = SetupFindNextMatchLineW(&line, L"AddService", &line))
-        {
-            wchar_t name[MAX_SERVICE_NAME_LEN];
-            if (!SetupGetStringFieldW(&line, 1, name, _countof(name), NULL)) { hr = DriverLastError(); break; }
-            names.push_back(name);
-        }
-        SetupCloseInfFile(inf);
-        DRIVER_TRY(hr);
+        DRIVER_TRY(CaptureDriverServiceNames(record.sourceInf.c_str(), actual + L".Services", names));
         for (const auto& name : names)
         {
             if (std::any_of(record.services.begin(), record.services.end(),
@@ -550,7 +629,10 @@ static HRESULT CaptureTargetServices(HDEVINFO set, SP_DEVINFO_DATA& device, Driv
 static bool SameDriverService(const DriverServiceConfig& a, const DriverServiceConfig& b)
 {
     return _wcsicmp(a.imagePath.c_str(), b.imagePath.c_str()) == 0 && _wcsicmp(a.loadOrderGroup.c_str(), b.loadOrderGroup.c_str()) == 0 &&
-        a.type == b.type && a.start == b.start && a.error == b.error;
+        a.type == b.type && a.start == b.start && a.error == b.error &&
+        a.dependencies.size() == b.dependencies.size() &&
+        std::equal(a.dependencies.begin(), a.dependencies.end(), b.dependencies.begin(),
+            [](const std::wstring& x, const std::wstring& y) { return _wcsicmp(x.c_str(), y.c_str()) == 0; });
 }
 
 // Immediately before the package-wide call: captured services must still be as captured, else refuse.
@@ -580,8 +662,17 @@ static HRESULT RestoreDriverService(const DriverServiceConfig& prior)
     DRIVER_TRY(QueryDriverService(service.handle, actual));
     auto same = [&]() { return SameDriverService(actual, prior); };
     if (same()) return S_OK;
+    std::vector<WCHAR> dependencies;
+    for (const auto& dependency : prior.dependencies)
+    {
+        dependencies.insert(dependencies.end(), dependency.begin(), dependency.end());
+        dependencies.push_back(L'\0');
+    }
+    if (dependencies.empty()) dependencies.push_back(L'\0');
+    dependencies.push_back(L'\0');
+    // A non-null empty MULTI_SZ clears dependencies; NULL would leave changed dependencies in place.
     if (!ChangeServiceConfigW(service.handle, prior.type, prior.start, prior.error, prior.imagePath.c_str(),
-        prior.loadOrderGroup.c_str(), NULL, NULL, NULL, NULL, NULL)) return DriverLastError();
+        prior.loadOrderGroup.c_str(), NULL, dependencies.data(), NULL, NULL, NULL)) return DriverLastError();
     DRIVER_TRY(QueryDriverService(service.handle, actual));
     if (!same()) return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
     WcaLog(LOGMSG_STANDARD, "Verified prior service configuration restored: %ws image=%ws.", prior.name.c_str(), prior.imagePath.c_str());
@@ -661,15 +752,13 @@ static HRESULT CaptureBindings(DriverUndoRecord& record, bool installing)
         SP_DEVINFO_DATA device = { sizeof(device) };
         if (!SetupDiEnumDeviceInfo(set, indexes[n], &device)) return DriverLastError();
         DRIVER_TRY(CurrentBinding(set, device, node.binding));
-        if (installing)
+        if (installing || (node.binding.hasDriver && SameDriverPackage(node.binding.package, record.sourcePackage)))
         {
-            // Services only for kept nodes; rebuild the source INF's list (VerifyPriorSelectable replaces it).
+            // Only kept nodes can be reinstalled by the inverse. Rebuild the source list before it is
+            // replaced by VerifyPriorSelectable, including owned-package uninstall snapshots.
             SP_DRVINFO_DATA_W target = { sizeof(target) };
             DRIVER_TRY(SelectDriver(set, device, record.sourceInf.c_str(), NULL, target));
             DRIVER_TRY(CaptureTargetServices(set, device, record));
-        }
-        if (installing || (node.binding.hasDriver && SameDriverPackage(node.binding.package, record.sourcePackage)))
-        {
             DRIVER_TRY(VerifyPriorSelectable(set, device, node.binding));
             kept.push_back(node);
         }
@@ -924,22 +1013,18 @@ static HRESULT CaptureDriverRecord(const DriverPlanEntry& entry, const DriverPla
 
 static HRESULT ForwardInstall(DriverUndoRecord& record, unsigned index, WCA_CASCRIPT_HANDLE script, bool& reboot)
 {
-    DriverPackageIdentity staged;
-    std::wstring published;
-    bool created = false;
-    HRESULT hr = StagePackage(record, staged, published, created);
-    if (SUCCEEDED(hr)) hr = AppendDriverEvent(script, { L"stage", std::to_wstring(index), created ? L"1" : L"0",
-        published, staged.storeInf, staged.infHash, staged.catalogHash });
-    if (FAILED(hr))
-    {
-        if (created && !published.empty())
-        {
+    DRIVER_TRY(StageDriverPackageWithIntent(record, index,
+        [&](DriverPackageIdentity& staged, std::wstring& published, bool& created) -> std::int32_t {
+            return StagePackage(record, staged, published, created);
+        }, [&](const std::vector<std::wstring>& event) -> std::int32_t {
+            return AppendDriverEvent(script, event);
+        }, [&](const std::wstring& published) {
             HRESULT cleanup = RemovePublishedPackage(published.c_str());
-            if (FAILED(cleanup)) WcaLog(LOGMSG_STANDARD, "Failed to compensate unrecorded newly staged package: 0x%x.", cleanup);
-        }
-        return hr;
-    }
-    if (!RecordDriverStage(record, created, staged, published)) return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
+            if (FAILED(cleanup)) WcaLog(LOGMSG_STANDARD, "Failed to compensate newly staged package; stage intent remains recorded: %ws status=0x%x.", published.c_str(), cleanup);
+        }));
+    DriverPackageIdentity staged = record.stagedPackage;
+    std::wstring published = record.publishedInf;
+    bool created = record.packageCreated;
     WcaLog(LOGMSG_STANDARD, "Driver stage: component=%ws published=%ws createdByThisCall=%d.",
         record.component.c_str(), published.c_str(), created);
     // DiInstallDriver acts package-wide on present matching devices. Recheck the whole captured scope first.
@@ -1068,6 +1153,13 @@ HRESULT ExecuteDriverTransaction(PCWSTR data, bool& reboot)
 
 static HRESULT RestoreDriverRecord(DriverUndoRecord& record, bool installing, bool& reboot)
 {
+    if (installing && DriverStageIntentIncomplete(record))
+    {
+        // An intent cannot prove creation ownership. Never guess a package to delete from its hash.
+        WcaLog(LOGMSG_STANDARD, "Incomplete driver stage intent: component=%ws source=%ws infHash=%ws catalogHash=%ws. Copy completion and creation ownership are unavailable; retaining own recovery journal without guessing a package to delete.",
+            record.component.c_str(), record.sourceInf.c_str(), record.sourcePackage.infHash.c_str(), record.sourcePackage.catalogHash.c_str());
+        return HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+    }
     if ((installing && !record.stageKnown) || (!installing && !record.removalAttempted && !record.metadataAttempted)) return S_OK;
     DriverPackageIdentity restoredPackage;
     std::wstring restoredPublished;
@@ -1114,10 +1206,10 @@ static HRESULT RestoreDriverRecord(DriverUndoRecord& record, bool installing, bo
         }
     }
     set.Close();
-    // Only after an actual package-wide call (its bind intents precede it), after prior bindings (whose own
-    // INF may rewrite them) and before created-package removal.
-    if (installing && std::any_of(record.bindings.begin(), record.bindings.end(),
-            [](const DriverBinding& b) { return b.attempted; }))
+    // Binding restoration can rewrite services. Restore the snapshot after those calls, but only
+    // after a package-wide install attempt or an actual owned-package removal attempt.
+    if ((installing && std::any_of(record.bindings.begin(), record.bindings.end(),
+             [](const DriverBinding& b) { return b.attempted; })) || (!installing && record.removalAttempted))
         for (const auto& service : record.services)
         {
             HRESULT hr = RestoreDriverService(service);
@@ -1165,7 +1257,7 @@ HRESULT RollbackDriverTransaction(PCWSTR data, bool& reboot)
     first = ReplayDriverInverseRecords(records, first, [&](DriverUndoRecord& record) -> std::int32_t {
         return RestoreDriverRecord(record, plan.installing, reboot);
     }, [&]() { DeleteDriverScript(plan); });
-    if (FAILED(first)) WcaLog(LOGMSG_STANDARD, "Driver inverse failed (0x%x); existing own script will not be deleted.", first);
+    if (FAILED(first)) WcaLog(LOGMSG_STANDARD, "Driver inverse failed (0x%x); own recovery script %ws will not be deleted.", first, plan.key.c_str());
     return first;
 }
 
