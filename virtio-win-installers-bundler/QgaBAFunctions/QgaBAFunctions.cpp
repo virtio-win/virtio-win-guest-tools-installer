@@ -3,6 +3,7 @@
 #include <objbase.h>
 #include <commctrl.h>
 #include <new>
+#include <cwctype>
 #include <stdio.h>
 #include <BootstrapperApplicationTypes.h>
 #include <BAFunctions.h>
@@ -135,8 +136,15 @@ struct Policy
                 result = MsiSummaryInfoGetPropertyW(summary, 7, &type, &integer, &time, platform, &count);
             if (summary) MsiCloseHandle(summary);
             if (database) MsiCloseHandle(database);
-            if (result != ERROR_SUCCESS ||
-                (is64 ? wcsncmp(platform, L"x64;", 4) : wcsncmp(platform, L"Intel;", 6))) return false;
+            if (result != ERROR_SUCCESS) return false;
+            // Normalize only successfully read metadata; an omitted platform means Intel.
+            if (WCHAR* separator = wcschr(platform, L';')) *separator = L'\0';
+            WCHAR* normalized = platform;
+            while (std::iswspace(*normalized)) ++normalized;
+            WCHAR* end = normalized + wcslen(normalized);
+            while (end > normalized && std::iswspace(end[-1])) *--end = L'\0';
+            LPCWSTR architecture = *normalized ? normalized : L"Intel";
+            if (_wcsicmp(architecture, is64 ? L"x64" : L"Intel")) return false;
             present = true;
         }
     }

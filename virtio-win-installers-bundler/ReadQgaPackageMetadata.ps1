@@ -25,6 +25,8 @@ foreach ($entry in $inputs.GetEnumerator()) {
     # Template Summary property 7 declares platform; do not infer it from the file name.
     $summary = $database.SummaryInformation(0)
     $platform = ([string]$summary.Property(7)).Split(';')[0].Trim()
+    # Windows Installer defaults an omitted platform specification to Intel.
+    if (-not $platform) { $platform = 'Intel' }
     if ($platform -ne $entry.Value.Platform) {
         throw "QGA MSI $($entry.Key) requires platform '$($entry.Value.Platform)', found '$platform': $path"
     }
