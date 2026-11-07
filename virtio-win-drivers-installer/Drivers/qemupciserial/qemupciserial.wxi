@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 <?define driverName = "qemupciserial" ?>
+<?define driverKey = "QEMUPCISERIAL" ?>
 <?define srcDirName = "qemupciserial" ?>
 <?define destDirName = "QEMUPCISERIAL" ?>
 <?define with_sys = "false"?>

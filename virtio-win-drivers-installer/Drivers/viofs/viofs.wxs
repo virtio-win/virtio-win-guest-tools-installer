@@ -27,5 +27,20 @@
                     Type="string" />
             </Component>
         </ComponentGroup>
+        <Property Id="VIOFS_SERVICE_NAME" Value="VirtioFsSvc" Secure="yes" />
+        <Property Id="VIOFS_LEGACY_SERVICE" Secure="yes">
+            <RegistrySearch Id="ViofsLegacyServiceSearch" Root="HKLM"
+                Key="SYSTEM\CurrentControlSet\Services\VirtIO-FS Service" Name="ImagePath" Type="raw" />
+        </Property>
+        <Property Id="VIOFS_CURRENT_SERVICE" Secure="yes">
+            <RegistrySearch Id="ViofsCurrentServiceSearch" Root="HKLM"
+                Key="SYSTEM\CurrentControlSet\Services\VirtioFsSvc" Name="ImagePath" Type="raw" />
+        </Property>
+        <SetProperty Id="VIOFS_SERVICE_NAME" Value="VirtIO-FS Service" Before="CostFinalize" Sequence="execute"
+            Condition="VIOFS_LEGACY_SERVICE AND NOT VIOFS_CURRENT_SERVICE" />
+        <Launch Condition="NOT (VIOFS_LEGACY_SERVICE AND VIOFS_CURRENT_SERVICE)"
+            Message="Both Virtio-FS service names are registered, so ownership is ambiguous. Resolve the conflict with the confirmed owning installer before retrying. This installer will not choose or remove either service in this state." />
+        <Launch Condition='VIOFS_SERVICE_NAME="VirtioFsSvc" OR VIOFS_SERVICE_NAME="VirtIO-FS Service"'
+            Message="Unsupported Virtio-FS service name." />
     </Fragment>
 </Wix>

@@ -28,6 +28,18 @@
             <?endif?>
         </ComponentGroup>
 
+        <!-- An installed client variant (Win10 or Win11) stays selected on upgrade: the same component GUIDs
+             let RemoveExistingProducts after InstallExecute leave the shared driver components in place. -->
+        <?ifdef variantKey?>
+        <Property Id="INSTALLED_$(var.variantKey)_$(var.driverKey)" Secure="yes">
+            <ComponentSearch Id="CS_$(var.osFullName)_$(var.driverName)" Guid="$(var.guid)" Type="file" />
+        </Property>
+        <?endif?>
+        <?if $(var.osShort) = "w11" ?>
+        <Launch Condition='(Installed AND REMOVE~="ALL") OR NOT (INSTALLED_W10X64_$(var.driverKey) AND INSTALLED_W11X64_$(var.driverKey))'
+            Message="Both Windows client variants of $(var.driverName) are registered. Fully uninstall the existing product with msiexec /x and its ProductCode before retrying. Repair and Modify are not supported in this state." />
+        <?endif?>
+
         <CustomTableRef Id="DriverInstallTable">
             <Row>
                 <Data Column="Component" Value="CMP_$(var.osFullName)_$(var.driverName)" />

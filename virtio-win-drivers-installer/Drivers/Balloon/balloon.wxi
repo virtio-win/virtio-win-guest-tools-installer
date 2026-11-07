@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 <?define driverName = "balloon" ?>
+<?define driverKey = "BALLOON" ?>
 <?define srcDirName = "Balloon" ?>
 <?define destDirName = "BALLOON" ?>
 <?define with_sys = "true"?>

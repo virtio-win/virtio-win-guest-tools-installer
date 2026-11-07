@@ -39,7 +39,7 @@ bool DevProps::Init(bool bInstall)
 {
     if (!bInstall && !FileExists())
     {
-        GetComponentRegKey();
+        if (!GetComponentRegKey()) return false;
     }
 
     if (GetLongPathname())
@@ -440,11 +440,8 @@ bool DevProps::SetOemName(const wchar_t* name, size_t size)
 {
     if (m_OemName.empty())
     {
-        std::wstring oem_name(name, size);
-        std::size_t pos = oem_name.find_last_of(L"\\");
-        ++pos;
-        m_OemName = oem_name.substr(pos);;
-        m_OemName.resize(size);
+        std::wstring oem_name(name);
+        m_OemName = oem_name.substr(oem_name.find_last_of(L"\\") + 1);
     }
     return (!m_OemName.empty());
 }
@@ -463,10 +460,7 @@ bool DevProps::SetStrongName(const wchar_t* name, size_t size)
     if (m_StrongName.empty() && (name != NULL))
     {
         m_StrongName = name;
-        if (size > 0)
-        {
-            m_StrongName.resize(size);
-        }
+
     }
     return (!m_StrongName.empty());
 }
@@ -553,8 +547,31 @@ bool DevProps::FindStrongName()
             return true;
         }
     }
+    Err = GetLastError();
+    if (!Err) Err = ERROR_NOT_FOUND;
     LogReport(HRESULT_FROM_WIN32(Err), L"Failed to get the strong name for %ws %ws  failed err = 0x%x: %ws", inffile.c_str(), inffile.c_str(), Err, GetErrorString(Err));
+    SetLastError(Err);
     return false;
+}
+
+static bool ReadInfBytes(PCWSTR path, std::vector<BYTE>& bytes)
+{
+    HANDLE file = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+    if (file == INVALID_HANDLE_VALUE) return false;
+    LARGE_INTEGER size;
+    DWORD error = ERROR_SUCCESS, read = 0;
+    if (!GetFileSizeEx(file, &size)) error = GetLastError();
+    else if (size.QuadPart <= 0 || size.QuadPart > MAXDWORD) error = ERROR_INVALID_DATA;
+    else
+    {
+        bytes.resize(static_cast<size_t>(size.QuadPart));
+        if (!ReadFile(file, bytes.data(), static_cast<DWORD>(bytes.size()), &read, NULL))
+            error = GetLastError();
+        else if (read != bytes.size()) error = ERROR_HANDLE_EOF;
+    }
+    CloseHandle(file);
+    SetLastError(error);
+    return error == ERROR_SUCCESS;
 }
 
 bool DevProps::FindOemFile()
@@ -566,6 +583,8 @@ bool DevProps::FindOemFile()
     std::wstring sys_path;
     DWORD Err = ERROR_SUCCESS;
     bool bfound = false;
+    std::vector<BYTE> source;
+    if (!ReadInfBytes(GetFullPath(), source)) return false;
 
     size = GetSystemWindowsDirectory(sys_buf.get(), size);
     sys_path.resize(size + 1);
@@ -597,630 +616,79 @@ bool DevProps::FindOemFile()
         std::wstring file = FindFileData.cFileName;
         oem_file += file;
 
-        DevProps* tmp_dp = new DevProps(oem_file.c_str());
-        tmp_dp->Init();
-
-        if (IsEqualGUID(*tmp_dp->GetClassGUID(), *GetClassGUID()) &&
-            (wcscmp(tmp_dp->GetProviderName(), GetProviderName()) == 0) &&
-            (wcscmp(tmp_dp->GetCatalogFile(), GetCatalogFile()) == 0) &&
-            tmp_dp->GetDriverVersion()->build == GetDriverVersion()->build)
+        std::vector<BYTE> candidate;
+        if (!ReadInfBytes(oem_file.c_str(), candidate))
         {
-            SetOemName(oem_file.c_str(), oem_file.length());
-            bfound = true;
+            Err = GetLastError();
             break;
         }
-        delete tmp_dp;
+        if (candidate == source)
+        {
+            if (bfound)
+            {
+                Err = ERROR_DUP_NAME;
+                break;
+            }
+            SetOemName(oem_file.c_str(), oem_file.length());
+            bfound = true;
+        }
 
     } while (FindNextFile(hFind, &FindFileData));
 
+    if (Err == ERROR_SUCCESS && GetLastError() != ERROR_NO_MORE_FILES)
+        Err = GetLastError();
     FindClose(hFind);
-
-    return bfound;
+    if (Err == ERROR_SUCCESS && !bfound) Err = ERROR_NOT_FOUND;
+    SetLastError(Err);
+    return bfound && Err == ERROR_SUCCESS;
 }
 
 bool DevProps::SetComponentRegKey()
 {
-    HKEY hRootKey;
-    std::wstring rootkey = TEXT("SOFTWARE\\RedHat\\Virtio-Win\\Components\\");
-    std::wstring dirkey = GetComponentName();
-    rootkey += dirkey;
-    LONG nError = ERROR_SUCCESS;
-
-    nError = RegOpenKeyEx(HKEY_LOCAL_MACHINE, rootkey.c_str(), 0, KEY_ALL_ACCESS, &hRootKey);
-
-    if (nError == ERROR_FILE_NOT_FOUND)
+    HKEY key;
+    std::wstring path = L"SOFTWARE\\RedHat\\Virtio-Win\\Components\\" + GetComponentName();
+    LONG error = RegCreateKeyEx(HKEY_LOCAL_MACHINE, path.c_str(), 0, NULL, 0,
+        KEY_SET_VALUE, NULL, &key, NULL);
+    if (error == ERROR_SUCCESS)
     {
-        nError = RegCreateKeyEx(HKEY_LOCAL_MACHINE, rootkey.c_str(), NULL, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hRootKey, NULL);
+        std::wstring oem = GetOemName(), strong = GetStrongName();
+        error = RegSetValueEx(key, L"oem", 0, REG_SZ,
+            reinterpret_cast<const BYTE*>(oem.c_str()), static_cast<DWORD>((oem.size() + 1) * sizeof(wchar_t)));
+        if (error == ERROR_SUCCESS)
+            error = RegSetValueEx(key, L"strongname", 0, REG_SZ,
+                reinterpret_cast<const BYTE*>(strong.c_str()), static_cast<DWORD>((strong.size() + 1) * sizeof(wchar_t)));
+        LONG closed = RegCloseKey(key);
+        if (error == ERROR_SUCCESS) error = closed;
     }
-
-    if (nError != ERROR_SUCCESS)
-    {
-        LogReport(HRESULT_FROM_WIN32(nError), L"Error opening or creating a key err = 0x%x: %ws", nError, GetErrorString(nError));
-        return false;
-    }
-
-    std::wstring oem_name = GetOemName();
-    if (!oem_name.empty())
-    {
-        std::wstring  value = TEXT("oem\0");
-        nError = RegSetValueEx(hRootKey, value.c_str(), 0, REG_SZ, (LPBYTE)oem_name.c_str(), (DWORD)((oem_name.length() + 1) * sizeof(wchar_t)));
-
-        if (nError != ERROR_SUCCESS)
-        {
-            LogReport(HRESULT_FROM_WIN32(nError), L"RegSetValueEx for oem value failed err = 0x%x: %ws", nError, GetErrorString(nError));
-        }
-    }
-
-    std::wstring strong_name = GetStrongName();
-    if (!strong_name.empty())
-    {
-        std::wstring  value = TEXT("strongname\0");
-        nError = RegSetValueEx(hRootKey, value.c_str(), 0, REG_SZ, (LPBYTE)strong_name.c_str(), (DWORD)((strong_name.length() + 1) * sizeof(wchar_t)));
-
-        if (nError != ERROR_SUCCESS)
-        {
-            LogReport(HRESULT_FROM_WIN32(nError), L"RegSetValueEx for strongname value failed err = 0x%x: %ws", nError, GetErrorString(nError));
-        }
-    }
-
-    nError = RegCloseKey(hRootKey);
-
-    if (nError != ERROR_SUCCESS)
-    {
-        LogReport(HRESULT_FROM_WIN32(nError), L"RegCloseKey failed err = 0x%x: %ws", nError, GetErrorString(nError));
-        return false;
-    }
-    return true;
+    SetLastError(error);
+    return error == ERROR_SUCCESS;
 }
 
 bool DevProps::GetComponentRegKey()
 {
-    HKEY hRootKey;
-    std::wstring rootkey = TEXT("SOFTWARE\\RedHat\\Virtio-Win\\Components\\");
-    std::wstring dirkey = GetComponentName();// TEXT("vioscsi\0");
-    rootkey += dirkey;
-    LONG nError = ERROR_SUCCESS;
-
-    nError = RegOpenKeyEx(HKEY_LOCAL_MACHINE, rootkey.c_str(), 0, KEY_ALL_ACCESS, &hRootKey);
-
-    if (nError != ERROR_SUCCESS)
+    std::wstring key = L"SOFTWARE\\RedHat\\Virtio-Win\\Components\\" + GetComponentName();
+    wchar_t strong[MAX_PATH], oem[MAX_PATH];
+    DWORD size = sizeof(strong);
+    LONG error = RegGetValueW(HKEY_LOCAL_MACHINE, key.c_str(), L"strongname",
+        RRF_RT_REG_SZ, NULL, strong, &size);
+    if (error == ERROR_SUCCESS)
     {
-        LogReport(HRESULT_FROM_WIN32(nError), L"RegOpenKeyEx failed err = 0x%x: %ws key %ws", nError, GetErrorString(nError), rootkey.c_str());
-        return false;
+        size = sizeof(oem);
+        error = RegGetValueW(HKEY_LOCAL_MACHINE, key.c_str(), L"oem",
+            RRF_RT_REG_SZ, NULL, oem, &size);
     }
-
-    DWORD SubKeysCount = 0;
-    DWORD ValuesCount = 0;
-    nError = RegQueryInfoKey(hRootKey, NULL, NULL, NULL, &SubKeysCount, NULL, NULL, &ValuesCount, NULL, NULL, NULL, NULL);
-    if (nError == ERROR_SUCCESS)
+    if (error == ERROR_SUCCESS)
     {
-        std::wstring  strongname = TEXT("strongname");
-        std::wstring  oemname = TEXT("oem");
-        for (DWORD i = 0; i < ValuesCount; i++)
-        {
-            DWORD buffSize = 1024;
-            wchar_t valueBuff[1024];
-            DWORD subKeyCount = 0;
-            HKEY hSubKey = hRootKey;
-            RegEnumValue(hRootKey, i, valueBuff, &buffSize, NULL, NULL, NULL, NULL);
-
-            std::wstring valueName = valueBuff;
-            DWORD dwType = REG_SZ;
-            wchar_t value[1024];
-            DWORD value_length = 1024;
-            nError = RegQueryValueEx(hRootKey, valueName.c_str(), NULL, &dwType, (LPBYTE)&value, &value_length);
-            if (nError == ERROR_SUCCESS)
-            {
-                if ((wcscmp(valueName.c_str(), strongname.c_str()) == 0))
-                {
-                    m_InfName = value;
-                    GetLongPathname();
-                }
-                else if (wcscmp(valueName.c_str(), oemname.c_str()) == 0)
-                {
-                    SetOemName(value, _tcslen(value));
-                    FindStrongName();
-                }
-            }
-            else
-            {
-                LogReport(HRESULT_FROM_WIN32(nError), L"RegQueryValueEx failed err = 0x%x: %ws", nError, GetErrorString(nError));
-            }
-        }
+        m_InfName = strong;
+        SetOemName(oem, wcslen(oem));
     }
-
-    nError = RegDeleteKey(HKEY_LOCAL_MACHINE, rootkey.c_str());
-    if (nError != ERROR_SUCCESS)
-    {
-        LogReport(HRESULT_FROM_WIN32(nError), L"RegDeleteKey failed err = 0x%x: %ws key = %ws", nError, GetErrorString(nError), rootkey.c_str());
-    }
-
-    nError = RegCloseKey(hRootKey);
-
-    if (nError != ERROR_SUCCESS) {
-        LogReport(HRESULT_FROM_WIN32(nError), L"RegCloseKey failed err = 0x%x: %ws", nError, GetErrorString(nError));
-        return false;
-    }
-
-    return true;
+    SetLastError(error);
+    return error == ERROR_SUCCESS;
 }
 
-DevDriver::DevDriver(const PCWSTR inf_name) : DevProps(inf_name), m_bRebootNeeded(false), m_pDiUninstallDriver(NULL)
+DWORD DevProps::DeleteComponentRegKey()
 {
-    FindFunctions();
-}
-
-bool DevDriver::UnInstall()
-{
-    RemoveDevices();
-    UnInstallOEMInf();
-    return true;
-}
-
-bool DevDriver::Install()
-{
-    DWORD Err = UpdateDriver();
-
-    if (Err == ERROR_NO_SUCH_DEVINST)
-    {
-        Err = InstallOEMInf();
-    }
-
-    if ((Err == NO_ERROR) || (Err == ERROR_NO_SUCH_DEVINST))
-    {
-        HDEVINFO NonPresentDevs = INVALID_HANDLE_VALUE;
-        NonPresentDevs = FindNonPresentDevices();
-        if (NonPresentDevs != INVALID_HANDLE_VALUE)
-        {
-            MarkDevicesAsNeedReinstall(NonPresentDevs);
-            SetupDiDestroyDeviceInfoList(NonPresentDevs);
-        }
-        FindStrongName();
-        SetComponentRegKey();
-        return true;
-    }
-
-    LogReport(HRESULT_FROM_WIN32(Err), L"Install failed err = 0x%x: %ws", Err, GetErrorString(Err));
-
-    return false;
-}
-
-bool DevDriver::ScanForHardwareChanges(void)
-{
-    DEVINST     devInst;
-    CONFIGRET   status = CR_SUCCESS;
-    DWORD Err = S_OK;
-    status = CM_Locate_DevNode(&devInst, NULL, CM_LOCATE_DEVNODE_NORMAL);
-
-    if (status != CR_SUCCESS)
-    {
-        Err = CM_MapCrToWin32Err(status, ERROR_UNIDENTIFIED_ERROR);
-        LogReport(HRESULT_FROM_WIN32(Err), L"CM_Locate_DevNode failed err = 0x%x: %ws", Err, GetErrorString(Err));
-        return false;
-    }
-
-    status = CM_Reenumerate_DevNode(devInst, 0);
-
-    if (status != CR_SUCCESS)
-    {
-        Err = CM_MapCrToWin32Err(status, ERROR_UNIDENTIFIED_ERROR);
-        LogReport(HRESULT_FROM_WIN32(Err), L"CM_Reenumerate_DevNode failed wit err = 0x%x: %ws", Err, GetErrorString(Err));
-        return false;
-    }
-
-    return true;
-}
-
-bool DevDriver::RemoveDevices(void)
-{
-    HDEVINFO DeviceInfoSet = INVALID_HANDLE_VALUE;
-    DWORD i = 0;
-    DWORD Err = S_OK;
-
-    SP_DEVINFO_DATA DeviceInfoData;
-    DWORD RegDataType;
-    bool bRet = false;
-
-    DeviceInfoSet = SetupDiGetClassDevs(GetClassGUID(),
-        NULL,
-        NULL,
-        DIGCF_ALLCLASSES
-    );
-
-    if (DeviceInfoSet == INVALID_HANDLE_VALUE)
-    {
-        Err = GetLastError();
-        LogReport(HRESULT_FROM_WIN32(Err), L"SetupDiGetClassDevs failed err = 0x%x: %ws", Err, GetErrorString(Err));
-        return false;
-    }
-
-    DeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
-
-    DWORD size = 0;
-
-    while (SetupDiEnumDeviceInfo(DeviceInfoSet, i++, &DeviceInfoData))
-    {
-        if (!SetupDiGetDeviceRegistryProperty(DeviceInfoSet,
-            &DeviceInfoData,
-            SPDRP_HARDWAREID,
-            &RegDataType,
-            NULL,
-            0,
-            &size))
-        {
-            Err = GetLastError();
-            if (Err == ERROR_INSUFFICIENT_BUFFER && size > 0)
-            {
-                std::unique_ptr< wchar_t[] > hwid_buf(new wchar_t[size]);
-                if (SetupDiGetDeviceRegistryProperty(DeviceInfoSet,
-                    &DeviceInfoData,
-                    SPDRP_HARDWAREID,
-                    &RegDataType,
-                    (PBYTE)hwid_buf.get(),
-                    size,
-                    &size))
-                {
-                    if ((RegDataType == REG_MULTI_SZ) || size > 0)
-                    {
-                        std::vector<std::wstring> hwids;
-                        std::vector<std::wstring> res;
-                        hwids = MultiSzToVector(hwid_buf.get());
-                        res = FindCommon(GetHWIDs(), hwids);
-                        if (!res.empty())
-                        {
-                            for (auto it = begin(res); it != end(res); ++it)
-                            {
-                                bRet = true;
-                                SP_REMOVEDEVICE_PARAMS removeParameters{0};
-                                SP_DRVINFO_DATA DriverInfoData{0};
-                                HKEY hKey = NULL;
-                                DWORD RegDataLength;
-                                DWORD RegDataType;
-                                DWORD RegErr;
-
-                                removeParameters.ClassInstallHeader.cbSize =
-                                    sizeof(removeParameters.ClassInstallHeader);
-                                removeParameters.ClassInstallHeader.InstallFunction =
-                                    DIF_REMOVE;
-                                removeParameters.Scope = DI_REMOVEDEVICE_GLOBAL;
-                                removeParameters.HwProfile = 0;
-
-                                SP_DEVINSTALL_PARAMS deviceInstallParams;
-                                deviceInstallParams.cbSize = sizeof(SP_DEVINSTALL_PARAMS);
-
-                                if (!SetupDiGetDeviceInstallParams(DeviceInfoSet, &DeviceInfoData, &deviceInstallParams))
-                                {
-                                    Err = GetLastError();
-                                    LogReport(HRESULT_FROM_WIN32(Err), L"SetupDiGetDeviceInstallParams failed err = 0x%x: %ws", Err, GetErrorString(Err));
-                                    return false;
-                                }
-                                deviceInstallParams.FlagsEx |= (DI_FLAGSEX_INSTALLEDDRIVER | DI_FLAGSEX_ALLOWEXCLUDEDDRVS);
-
-                                if (SetupDiSetDeviceInstallParams(DeviceInfoSet, &DeviceInfoData, &deviceInstallParams))
-                                {
-                                    if (!SetupDiBuildDriverInfoList(DeviceInfoSet, &DeviceInfoData, SPDIT_CLASSDRIVER))
-                                    {
-                                        Err = GetLastError();
-                                        LogReport(HRESULT_FROM_WIN32(Err), L"SetupDiBuildDriverInfoList failed err = 0x%x: %ws", Err, GetErrorString(Err));
-                                        return FALSE;
-                                    }
-                                    DriverInfoData.cbSize = sizeof(DriverInfoData);
-                                    if (!SetupDiEnumDriverInfo(DeviceInfoSet, &DeviceInfoData, SPDIT_CLASSDRIVER,
-                                        0, &DriverInfoData)) 
-                                    {
-                                        Err = GetLastError();
-                                        LogReport(HRESULT_FROM_WIN32(Err), L"SetupDiEnumDriverInfo failed err = 0x%x: %ws", Err, GetErrorString(Err));
-                                        return false;
-                                    }
-                                }
-                                deviceInstallParams.FlagsEx &= ~(DI_FLAGSEX_INSTALLEDDRIVER | DI_FLAGSEX_ALLOWEXCLUDEDDRVS);
-                                hKey = SetupDiOpenDevRegKey(DeviceInfoSet,
-                                    &DeviceInfoData,
-                                    DICS_FLAG_GLOBAL,
-                                    0,
-                                    DIREG_DRV,
-                                    KEY_READ
-                                );
-
-                                if (hKey == INVALID_HANDLE_VALUE) {
-                                    Err = GetLastError();
-                                    LogReport(HRESULT_FROM_WIN32(Err), L"SetupDiOpenDevRegKey failed err = 0x%x: %ws", Err, GetErrorString(Err));
-                                    RegCloseKey(hKey);
-                                    return false;
-                                }
-
-                                RegDataLength = sizeof(deviceInstallParams.DriverPath);
-                                RegErr = RegQueryValueEx(hKey,
-                                    REGSTR_VAL_INFPATH,
-                                    NULL,
-                                    &RegDataType,
-                                    (PBYTE)deviceInstallParams.DriverPath,
-                                    &RegDataLength
-                                );
-
-                                if ((RegErr != ERROR_SUCCESS) || (RegDataType != REG_SZ))
-                                {
-                                    Err = GetLastError();
-                                    LogReport(HRESULT_FROM_WIN32(Err), L"RegQueryValueEx failed err = 0x%x: %ws", RegErr, GetErrorString(RegErr));
-                                    RegCloseKey(hKey);
-                                    return false;
-                                }
-
-                                SetOemName(deviceInstallParams.DriverPath, RegDataLength);
-
-                                SetupDiSetClassInstallParams(DeviceInfoSet, &DeviceInfoData,
-                                    &removeParameters.ClassInstallHeader,
-                                    sizeof(removeParameters));
-
-                                if (!SetupDiCallClassInstaller(DIF_REMOVE, DeviceInfoSet, &DeviceInfoData))
-                                {
-                                    Err = GetLastError();
-                                    LogReport(HRESULT_FROM_WIN32(Err), L"SetupDiCallClassInstaller failed err = 0x%x: %ws", Err, GetErrorString(Err));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    SetupDiDestroyDeviceInfoList(DeviceInfoSet);
-
-    return bRet;
-}
-
-
-HDEVINFO DevDriver::FindNonPresentDevices()
-{
-    HDEVINFO DeviceInfoSet = INVALID_HANDLE_VALUE;
-    HDEVINFO ExistingNonPresentDevices = INVALID_HANDLE_VALUE;
-    DWORD i, Err;
-    SP_DEVINFO_DATA DeviceInfoData;
-    DWORD RegDataType;
-    BOOL bRet;
-    ULONG Status, Problem;
-    TCHAR DeviceInstanceId[MAX_DEVNODE_ID_LEN];
-
-    DeviceInfoSet = SetupDiGetClassDevs(GetClassGUID(),
-        NULL,
-        NULL,
-        DIGCF_ALLCLASSES
-    );
-
-    if (DeviceInfoSet == INVALID_HANDLE_VALUE)
-    {
-        Err = GetLastError();
-        LogReport(HRESULT_FROM_WIN32(Err), L"SetupDiGetClassDevs failed err = 0x%x: %ws", Err, GetErrorString(Err));
-        return INVALID_HANDLE_VALUE;
-    }
-
-    DeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
-
-    Err = NO_ERROR;
-    bRet = FALSE;
-
-    i = 0;
-
-    DWORD size = 0;
-    while (SetupDiEnumDeviceInfo(DeviceInfoSet, i++, &DeviceInfoData))
-    {
-
-        if (!SetupDiGetDeviceRegistryProperty(DeviceInfoSet,
-            &DeviceInfoData,
-            SPDRP_HARDWAREID,
-            &RegDataType,
-            NULL,
-            0,
-            &size))
-        {
-            Err = GetLastError();
-            if (Err == ERROR_INSUFFICIENT_BUFFER && size > 0)
-            {
-                std::unique_ptr< wchar_t[] > hwid_buf(new wchar_t[size]);
-                if (SetupDiGetDeviceRegistryProperty(DeviceInfoSet,
-                    &DeviceInfoData,
-                    SPDRP_HARDWAREID,
-                    &RegDataType,
-                    (PBYTE)hwid_buf.get(),
-                    size,
-                    &size)) 
-                {
-                    if ((RegDataType == REG_MULTI_SZ) || size > 0) 
-                    {
-                        std::vector<std::wstring> hwids;
-                        std::vector<std::wstring> res;
-                        hwids = MultiSzToVector(hwid_buf.get());
-                        res = FindCommon(GetHWIDs(), hwids);
-                        if (!res.empty())
-                        {
-                            for (auto it = begin(res); it != end(res); ++it)
-                            {
-                                bRet = TRUE;
-
-                                if (CR_SUCCESS != CM_Get_DevNode_Status(&Status,
-                                    &Problem,
-                                    (DEVNODE)DeviceInfoData.DevInst,
-                                    0))
-                                {
-                                    if (ExistingNonPresentDevices == INVALID_HANDLE_VALUE)
-                                    {
-                                        ExistingNonPresentDevices =
-                                            SetupDiCreateDeviceInfoList(NULL, NULL);
-
-                                        if (ExistingNonPresentDevices == INVALID_HANDLE_VALUE)
-                                        {
-                                            Err = GetLastError();
-                                            LogReport(HRESULT_FROM_WIN32(Err), L"SetupDiCreateDeviceInfoList failed err = 0x%x: %ws", Err, GetErrorString(Err));
-
-                                            bRet = FALSE;
-                                            break;
-                                        }
-                                    }
-                                    std::unique_ptr< wchar_t[] > dev_id(new wchar_t[MAX_DEVNODE_ID_LEN]);
-
-                                    if (!SetupDiGetDeviceInstanceId(DeviceInfoSet,
-                                        &DeviceInfoData,
-                                        DeviceInstanceId,
-                                        sizeof(DeviceInstanceId) / sizeof(TCHAR),
-                                        NULL))
-                                    {
-                                        Err = GetLastError();
-                                        LogReport(HRESULT_FROM_WIN32(Err), L"SetupDiGetDeviceInstanceId failed err = 0x%x: %ws", Err, GetErrorString(Err));
-                                        bRet = FALSE;
-                                        break;
-                                    }
-
-                                    if (!SetupDiOpenDeviceInfo(ExistingNonPresentDevices,
-                                        DeviceInstanceId,
-                                        NULL,
-                                        0,
-                                        NULL))
-                                    {
-                                        Err = GetLastError();
-                                        LogReport(HRESULT_FROM_WIN32(Err), L"SetupDiOpenDeviceInfo failed err = 0x%x: %ws", Err, GetErrorString(Err));
-                                        bRet = FALSE;
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    SetupDiDestroyDeviceInfoList(DeviceInfoSet);
-
-    if ((Err != NO_ERROR) &&
-        (ExistingNonPresentDevices != INVALID_HANDLE_VALUE))
-    {
-        SetupDiDestroyDeviceInfoList(ExistingNonPresentDevices);
-        ExistingNonPresentDevices = INVALID_HANDLE_VALUE;
-    }
-
-    return ExistingNonPresentDevices;
-}
-
-VOID DevDriver::MarkDevicesAsNeedReinstall(
-    _In_ HDEVINFO DeviceInfoSet
-)
-{
-    SP_DEVINFO_DATA DeviceInfoData{0};
-
-    DeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
-
-    for (DWORD i = 0;
-        SetupDiEnumDeviceInfo(DeviceInfoSet, i, &DeviceInfoData);
-        i++)
-    {
-        DWORD ConfigFlags, RegDataType;
-
-        if (SetupDiGetDeviceRegistryProperty(DeviceInfoSet,
-            &DeviceInfoData,
-            SPDRP_CONFIGFLAGS,
-            &RegDataType,
-            (PBYTE)&ConfigFlags,
-            sizeof(ConfigFlags),
-            NULL)
-            && (RegDataType == REG_DWORD))
-        {
-            ConfigFlags |= CONFIGFLAG_REINSTALL;
-            SetupDiSetDeviceRegistryProperty(DeviceInfoSet,
-                &DeviceInfoData,
-                SPDRP_CONFIGFLAGS,
-                (PBYTE)&ConfigFlags,
-                sizeof(ConfigFlags)
-            );
-        }
-    }
-}
-
-DWORD DevDriver::UpdateDriver()
-{
-    const wchar_t* pInf = GetFullPath();
-    DWORD Err = NO_ERROR;
-    if (pInf)
-    {
-        const std::vector<std::wstring> hwids = GetHWIDs();
-
-        if (!hwids.empty())
-        {
-            for (const auto& hwid : hwids)
-            {
-                if (!hwid.empty())
-                {
-                    if (UpdateDriverForPlugAndPlayDevices(NULL, hwid.data(), pInf, INSTALLFLAG_FORCE, &m_bRebootNeeded))
-                    {
-                        return NO_ERROR;
-                    }
-                    Err = GetLastError();
-                    if (Err != ERROR_NO_SUCH_DEVINST)
-                    {
-                        LogReport(HRESULT_FROM_WIN32(Err), L"UpdateDriverForPlugAndPlayDevices for %ws failed err = 0x%x: %ws", hwid.data(), Err, GetErrorString(Err));
-                    }
-                }
-            }
-        }
-    }
-    return ERROR_NO_SUCH_DEVINST;
-}
-
-DWORD DevDriver::InstallOEMInf()
-{
-    const wchar_t* pInf = GetFullPath();
-    DWORD Err = ERROR_FILE_NOT_FOUND;
-    if (pInf)
-    {
-        DWORD size = MAX_PATH;
-        std::unique_ptr< wchar_t[] > val_buf(new wchar_t[size]);
-        PWSTR oem_name = nullptr;
-        if (!SetupCopyOEMInf(pInf, NULL, SPOST_PATH, 0, val_buf.get(), size, &size, &oem_name))
-        {
-            Err = GetLastError();
-            LogReport(HRESULT_FROM_WIN32(Err), L"SetupCopyOEMInf failed err = 0x%x: %ws", Err, GetErrorString(Err));
-        }
-        else
-        {
-            SetOemName(oem_name, _tcslen(oem_name));
-            return NO_ERROR;
-        }
-    }
-    return Err;
-}
-
-DWORD DevDriver::UnInstallOEMInf()
-{
-    const wchar_t* pOem = nullptr;
-
-    if (m_pDiUninstallDriver == NULL)
-    {
-        pOem = GetOemName();
-        if (pOem && SetupUninstallOEMInf(pOem, 0, NULL))
-        {
-            return NO_ERROR;
-        }
-    }
-    else
-    {
-        pOem = GetStrongName();
-        if (pOem && m_pDiUninstallDriver(NULL, pOem, 0/*DIURFLAG_NO_REMOVE_INF*/, &m_bRebootNeeded))
-        {
-            return NO_ERROR;
-        }
-    }
-
-    return ERROR_FILE_NOT_FOUND;
-}
-
-void DevDriver::FindFunctions()
-{
-    HINSTANCE hModDll = LoadLibrary(L"newdev.dll");
-
-    if (hModDll != NULL)
-    {
-        m_pDiUninstallDriver = (DiUninstallDriverProto)GetProcAddress(hModDll, "DiUninstallDriverW");
-        FreeLibrary(hModDll);
-    }
+    std::wstring key = L"SOFTWARE\\RedHat\\Virtio-Win\\Components\\" + GetComponentName();
+    LONG error = RegDeleteKey(HKEY_LOCAL_MACHINE, key.c_str());
+    return error == ERROR_FILE_NOT_FOUND ? ERROR_SUCCESS : error;
 }

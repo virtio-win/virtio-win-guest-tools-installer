@@ -2,7 +2,10 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Fragment Id='DrvInstCA'>
     <InstallExecuteSequence>
+      <Custom Action='CheckLegacyDriverOwnership' After='InstallValidate'>VersionNT >= 603</Custom>
+      <Custom Action='ProcessDriverUninstallPackages' Before='RemoveFiles'>VersionNT >= 603</Custom>
       <Custom Action='ProcessDriverPackages' After='InstallFiles'>VersionNT >= 603</Custom>
+      <Custom Action='CleanupDriverTransactions' After='InstallFinalize'>VersionNT >= 603</Custom>
     </InstallExecuteSequence>
 
     <?if $(sys.BUILDARCH) = "x64" ?>
@@ -18,11 +21,15 @@
       <ProgressText Action="RollbackUninstall">!(loc.RollbackUninstall)</ProgressText>
     </UI>
 
+    <CustomAction Id='CheckLegacyDriverOwnership' BinaryKey='DrvInstallDll' DllEntry='CheckLegacyDriverOwnership' Execute='immediate' Return='check' />
+    <CustomAction Id='ProcessDriverUninstallPackages' BinaryKey='DrvInstallDll' DllEntry='ProcessUninstallPackages' Execute='immediate' Return='check' />
     <CustomAction Id='ProcessDriverPackages'   BinaryKey='DrvInstallDll' DllEntry='ProcessPackages' SuppressModularization='yes' Execute='immediate' />
+    <CustomAction Id='BeginDriverTransaction' BinaryKey='DrvInstallDll' DllEntry='BeginDriverPackages' Execute='deferred' Impersonate='no' Return='check' />
+    <CustomAction Id='CleanupDriverTransactions' BinaryKey='DrvInstallDll' DllEntry='CleanupDriverPackages' Execute='immediate' Return='check' />
     <CustomAction Id='InstallDriverPackages'   BinaryKey='DrvInstallDll' DllEntry='InstallPackages' SuppressModularization='yes' Execute='deferred' Impersonate='no' Return='check' />
-    <CustomAction Id='RollbackInstall'         BinaryKey='DrvInstallDll' DllEntry='UninstallPackages' SuppressModularization='yes' Execute='rollback' Impersonate='no' />
+    <CustomAction Id='RollbackInstall'         BinaryKey='DrvInstallDll' DllEntry='RollbackDriverPackages' SuppressModularization='yes' Execute='rollback' Impersonate='no' />
     <CustomAction Id='UninstallDriverPackages' BinaryKey='DrvInstallDll' DllEntry='UninstallPackages' SuppressModularization='yes' Execute='deferred' Impersonate='no' Return='check' />
-    <CustomAction Id='RollbackUninstall'       BinaryKey='DrvInstallDll' DllEntry='InstallPackages' SuppressModularization='yes' Execute='rollback' Impersonate='no' />
+    <CustomAction Id='RollbackUninstall'       BinaryKey='DrvInstallDll' DllEntry='RollbackDriverPackages' SuppressModularization='yes' Execute='rollback' Impersonate='no' />
 
   </Fragment>
 </Wix>

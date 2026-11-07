@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 <?define driverName = "netkvm" ?>
+<?define driverKey = "NETKVM" ?>
 <?define srcDirName = "NetKVM" ?>
 <?define destDirName = "NETWORK" ?>
 <?define with_sys = "true"?>
